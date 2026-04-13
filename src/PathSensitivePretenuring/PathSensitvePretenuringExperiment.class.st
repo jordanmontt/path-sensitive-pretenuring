@@ -54,6 +54,14 @@ PathSensitvePretenuringExperiment >> constructAllocationGraph [
     allocationGraph := AllocationGraph onSamples: rawAllocationsSamples
 ]
 
+{ #category : 'api' }
+PathSensitvePretenuringExperiment >> deserializeSendersToPretenureFrom: aFileName [
+
+    | jsonString |
+    jsonString := aFileName asFileReference contents.
+    sendersToPretenure := MethodWithOffsetSerializer new deserialize: jsonString
+]
+
 { #category : 'api - exporting' }
 PathSensitvePretenuringExperiment >> exportAllocationSites [
 
