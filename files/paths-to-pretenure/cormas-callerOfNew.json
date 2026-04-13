@@ -1,0 +1,50 @@
+[
+	[
+		{
+			"methodClass" : "Association class",
+			"offset" : "42",
+			"sourceCode" : "key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^self basicNew key: newKey value: newValue"
+		},
+		{
+			"methodClass" : "Object",
+			"offset" : "44",
+			"sourceCode" : "-> anObject\r\t\"Answer an Association between self and anObject\"\r\t\"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r\t\"(1 -> 'one') key >>> 1\"\r\t\"(1 -> 'one') value >>> 'one'\"\r\r\t\"Note that key and value can be ANY object.\"\r\r\t^ Association key: self value: anObject"
+		}
+	],
+	[
+		{
+			"methodClass" : "Association class",
+			"offset" : "42",
+			"sourceCode" : "key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^self basicNew key: newKey value: newValue"
+		},
+		{
+			"methodClass" : "Dictionary",
+			"offset" : "82",
+			"sourceCode" : "at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := array at: index.\r\tassoc\r\t\tifNil: [self atNewIndex: index put: (Association key: key value: anObject)]\r\t\tifNotNil: [assoc value: anObject].\r\t^ anObject"
+		}
+	],
+	[
+		{
+			"methodClass" : "HashedCollection class",
+			"offset" : "58",
+			"sourceCode" : "new\r\t^ self basicNew\r\t\tinitialize: 5;\r\t\tyourself"
+		},
+		{
+			"methodClass" : "CMSpatialEntity",
+			"offset" : "48",
+			"sourceCode" : "theOccupants\r\t\r\t^theOccupants ifNil: [theOccupants := Dictionary new]"
+		}
+	],
+	[
+		{
+			"methodClass" : "CMSpace4Neighbourhood",
+			"offset" : "115",
+			"sourceCode" : "initializeOrderedNeighbourhood: k\r\r\t| v i |\r\tv := Array new: 4.\r\t(i := self northCell: k) > 0 ifTrue: [ \r\t\tv at: 1 put: (self elementaryEntitiesAt: i) ].\r\t(i := self westCell: k) > 0 ifTrue: [ \r\t\tv at: 2 put: (self elementaryEntitiesAt: i) ].\r\t(i := self southCell: k) > 0 ifTrue: [ \r\t\tv at: 3 put: (self elementaryEntitiesAt: i) ].\r\t(i := self eastCell: k) > 0 ifTrue: [ \r\t\tv at: 4 put: (self elementaryEntitiesAt: i) ].\r\t^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+		},
+		{
+			"methodClass" : "CMSpaceNeighbourhood",
+			"offset" : "95",
+			"sourceCode" : "initializeNeighbourhood\r\t\" Private - Initialize aSpaceModel neighbourhood values based on the receiver \"\r\r\t1 to: self spaceModel gridSize do: [ :k | \r\t\t(self elementaryEntitiesAt: k) ifNotNil: [ \r\t\t\tself initializeOrderedNeighbourhood: k ] ]."
+		}
+	]
+]

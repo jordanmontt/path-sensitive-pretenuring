@@ -1,0 +1,275 @@
+[
+	[
+		{
+			"methodClass" : "RubCharacterScanner",
+			"offset" : "144",
+			"sourceCode" : "basicScanCharactersFrom: startIndex to: stopIndex in: sourceString rightX: rightX stopConditions: stops kern: kernDelta\r\t\"Primitive. This is the inner loop of text display--but see\r\tscanCharactersFrom: to:rightX: which would get the string,\r\tstopConditions and displaying from the instance. March through source\r\tString from startIndex to stopIndex. If any character is flagged with a\r\tnon-nil entry in stops, then return the corresponding value. Determine\r\twidth of each character from xTable, indexed by map.\r\tIf dextX would exceed rightX, then return stops at: 258.\r\tAdvance destX by the width of the character. If stopIndex has been\r\treached, then return stops at: 257. Optional.\r\tSee Object documentation whatIsAPrimitive.\"\r\t| ascii nextDestX char floatDestX widthAndKernedWidth nextChar atEndOfRun |\r\tlastIndex := startIndex.\r\tfloatDestX := destX.\r\twidthAndKernedWidth := Array new: 2.\r\tatEndOfRun := false.\r\t[lastIndex <= stopIndex]\r\t\twhileTrue: [\r\t\t\tchar := (sourceString at: lastIndex).\r\t\t\tascii := char asciiValue.\r\r\t\t\t(ascii < stops size and: [(stops at: ascii + 1) isNotNil]) ifTrue: [^ stops at: ascii + 1].\r\t\t\t\"Note: The following is querying the font about the width\r\t\t\tsince the primitive may have failed due to a non-trivial\r\t\t\tmapping of characters to glyphs or a non-existing xTable.\"\r\r\t\t\t(self isBreakableAt: lastIndex in: text)\r\t\t\t\tifTrue: [ self registerBreakableIndex ].\r\r\t\t\tnextChar := (lastIndex + 1 <= stopIndex)\r\t\t\t\tifTrue:[sourceString at: lastIndex + 1]\r\t\t\t\tifFalse:[\r\t\t\t\t\tatEndOfRun := true.\r\t\t\t\t\t\"if there is a next char in sourceString, then get the kern\r\t\t\t\t\tand store it in pendingKernX\"\r\t\t\t\t\tlastIndex + 1 <= sourceString size\r\t\t\t\t\t\tifTrue:[sourceString at: lastIndex + 1]\r\t\t\t\t\t\tifFalse:[\tnil]].\r\t\t\tfont\r\t\t\t\twidthAndKernedWidthOfLeft: char\r\t\t\t\tright: nextChar\r\t\t\t\tinto: widthAndKernedWidth.\r\t\t\tnextDestX := floatDestX + ((widthAndKernedWidth at: 1) * self scale).\r\t\t\t\"note crossing of right component side, unless we would end up on the first position\r\t\t\tagain (endless loop, if line is to narrow to hold this current character)\"\r\t\t\tnextDestX > rightX ifTrue: [firstDestX ~= destX ifTrue:[ ^stops crossedX]].\r\t\t\tfloatDestX := floatDestX + (kernDelta * self scale) + ((widthAndKernedWidth at: 2) * self scale).\r\t\t\tatEndOfRun\r\t\t\t\tifTrue:[\r\t\t\t\t\tpendingKernX := ((widthAndKernedWidth at: 2) * self scale) - ((widthAndKernedWidth at: 1) * self scale).\r\t\t\t\t\tfloatDestX := floatDestX - pendingKernX].\r\t\t\tdestX := floatDestX.\r\t\t\tlastIndex := lastIndex + 1].\r\tlastIndex := stopIndex.\r\t^ stops endOfRun"
+		},
+		{
+			"methodClass" : "RubCharacterScanner",
+			"offset" : "93",
+			"sourceCode" : "scanCharactersFrom: startIndex to: stopIndex in: sourceString rightX: rightX stopConditions: stops kern: kernDelta\r\r\tsourceString isByteString\r\t\tifTrue: [ ^ self\r\t\t\t\t\tbasicScanCharactersFrom: startIndex\r\t\t\t\t\tto: stopIndex\r\t\t\t\t\tin: sourceString\r\t\t\t\t\trightX: rightX\r\t\t\t\t\tstopConditions: stops\r\t\t\t\t\tkern: kernDelta ].\r\r\tsourceString isWideString ifFalse: [ ^ stops endOfRun ].\r\r\tstartIndex > stopIndex\r\t\tifTrue: [\r\t\t\tlastIndex := stopIndex.\r\t\t\t^ stops endOfRun ].\r\r\t^ self\r\t\tscanMultiCharactersFrom: startIndex\r\t\tto: stopIndex\r\t\tin: sourceString\r\t\trightX: rightX\r\t\tstopConditions: stops\r\t\tkern: kernDelta"
+		}
+	],
+	[
+		{
+			"methodClass" : "ByteString",
+			"offset" : "52",
+			"sourceCode" : "createSymbol\r\r\t^(ByteSymbol basicNew: self size) string: self"
+		},
+		{
+			"methodClass" : "Symbol class",
+			"offset" : "75",
+			"sourceCode" : "rawIntern: aStringOrSymbol\r\r\t^ (self findInterned: aStringOrSymbol) ifNil: [\r\t\t  NewSymbols add: aStringOrSymbol createSymbol ]"
+		}
+	],
+	[
+		{
+			"methodClass" : "Point class",
+			"offset" : "42",
+			"sourceCode" : "x: xInteger y: yInteger\r\t\"Answer an instance of me with coordinates xInteger and yInteger.\"\r\r\t^ self basicNew setX: xInteger setY: yInteger"
+		},
+		{
+			"methodClass" : "Number",
+			"offset" : "47",
+			"sourceCode" : "@ y\r\t\"Primitive. Answer a Point whose x value is the receiver and whose y\r\tvalue is the argument. Optional. No Lookup. See Object documentation\r\twhatIsAPrimitive.\"\r\r\t<primitive: 18>\r\t^Point x: self y: y"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "59",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "MooseObject",
+			"offset" : "44",
+			"sourceCode" : "resetPrivateState\r\tentityAttributes := #().\r\tcache := SmallDictionary new"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "55",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "MooseObject",
+			"offset" : "44",
+			"sourceCode" : "resetPrivateState\r\tentityAttributes := #().\r\tcache := SmallDictionary new"
+		}
+	],
+	[
+		{
+			"methodClass" : "Rectangle class",
+			"offset" : "42",
+			"sourceCode" : "origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^self basicNew setPoint: originPoint point: cornerPoint"
+		},
+		{
+			"methodClass" : "Rectangle",
+			"offset" : "48",
+			"sourceCode" : "translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^Rectangle origin: origin + factor corner: corner + factor"
+		},
+		{
+			"methodClass" : "FormCanvas",
+			"offset" : "123",
+			"sourceCode" : "frameAndFillRectangle: r fillColor: fillColor borderWidth: borderWidth borderColor: borderColor\r\t| rect |\r\trect := r translateBy: origin.\r\t\"draw the border of the rectangle\"\r\tborderColor isTransparent ifFalse:[\r\t\tself setFillColor: borderColor.\r\t\t(r area > 10000 or: [fillColor isTranslucent]) ifTrue: [\r\t\t\tport frameRect: rect borderWidth: borderWidth.\r\t\t] ifFalse: [\"for small rectangles, it's faster to fill the entire outer rectangle\r\t\t\t\t\tthan to compute and fill the border rects\"\r\t\t\t\t\tport fillRect: rect offset: origin]].\r\r\t\"fill the inside\"\r\tfillColor isTransparent ifFalse:\r\t\t[self setFillColor: fillColor.\r\t\tport fillRect: (rect insetBy: borderWidth) offset: origin]"
+		}
+	],
+	[
+		{
+			"methodClass" : "Rectangle class",
+			"offset" : "42",
+			"sourceCode" : "origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^self basicNew setPoint: originPoint point: cornerPoint"
+		},
+		{
+			"methodClass" : "ScalingCanvas",
+			"offset" : "197",
+			"sourceCode" : "frameAndFillRectangle: r fillColor: fillColor borderWidth: borderWidth borderColor: borderColor\r\r\tborderWidth truncated = borderWidth ifTrue: [\r\t\t| extent extentTruncated |\r\t\textent := r extent.\r\t\textentTruncated := r extent truncated.\r\t\t(borderWidth = 0 or: [ extentTruncated = extent ]) ifTrue: [\r\t\t\t| maxCorner origin corner scaledRectangle |\r\t\t\tmaxCorner := (1 << 31 - 1) asPoint - formCanvas origin.\r\t\t\torigin := r origin truncated * scale.\r\t\t\tcorner := origin + (extentTruncated * scale).\r\t\t\tscaledRectangle := Rectangle origin: origin corner: (corner min: maxCorner).\r\t\t\tformCanvas frameAndFillRectangle: scaledRectangle fillColor: fillColor\r\t\t\t\tborderWidth: borderWidth * scale borderColor: borderColor.\r\t\t\t^ self ] ].\r\tself applyClippingTo: r floor\r\t\tduring: [ :transformedCanvas |\r\t\t\ttransformedCanvas frameAndFillRectangle: r fillColor: fillColor\r\t\t\t\tborderWidth: borderWidth borderColor: borderColor ]"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "59",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "FM3Element class",
+			"offset" : "42",
+			"sourceCode" : "named: aString\r\t^ self new\r\t\tname: aString;\r\t\tyourself"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "55",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "FM3Element class",
+			"offset" : "42",
+			"sourceCode" : "named: aString\r\t^ self new\r\t\tname: aString;\r\t\tyourself"
+		}
+	],
+	[
+		{
+			"methodClass" : "Rectangle class",
+			"offset" : "42",
+			"sourceCode" : "origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^self basicNew setPoint: originPoint point: cornerPoint"
+		},
+		{
+			"methodClass" : "Rectangle",
+			"offset" : "48",
+			"sourceCode" : "scaleBy: scale\r\t\"Answer a Rectangle scaled by scale, a Point or a scalar.\"\r\r\t^Rectangle origin: origin * scale corner: corner * scale"
+		}
+	],
+	[
+		{
+			"methodClass" : "FreeTypeFont",
+			"offset" : "475",
+			"sourceCode" : "displayString: aString on: aBitBlt from: startIndex to: stopIndex at: aPoint kern: kernDelta baselineY: baselineY scale: scale\r\t| glyph  depth foreColorVal foreColorAlpha originalColorMap clr subPixelPosition widthAndKernedWidth char nextChar floatDestX  destX destY offset gammaTable gammaInverseTable useRule41 |\r\r\tuseRule41 := FreeTypeSettings current useSubPixelAntiAliasing and: [aBitBlt destForm depth >= 8].\r\tdepth := aBitBlt destForm depth.\r\toriginalColorMap := aBitBlt colorMap.\r\tclr := (aBitBlt lastFontForegroundColor ifNil:[Color black asNontranslucentColor])\r\t\tpixelValueForDepth: 32.\r\tuseRule41\r\t\tifTrue:[\r\t\t\tforeColorVal := clr bitAnd: 16rFFFFFF.\r\t\t\tforeColorAlpha := (clr bitAnd: 16rFF000000) >> 24.\r\t\t\tgammaTable := FreeTypeSettings current gammaTable.\r\t\t\tgammaInverseTable := FreeTypeSettings current gammaInverseTable.]\r\t\tifFalse:[\r\t\t\tforeColorVal := clr].\r\tdepth <= 8\r\t\tifTrue:[\r\t\t\taBitBlt colorMap: (aBitBlt cachedFontColormapFrom:32 to: depth)]\r\t\tifFalse:[\r\t\t\taBitBlt colorMap: nil].\r\tdestX := aPoint x.\r\tdestY := baselineY.\r\tfloatDestX := aPoint x.\r\twidthAndKernedWidth := Array new: 2.\r \tstartIndex to: stopIndex do: [:i |\r\t\tsubPixelPosition := ((floatDestX \\\\ 1) roundTo: \"1/64\" 0.015625) * 64.\r\t\tsubPixelPosition = 64\r\t\t\tifTrue:[\r\t\t\t\tsubPixelPosition := 0.\r\t\t\t\tdestX := destX + 1].\r\t\tchar := aString at: i.\r\t\tglyph := self\r\t\t\tglyphOf: char\r\t\t\tdestDepth: depth\r\t\t\tcolorValue: foreColorVal\r\t\t\tsubpixelPosition: subPixelPosition\r\t\t\tscale: scale.\r\t\taBitBlt sourceForm: glyph.\r\t\toffset := glyph offset.\r\t\taBitBlt destX: destX + offset x.\r\t\taBitBlt destY: destY + offset y.\r\t\taBitBlt width: glyph width.\r\t\taBitBlt height: glyph height.\r\t\tuseRule41\r\t\t\tifTrue:[\r\t\t\t\taBitBlt\r\t\t\t\t\tcopyBitsColor: foreColorVal\r\t\t\t\t\talpha: foreColorAlpha\r\t\t\t\t\tgammaTable: gammaTable\r\t\t\t\t\tungammaTable: gammaInverseTable]\r\t\t\tifFalse:[\r\t\t\t\taBitBlt copyBits].\r\t\tnextChar := (i + 1 <= stopIndex)\r\t\t\t\tifTrue:[aString at: i + 1]\r\t\t\t\tifFalse:[nil].\r\t\tself\r\t\t\twidthAndKernedWidthOfLeft: char\r\t\t\tright: nextChar\r\t\t\tinto: widthAndKernedWidth.\r\t\tfloatDestX := floatDestX + (((widthAndKernedWidth at: 2) + kernDelta) * scale).\r\t\tdestX := floatDestX ].\r\taBitBlt colorMap: originalColorMap.\r\t^ destX @ destY"
+		},
+		{
+			"methodClass" : "LogicalFont",
+			"offset" : "54",
+			"sourceCode" : "displayString: aString on: aDisplayContext from: startIndex to: stopIndex at: aPoint kern: kernDelta baselineY: baselineY scale: scale\r\r\t^ self realFont displayString: aString on: aDisplayContext from: startIndex to: stopIndex\r\t\tat: aPoint kern: kernDelta baselineY: baselineY scale: scale"
+		}
+	],
+	[
+		{
+			"methodClass" : "Rectangle class",
+			"offset" : "42",
+			"sourceCode" : "origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^self basicNew setPoint: originPoint point: cornerPoint"
+		},
+		{
+			"methodClass" : "Rectangle",
+			"offset" : "136",
+			"sourceCode" : "intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle)\r\t\tifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle origin: left @ top corner: right @ bottom"
+		},
+		{
+			"methodClass" : "Morph",
+			"offset" : "127",
+			"sourceCode" : "drawSubmorphsOn: aCanvas\r\t\"Display submorphs back to front\"\r\r\t| drawBlock |\r\tsubmorphs isEmpty ifTrue: [^self].\r\tdrawBlock := [:canvas | submorphs reverseDo: [:m | canvas fullDrawMorph: m]].\r\tself clipSubmorphs\r\t\tifTrue: [aCanvas clipBy: (aCanvas clipRect intersect: self clippingBounds ifNone: [ ^ self ]) during: drawBlock]\r\t\tifFalse: [drawBlock value: aCanvas]"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "55",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "MooseObject",
+			"offset" : "34",
+			"sourceCode" : "flush\r\tcache initialize"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "59",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "MooseObject",
+			"offset" : "34",
+			"sourceCode" : "flush\r\tcache initialize"
+		}
+	],
+	[
+		{
+			"methodClass" : "OrderedCollection",
+			"offset" : "74",
+			"sourceCode" : "growAtLast\r\t\"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r\t\"OrderedCollection new capacity >>> 10\"\r\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r\t| newArray |\r\tnewArray := self class arrayType new: (array size * 2 max: 1).\r\tnewArray\r\t\treplaceFrom: firstIndex\r\t\tto: lastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray := newArray"
+		},
+		{
+			"methodClass" : "OrderedCollection",
+			"offset" : "83",
+			"sourceCode" : "makeRoomAtLast\r\t\"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r\t| tally newFirstIndex newLastIndex |\r\ttally := self size.\r\ttally * 2 >= lastIndex ifTrue: [ ^self growAtLast ].\r\ttally = 0 ifTrue: [ ^self resetTo: 1 ].\r\tnewLastIndex := lastIndex // 2.\r\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\r\tarray\r\t\treplaceFrom: newFirstIndex\r\t\tto: newLastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray from: newLastIndex + 1 to: lastIndex put: nil.\r\tfirstIndex := newFirstIndex.\r\tlastIndex := newLastIndex"
+		}
+	],
+	[
+		{
+			"methodClass" : "SequenceableCollection",
+			"offset" : "47",
+			"sourceCode" : "copyWith: newElement\r\t\"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r\t| newIC |\r\tnewIC := self species new: self size + 1.\r\tnewIC\r\t\treplaceFrom: 1\r\t\tto: self size\r\t\twith: self\r\t\tstartingAt: 1.\r\tnewIC at: newIC size put: newElement.\r\t^newIC"
+		},
+		{
+			"methodClass" : "MooseObject",
+			"offset" : "124",
+			"sourceCode" : "attributeAt: name put: value\r\r\t| aName |\r\taName := name asSymbol.\r\t1 to: entityAttributes size do: [ :n |\r\t\t\taName == (entityAttributes at: n) key ifTrue: [\r\t\t\t\t^ ((entityAttributes at: n) value: value) value ] ].\r\tentityAttributes := entityAttributes copyWith: aName -> value.\r\t^ entityAttributes last value"
+		}
+	],
+	[
+		{
+			"methodClass" : "Rectangle class",
+			"offset" : "42",
+			"sourceCode" : "origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^self basicNew setPoint: originPoint point: cornerPoint"
+		},
+		{
+			"methodClass" : "Rectangle",
+			"offset" : "48",
+			"sourceCode" : "translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^Rectangle origin: origin + factor corner: corner + factor"
+		},
+		{
+			"methodClass" : "FormCanvas",
+			"offset" : "44",
+			"sourceCode" : "clipRect\r\t\"Return the currently active clipping rectangle\"\r\t^ clipRect translateBy: origin negated"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "59",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "FM3Class",
+			"offset" : "59",
+			"sourceCode" : "createInstance\r\t^ implementingClass\r\t\tifNil: [ FMRuntimeElement new description: self ]\r\t\tifNotNil: [ implementingClass new ]"
+		}
+	],
+	[
+		{
+			"methodClass" : "SmallDictionary",
+			"offset" : "55",
+			"sourceCode" : "initialize\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+		},
+		{
+			"methodClass" : "Behavior",
+			"offset" : "43",
+			"sourceCode" : "new\r\t\"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\r\r\t^ self basicNew initialize"
+		},
+		{
+			"methodClass" : "FM3Class",
+			"offset" : "59",
+			"sourceCode" : "createInstance\r\t^ implementingClass\r\t\tifNil: [ FMRuntimeElement new description: self ]\r\t\tifNotNil: [ implementingClass new ]"
+		}
+	]
+]
