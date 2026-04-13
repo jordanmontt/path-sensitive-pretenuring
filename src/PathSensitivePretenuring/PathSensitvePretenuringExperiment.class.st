@@ -58,7 +58,7 @@ PathSensitvePretenuringExperiment >> constructAllocationGraph [
 PathSensitvePretenuringExperiment >> deserializeSendersToPretenureFrom: aFileName [
 
     | jsonString |
-    jsonString := FileLocator imageDirectory / aFileName asFileReference contents.
+    jsonString := (FileLocator imageDirectory / aFileName) asFileReference contents.
     sendersToPretenure := MethodWithOffsetSerializer new deserialize: jsonString
 ]
 
