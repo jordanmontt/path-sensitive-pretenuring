@@ -23,6 +23,7 @@ echo "Installed Path Sensitive Pretenuring $veritas_bench for image $image_path"
 }
 
 rewrite_senders() {
+    local image_path="$1"
     local benchmark="$2"
     local strategy="$3"
 
@@ -66,34 +67,34 @@ echo "Baseimage downloaded"
 }
 
 
-######
-# Download baseimage
-#setup_base_image
+#####
+Download baseimage
+setup_base_image
 
+
+###########
+# Cormas — applicationMethod
+mkdir -p cormas-applicationMethod
+"$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-applicationMethod/cormas-applicationMethod
+cp "$BASE_DIR"/*.sources ./cormas-applicationMethod/
+install_veritas_and_senders_rewriter_for ./cormas-applicationMethod/cormas-applicationMethod.image VeritasCormas
+rewrite_senders ./cormas-applicationMethod/cormas-applicationMethod.image cormas applicationMethod
 
 ############
-# Cormas — applicationMethod
-# mkdir -p cormas-applicationMethod
-# "$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-applicationMethod/cormas-applicationMethod
-# cp "$BASE_DIR"/*.sources ./cormas-applicationMethod/
-# install_veritas_and_senders_rewriter_for ./cormas-applicationMethod/cormas-applicationMethod.image VeritasCormas
-# rewrite_senders ./cormas-applicationMethod/cormas-applicationMethod.image cormas applicationMethod
+# Cormas — callerOfNew
+mkdir -p cormas-callerOfNew
+"$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-callerOfNew/cormas-callerOfNew
+cp "$BASE_DIR"/*.sources ./cormas-callerOfNew/
+install_veritas_and_senders_rewriter_for ./cormas-callerOfNew/cormas-callerOfNew.image VeritasCormas
+rewrite_senders ./cormas-callerOfNew/cormas-callerOfNew.image cormas callerOfNew
 
-# ############
-# # Cormas — callerOfNew
-# mkdir -p cormas-callerOfNew
-# "$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-callerOfNew/cormas-callerOfNew
-# cp "$BASE_DIR"/*.sources ./cormas-callerOfNew/
-# install_veritas_and_senders_rewriter_for ./cormas-callerOfNew/cormas-callerOfNew.image VeritasCormas
-# rewrite_senders ./cormas-callerOfNew/cormas-callerOfNew.image cormas callerOfNew
-
-# ############
-# # Cormas — locationOfNew
-# mkdir -p cormas-locationOfNew
-# "$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-locationOfNew/cormas-locationOfNew
-# cp "$BASE_DIR"/*.sources ./cormas-locationOfNew/
-# install_veritas_and_senders_rewriter_for ./cormas-locationOfNew/cormas-locationOfNew.image VeritasCormas
-# rewrite_senders ./cormas-locationOfNew/cormas-locationOfNew.image cormas locationOfNew
+############
+# Cormas — locationOfNew
+mkdir -p cormas-locationOfNew
+"$PHARO_CMD" --headless "$BASE_IMAGE_FILE" save ../cormas-locationOfNew/cormas-locationOfNew
+cp "$BASE_DIR"/*.sources ./cormas-locationOfNew/
+install_veritas_and_senders_rewriter_for ./cormas-locationOfNew/cormas-locationOfNew.image VeritasCormas
+rewrite_senders ./cormas-locationOfNew/cormas-locationOfNew.image cormas locationOfNew
 
 ############
 # Microdown — applicationMethod
