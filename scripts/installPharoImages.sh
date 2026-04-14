@@ -68,7 +68,7 @@ echo "Baseimage downloaded"
 
 ######
 # Download baseimage
-setup_base_image
+#setup_base_image
 
 
 ############
