@@ -43,7 +43,7 @@ rewrite_senders() {
     case "$strategy" in
         locationOfNew)    strategyObject="TextualLocationOfNewStrategy new" ;;
         callerOfNew)      strategyObject="CallerOfNewStrategy new" ;;
-        applicationMethod) strategyObject="ApplicationMethodStrategy setUpForApplicationPackages: ${benchmarkClass} applicationPackages" ;;
+        applicationMethod) strategyObject="ApplicationMethodStrategy setUpForApplicationPackages: $benchmarkClass applicationPackages" ;;
         *)
             echo "Unknown strategy: $strategy" >&2
             return 1
