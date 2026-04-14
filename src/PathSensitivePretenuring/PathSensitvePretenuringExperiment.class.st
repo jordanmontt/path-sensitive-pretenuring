@@ -136,6 +136,12 @@ PathSensitvePretenuringExperiment >> run [
 ]
 
 { #category : 'api - accessing' }
+PathSensitvePretenuringExperiment >> sendersToPretenure [
+
+    ^ sendersToPretenure
+]
+
+{ #category : 'api - accessing' }
 PathSensitvePretenuringExperiment >> sendersToPretenure: anArrayOfArrays [
 
     sendersToPretenure := anArrayOfArrays
