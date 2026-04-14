@@ -39,6 +39,18 @@ PathSensitvePretenuringExperiment >> allocationSiteStrategy: aStrategy [
 	allocationSiteStrategy := aStrategy
 ]
 
+{ #category : 'api' }
+PathSensitvePretenuringExperiment >> analyzeAllocations [
+
+   self constructAllocationGraph.
+
+   	self classifyEdgesByLifetime.
+
+	allocationSiteStrategy setUpForGraph: allocationGraph.
+	allocationGraph traverseLongLivedSenderChainsUsing: allocationSiteStrategy.
+   self extractLongLivedSendersChains
+]
+
 { #category : 'calculating' }
 PathSensitvePretenuringExperiment >> classifyEdgesByLifetime [
 
@@ -119,20 +131,6 @@ PathSensitvePretenuringExperiment >> rewriteAllocationSites [
 
     pretenurator pretenureAllocations: sendersToPretenure.
     ^ pretenurator
-]
-
-{ #category : 'api' }
-PathSensitvePretenuringExperiment >> run [
-
-   self constructAllocationGraph.
-
-   	self classifyEdgesByLifetime.
-
-	allocationSiteStrategy setUpForGraph: allocationGraph.
-	allocationGraph traverseLongLivedSenderChainsUsing: allocationSiteStrategy.
-   self extractLongLivedSendersChains.
-
-	"self rewriteAllocationSites"
 ]
 
 { #category : 'api - accessing' }
