@@ -14,12 +14,14 @@ install_veritas_and_senders_rewriter_for() {
 local image_path="$1"
 local veritas_bench="$2"
 "$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt/PharoVeritasBenchSuite:main" "$veritas_bench"
-echo; echo; echo
+echo
 echo "Installed Veritas $veritas_bench for image $image_path"
+echo; echo; echo
 
 "$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt//path-sensitive-pretenuring:main" "PathSensitivePretenuring"
-echo; echo; echo
+echo
 echo "Installed Path Sensitive Pretenuring $veritas_bench for image $image_path"
+echo; echo; echo
 }
 
 rewrite_senders() {
@@ -50,10 +52,13 @@ rewrite_senders() {
             ;;
     esac
 
-    "$PHARO_CMD" --headless "$image_path" eval --save \
-        "PSPRunner new strategy: ($strategyObject); benchmarkClass: $benchmarkClass; pretenurePaths"
+    local pharo_script="PSPRunner new strategy: ($strategyObject); benchmarkClass: $benchmarkClass; pretenurePaths"
+    echo
+    echo "$pharo_script"
 
-    echo "Rewritten code for pretenuring paths"
+    "$PHARO_CMD" --headless "$image_path" eval --save "$pharo_script"
+
+    echo "Rewritten code for $benchmarkClass using strategy $strategyObject"
     echo; echo; echo
 }
 
@@ -62,8 +67,9 @@ mkdir -p baseimage
 cd baseimage || return 1
 wget --quiet -O - get.pharo.org/140+vm | bash
 cd - > /dev/null || return 1
-echo; echo; echo
+echo;
 echo "Baseimage downloaded"
+echo; echo; echo
 }
 
 
