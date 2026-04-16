@@ -1,113 +1,153 @@
 Class {
-	#name : 'PSPRunner',
-	#superclass : 'Object',
-	#instVars : [
-		'strategy',
-		'benchmarkClass',
-		'jitCompiledMethods',
-		'jitCompiledBlocks',
-		'timeCompilingJitMethodsMilliseconds',
-		'timeCompilingJitBlocksMilliseconds'
-	],
-	#category : 'PathSensitivePretenuring-Experiment',
-	#package : 'PathSensitivePretenuring',
-	#tag : 'Experiment'
+    #name : 'PSPRunner',
+    #superclass : 'Object',
+    #instVars : [
+        'strategy',
+        'benchmarkClass',
+        'methodsJitCompiled',
+        'blocksJitCompiled',
+        'jitCompilationTime',
+        'jitBlockCompilationTime',
+        'totalMethodsJitCompiled',
+        'totalBlocksJitCompiled',
+        'totalJitCompilationTime',
+        'totalJitBlockCompilationTime'
+    ],
+    #category : 'PathSensitivePretenuring-Experiment',
+    #package : 'PathSensitivePretenuring',
+    #tag : 'Experiment'
 }
 
-{ #category : 'api - accessing' }
+{ #category : 'api' }
 PSPRunner >> benchmarkClass: aClass [
-
     benchmarkClass := aClass
 ]
 
 { #category : 'private' }
-PSPRunner >> getJsonName [
-
+PSPRunner >> jsonFileName [
     ^ 'jit-measurements' , (Random new nextIntegerBetween: 1 and: 1000000) asString , '.json'
-]
-
-{ #category : 'private' }
-PSPRunner >> getSendersToPretenure [
-
-    | profiler experiment |
-    profiler := FiLiP new
-                    profileOn: [ benchmarkClass new run ];
-                    yourself.
-
-    experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
-    experiment analyzeAllocations.
-    ^ experiment sendersToPretenure
 ]
 
 { #category : 'running' }
 PSPRunner >> pretenurePaths [
-
-    | sendersToPretenure |
-    sendersToPretenure := self getSendersToPretenure.
+    | senders |
+    senders := self sendersToPretenure.
 
     5 timesRepeat: [ Smalltalk garbageCollect ].
 
-    PathSensitvePretenuringExperiment new
-        sendersToPretenure: sendersToPretenure;
-        rewriteAllocationSites.
-
-    sendersToPretenure := nil.
+    self rewriteAllocationSitesWith: senders.
 
     10 timesRepeat: [ Smalltalk garbageCollect ]
 ]
 
+{ #category : 'private' }
+PSPRunner >> recordBaselineJitMetrics [
+    methodsJitCompiled := self currentMethodsJitCompiled.
+    blocksJitCompiled := self currentBlocksJitCompiled.
+    jitCompilationTime := self currentJitCompilationTime.
+    jitBlockCompilationTime := self currentJitBlockCompilationTime
+]
+
+{ #category : 'private' }
+PSPRunner >> rewriteAllocationSitesWith: senders [
+    PathSensitvePretenuringExperiment new
+        sendersToPretenure: senders;
+        rewriteAllocationSites
+]
+
 { #category : 'running' }
 PSPRunner >> run [
-
     | initialTime finalTime |
-    jitCompiledMethods := Smalltalk vm parameterAt: 75.
-    timeCompilingJitMethodsMilliseconds := Smalltalk vm parameterAt: 76.
-    jitCompiledBlocks := Smalltalk vm parameterAt: 77.
-    timeCompilingJitBlocksMilliseconds := Smalltalk vm parameterAt: 78.
+    self recordBaselineJitMetrics.
 
     initialTime := Time millisecondClockValue.
     benchmarkClass new run.
     finalTime := Time millisecondClockValue.
 
-	"the idea here is to measure the jit compilation that happened during the executiong of  benchmarkClass new run"
-    jitCompiledMethods := (Smalltalk vm parameterAt: 75) - jitCompiledMethods.
-    timeCompilingJitMethodsMilliseconds := (Smalltalk vm parameterAt: 76) - timeCompilingJitMethodsMilliseconds.
-    jitCompiledBlocks := (Smalltalk vm parameterAt: 77) - jitCompiledBlocks.
-    timeCompilingJitBlocksMilliseconds := (Smalltalk vm parameterAt: 78) - timeCompilingJitBlocksMilliseconds.
-
+    self recordDeltas.
     self writeJitMeasurements.
+
     ^ finalTime - initialTime
 ]
 
-{ #category : 'api - accessing' }
-PSPRunner >> strategy: aStrategy [
+{ #category : 'private' }
+PSPRunner >> recordDeltas [
+    methodsJitCompiled := self currentMethodsJitCompiled - methodsJitCompiled.
+    blocksJitCompiled := self currentBlocksJitCompiled - blocksJitCompiled.
+    jitCompilationTime := self currentJitCompilationTime - jitCompilationTime.
+    jitBlockCompilationTime := self currentJitBlockCompilationTime - jitBlockCompilationTime
+]
 
+{ #category : 'private' }
+PSPRunner >> sendersToPretenure [
+    | profiler experiment |
+    profiler := FiLiP new
+                    profileOn: [ benchmarkClass new run ];
+                    yourself.
+
+    experiment := PathSensitvePretenuringExperiment
+                      onProfiler: profiler
+                      traversalStrategy: strategy.
+    ^ experiment analyzeAllocations; sendersToPretenure
+]
+
+{ #category : 'api' }
+PSPRunner >> strategy: aStrategy [
     strategy := aStrategy
 ]
 
 { #category : 'private' }
+PSPRunner >> currentMethodsJitCompiled [
+    ^ Smalltalk vm parameterAt: 75
+]
+
+{ #category : 'private' }
+PSPRunner >> currentBlocksJitCompiled [
+    ^ Smalltalk vm parameterAt: 77
+]
+
+{ #category : 'private' }
+PSPRunner >> currentJitCompilationTime [
+    ^ Smalltalk vm parameterAt: 76
+]
+
+{ #category : 'private' }
+PSPRunner >> currentJitBlockCompilationTime [
+    ^ Smalltalk vm parameterAt: 78
+]
+
+{ #category : 'private' }
 PSPRunner >> writeJitMeasurements [
+    self storeTotalMetrics.
+    self writeJsonFile: self jitMetricsAsDictionary
+]
 
-    | writeStream jsonString tempDict totalJitCompiledMethods totalTimeCompilingJitMethodsMilliseconds totalJitCompiledBlocks totalTimeCompilingJitBlocksMilliseconds |
-    totalJitCompiledMethods := Smalltalk vm parameterAt: 75.
-    totalTimeCompilingJitMethodsMilliseconds := Smalltalk vm parameterAt: 76.
-    totalJitCompiledBlocks := Smalltalk vm parameterAt: 77.
-    totalTimeCompilingJitBlocksMilliseconds := Smalltalk vm parameterAt: 78.
+{ #category : 'private' }
+PSPRunner >> storeTotalMetrics [
+    totalMethodsJitCompiled := self currentMethodsJitCompiled.
+    totalBlocksJitCompiled := self currentBlocksJitCompiled.
+    totalJitCompilationTime := self currentJitCompilationTime.
+    totalJitBlockCompilationTime := self currentJitBlockCompilationTime
+]
 
-    tempDict := Dictionary newFrom: {
-            ('jitCompiledMethods' -> jitCompiledMethods).
-            ('timeCompilingJitMethodsMilliseconds' -> timeCompilingJitMethodsMilliseconds).
-            ('jitCompiledBlocks' -> jitCompiledBlocks).
-            ('timeCompilingJitBlocksMilliseconds' -> timeCompilingJitBlocksMilliseconds).
+{ #category : 'private' }
+PSPRunner >> writeJsonFile: aDictionary [
+    | writeStream |
+    writeStream := self jsonFileName asFileReference writeStream.
+    [ writeStream nextPutAll: (NeoJSONWriter toStringPretty: aDictionary) ]
+        ensure: [ writeStream close ]
+]
 
-            ('totalJitCompiledMethods' -> totalJitCompiledMethods).
-            ('totalTimeCompilingJitMethodsMilliseconds' -> totalTimeCompilingJitMethodsMilliseconds).
-            ('totalJitCompiledBlocks' -> totalJitCompiledBlocks).
-            ('totalTimeCompilingJitBlocksMilliseconds' -> totalTimeCompilingJitBlocksMilliseconds) }.
-    
-    writeStream := self getJsonName asFileReference createFile writeStream.
-    jsonString := NeoJSONWriter toStringPretty: tempDict.
+{ #category : 'private' }
+PSPRunner >> jitMetricsAsDictionary [
+    ^ Dictionary newFrom: {
+            #methodsJitCompiled -> methodsJitCompiled.
+            #jitCompilationTime -> jitCompilationTime.
+            #blocksJitCompiled -> blocksJitCompiled.
+            #jitBlockCompilationTime -> jitBlockCompilationTime.
 
-    writeStream nextPutAll: jsonString.
-    writeStream close
+            #totalMethodsJitCompiled -> totalMethodsJitCompiled.
+            #totalJitCompilationTime -> totalJitCompilationTime.
+            #totalBlocksJitCompiled -> totalBlocksJitCompiled.
+            #totalJitBlockCompilationTime -> totalJitBlockCompilationTime }
 ]
