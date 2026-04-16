@@ -146,7 +146,7 @@ PSPRunner >> writeJitMeasurements [
     tempDict := self jitMetricsAsDictionary.
     jsonFileName := 'jit-measurements' , (Random new nextIntegerBetween: 1 and: 1000000) asString , '.json'.
 
-    writeStream := jsonFileName asFileReference writeStream.
+    writeStream := (FileLocator imageDirectory / jsonFileName) asFileReference writeStream.
     [ writeStream nextPutAll: (NeoJSONWriter toStringPretty: tempDict) ]
         ensure: [ writeStream close ]
 ]
