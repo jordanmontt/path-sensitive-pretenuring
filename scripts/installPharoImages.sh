@@ -11,17 +11,17 @@ PHARO_CMD="$BASE_DIR/pharo"
 
 # Functions
 install_veritas_and_senders_rewriter_for() {
-local image_path="$1"
-local veritas_bench="$2"
-"$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt/PharoVeritasBenchSuite:main" "$veritas_bench"
-echo
-echo "Installed Veritas $veritas_bench for image $image_path"
-echo; echo; echo
+    local image_path="$1"
+    local veritas_bench="$2"
+    "$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt/PharoVeritasBenchSuite:main" "$veritas_bench"
+    echo
+    echo "Installed Veritas $veritas_bench for image $image_path"
+    echo; echo; echo
 
-"$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt//path-sensitive-pretenuring:main" "PathSensitivePretenuring"
-echo
-echo "Installed Path Sensitive Pretenuring $veritas_bench for image $image_path"
-echo; echo; echo
+    "$PHARO_CMD" --headless "$image_path" metacello install --save "github://jordanmontt//path-sensitive-pretenuring:main" "PathSensitivePretenuring"
+    echo
+    echo "Installed Path Sensitive Pretenuring $veritas_bench for image $image_path"
+    echo; echo; echo
 }
 
 rewrite_senders() {
