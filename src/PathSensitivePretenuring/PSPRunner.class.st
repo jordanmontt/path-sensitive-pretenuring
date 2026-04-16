@@ -4,10 +4,10 @@ Class {
 	#instVars : [
 		'strategy',
 		'benchmarkClass',
-		'jitCompiledMethod',
-		'jitCompiledMethodSeconds',
-		'jitCompiledBlock',
-		'jitCompilingBlockSeconds'
+		'jitCompiledMethods',
+		'jitCompiledBlocks',
+		'timeCompilingJitMethodsMilliseconds',
+		'timeCompilingJitBlocksMilliseconds'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -18,6 +18,12 @@ Class {
 PSPRunner >> benchmarkClass: aClass [
 
     benchmarkClass := aClass
+]
+
+{ #category : 'private' }
+PSPRunner >> getJsonName [
+
+    ^ 'jit-measurements' , (Random new nextIntegerBetween: 1 and: 1000000) asString , '.json'
 ]
 
 { #category : 'private' }
@@ -54,14 +60,20 @@ PSPRunner >> pretenurePaths [
 PSPRunner >> run [
 
     | initialTime finalTime |
-    jitCompiledMethod := Smalltalk vm parameterAt: 75.
-    jitCompiledMethodSeconds := Smalltalk vm parameterAt: 76.
-    jitCompiledBlock := Smalltalk vm parameterAt: 77.
-    jitCompilingBlockSeconds := Smalltalk vm parameterAt: 78.
+    jitCompiledMethods := Smalltalk vm parameterAt: 75.
+    timeCompilingJitMethodsMilliseconds := Smalltalk vm parameterAt: 76.
+    jitCompiledBlocks := Smalltalk vm parameterAt: 77.
+    timeCompilingJitBlocksMilliseconds := Smalltalk vm parameterAt: 78.
 
     initialTime := Time millisecondClockValue.
     benchmarkClass new run.
     finalTime := Time millisecondClockValue.
+
+	"the idea here is to measure the jit compilation that happened during the executiong of  benchmarkClass new run"
+    jitCompiledMethods := (Smalltalk vm parameterAt: 75) - jitCompiledMethods.
+    timeCompilingJitMethodsMilliseconds := (Smalltalk vm parameterAt: 76) - timeCompilingJitMethodsMilliseconds.
+    jitCompiledBlocks := (Smalltalk vm parameterAt: 77) - jitCompiledBlocks.
+    timeCompilingJitBlocksMilliseconds := (Smalltalk vm parameterAt: 78) - timeCompilingJitBlocksMilliseconds.
 
     self writeJitMeasurements.
     ^ finalTime - initialTime
@@ -76,14 +88,24 @@ PSPRunner >> strategy: aStrategy [
 { #category : 'private' }
 PSPRunner >> writeJitMeasurements [
 
-    | writeStream jsonString tempDict |
-    tempDict := Dictionary newFrom: {
-            ('jitCompiledMethod' -> jitCompiledMethod).
-            ('jitCompiledMethodSeconds' -> jitCompiledMethodSeconds).
-            ('jitCompiledBlock' -> jitCompiledBlock).
-            ('jitCompilingBlockSeconds' -> jitCompilingBlockSeconds) }.
-    writeStream := 'jit-measurements.json' asFileReference createFile writeStream.
+    | writeStream jsonString tempDict totalJitCompiledMethods totalTimeCompilingJitMethodsMilliseconds totalJitCompiledBlocks totalTimeCompilingJitBlocksMilliseconds |
+    totalJitCompiledMethods := Smalltalk vm parameterAt: 75.
+    totalTimeCompilingJitMethodsMilliseconds := Smalltalk vm parameterAt: 76.
+    totalJitCompiledBlocks := Smalltalk vm parameterAt: 77.
+    totalTimeCompilingJitBlocksMilliseconds := Smalltalk vm parameterAt: 78.
 
+    tempDict := Dictionary newFrom: {
+            ('jitCompiledMethods' -> jitCompiledMethods).
+            ('timeCompilingJitMethodsMilliseconds' -> timeCompilingJitMethodsMilliseconds).
+            ('jitCompiledBlocks' -> jitCompiledBlocks).
+            ('timeCompilingJitBlocksMilliseconds' -> timeCompilingJitBlocksMilliseconds).
+
+            ('totalJitCompiledMethods' -> totalJitCompiledMethods).
+            ('totalTimeCompilingJitMethodsMilliseconds' -> totalTimeCompilingJitMethodsMilliseconds).
+            ('totalJitCompiledBlocks' -> totalJitCompiledBlocks).
+            ('totalTimeCompilingJitBlocksMilliseconds' -> totalTimeCompilingJitBlocksMilliseconds) }.
+    
+    writeStream := self getJsonName asFileReference createFile writeStream.
     jsonString := NeoJSONWriter toStringPretty: tempDict.
 
     writeStream nextPutAll: jsonString.
