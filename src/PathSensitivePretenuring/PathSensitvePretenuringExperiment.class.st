@@ -60,6 +60,13 @@ PathSensitvePretenuringExperiment >> classifyEdgesByLifetime [
 ]
 
 { #category : 'api' }
+PathSensitvePretenuringExperiment >> compilePretenuredMethods [
+
+    pretenurator compilePretenuredPathsFrom: sendersToPretenure.
+    ^ pretenurator
+]
+
+{ #category : 'api' }
 PathSensitvePretenuringExperiment >> constructAllocationGraph [
 
     self removeKernelAllocations.
@@ -112,6 +119,12 @@ PathSensitvePretenuringExperiment >> inspector: aBuilder [
     ^ sendersToPretenure inspectionItems: aBuilder
 ]
 
+{ #category : 'api' }
+PathSensitvePretenuringExperiment >> installPretenuredMethods [
+
+    pretenurator installPretenuredMethods
+]
+
 { #category : 'calculating' }
 PathSensitvePretenuringExperiment >> removeKernelAllocations [
 
@@ -124,13 +137,6 @@ PathSensitvePretenuringExperiment >> removeKernelAllocations [
 PathSensitvePretenuringExperiment >> restoreSourceCodeToOriginalState [
 
 	pretenurator restoreOriginalState
-]
-
-{ #category : 'api' }
-PathSensitvePretenuringExperiment >> rewriteAllocationSites [
-
-    pretenurator pretenureAllocations: sendersToPretenure.
-    ^ pretenurator
 ]
 
 { #category : 'api - accessing' }

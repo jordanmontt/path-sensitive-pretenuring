@@ -11,7 +11,8 @@ Class {
 		'totalMethodsJitCompiled',
 		'totalBlocksJitCompiled',
 		'totalJitCompilationTime',
-		'totalJitBlockCompilationTime'
+		'totalJitBlockCompilationTime',
+		'experiment'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -43,6 +44,12 @@ PSPRunner >> currentMethodsJitCompiled [
     ^ Smalltalk vm parameterAt: 75
 ]
 
+{ #category : 'api' }
+PSPRunner >> installPretenuredMethods [
+
+    experiment installPretenuredMethods
+]
+
 { #category : 'writing' }
 PSPRunner >> jitMetricsAsDictionary [
     ^ Dictionary newFrom: {
@@ -59,14 +66,17 @@ PSPRunner >> jitMetricsAsDictionary [
 
 { #category : 'api' }
 PSPRunner >> pretenurePaths [
-    | senders |
-    senders := self sendersToPretenure.
 
-    5 timesRepeat: [ Smalltalk garbageCollect ].
+   | profiler |
+    profiler := FiLiP new
+        profileOn: [ benchmarkClass new run ];
+        yourself.
 
-    self rewriteAllocationSitesWith: senders.
+    experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
+    experiment analyzeAllocations.
+    experiment sendersToPretenure.
 
-    10 timesRepeat: [ Smalltalk garbageCollect ]
+    experiment compilePretenuredMethods
 ]
 
 { #category : 'jit measurements' }
@@ -96,14 +106,6 @@ PSPRunner >> recordTotalJitMetrics [
     totalJitBlockCompilationTime := self currentJitBlockCompilationTime
 ]
 
-{ #category : 'running' }
-PSPRunner >> rewriteAllocationSitesWith: senders [
-
-    PathSensitvePretenuringExperiment new
-        sendersToPretenure: senders;
-        rewriteAllocationSites
-]
-
 { #category : 'api' }
 PSPRunner >> run [
     | initialTime finalTime |
@@ -119,19 +121,6 @@ PSPRunner >> run [
     self writeJitMeasurements.
 
     ^ finalTime - initialTime
-]
-
-{ #category : 'running' }
-PSPRunner >> sendersToPretenure [
-
-    | profiler experiment |
-    profiler := FiLiP new
-        profileOn: [ benchmarkClass new run ];
-        yourself.
-
-    experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
-    experiment analyzeAllocations.
-    ^ experiment sendersToPretenure
 ]
 
 { #category : 'api' }
