@@ -48,7 +48,7 @@ PathSensitvePretenuringExperiment >> analyzeAllocations [
 
 	allocationSiteStrategy setUpForGraph: allocationGraph.
 	allocationGraph traverseLongLivedSenderChainsUsing: allocationSiteStrategy.
-   self extractLongLivedSendersChains
+   sendersToPretenure := self extractLongLivedSendersChains
 ]
 
 { #category : 'calculating' }

@@ -74,7 +74,6 @@ PSPRunner >> pretenurePaths [
 
     experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
     experiment analyzeAllocations.
-    experiment sendersToPretenure.
 
     experiment compilePretenuredMethods
 ]
