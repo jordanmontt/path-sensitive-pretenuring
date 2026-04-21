@@ -125,6 +125,12 @@ PathSensitvePretenuringExperiment >> installPretenuredMethods [
     pretenurator installPretenuredMethods
 ]
 
+{ #category : 'initialization' }
+PathSensitvePretenuringExperiment >> methodProtocol: aProtocol [
+
+	pretenurator methodProtocol: aProtocol
+]
+
 { #category : 'calculating' }
 PathSensitvePretenuringExperiment >> removeKernelAllocations [
 
