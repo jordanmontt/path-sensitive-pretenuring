@@ -78,21 +78,6 @@ PSPRunner >> methodProtocol: aString [
 	protocol := aString
 ]
 
-{ #category : 'api' }
-PSPRunner >> pretenurePaths [
-
-   | profiler |
-    profiler := FiLiP new
-        profileOn: [ benchmarkClass new run ];
-        yourself.
-
-    experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
-    experiment methodProtocol: protocol.
-    experiment analyzeAllocations.
-
-    experiment compilePretenuredMethods
-]
-
 { #category : 'jit measurements' }
 PSPRunner >> recordBaselineJitMetrics [
 

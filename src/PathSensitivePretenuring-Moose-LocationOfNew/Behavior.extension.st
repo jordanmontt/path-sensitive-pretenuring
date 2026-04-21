@@ -1,0 +1,8 @@
+Extension { #name : 'Behavior' }
+
+{ #category : '*PathSensitivePretenuring-Moose-LocationOfNew' }
+Behavior >> newTenured [
+	"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable."
+
+	^ self basicNewTenured initialize
+]
