@@ -12,7 +12,8 @@ Class {
 		'totalBlocksJitCompiled',
 		'totalJitCompilationTime',
 		'totalJitBlockCompilationTime',
-		'experiment'
+		'experiment',
+		'protocol'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -44,6 +45,13 @@ PSPRunner >> currentMethodsJitCompiled [
     ^ Smalltalk vm parameterAt: 75
 ]
 
+{ #category : 'initialization' }
+PSPRunner >> initialize [
+
+	super initialize.
+	protocol := 'automatically-generated'
+]
+
 { #category : 'api' }
 PSPRunner >> installPretenuredMethods [
 
@@ -65,6 +73,12 @@ PSPRunner >> jitMetricsAsDictionary [
 ]
 
 { #category : 'api' }
+PSPRunner >> methodProtocol: aString [
+
+	protocol := aString
+]
+
+{ #category : 'api' }
 PSPRunner >> pretenurePaths [
 
    | profiler |
@@ -73,6 +87,7 @@ PSPRunner >> pretenurePaths [
         yourself.
 
     experiment := PathSensitvePretenuringExperiment onProfiler: profiler traversalStrategy: strategy.
+    experiment methodProtocol: protocol.
     experiment analyzeAllocations.
 
     experiment compilePretenuredMethods
