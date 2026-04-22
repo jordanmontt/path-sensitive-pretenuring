@@ -7,7 +7,6 @@ Class {
 
 { #category : 'baselines' }
 BaselineOfPathSensitivePretenuring >> baseline: spec [
-
 	<baseline>
 	spec for: #common do: [
 		"Packages"
@@ -28,31 +27,35 @@ BaselineOfPathSensitivePretenuring >> baseline: spec [
 		spec package: 'PathSensitivePretenuring-Moose-ApplicationMethod'.
 		spec package: 'PathSensitivePretenuring-Moose-LocationOfNew'.
 		spec package: 'PathSensitivePretenuring-Moose-CallerOfNew'.
-
+		
 		"External dependencies"
 		spec baseline: 'SendersChainTransformer' with: [ spec repository: 'github://jordanmontt/senders-chain-transformer:main' ].
 		spec baseline: 'PretenuringAdviceAlgorithm' with: [ spec repository: 'github://jordanmontt/Pretenuring-Advice-Algorithm:main' ].
 		spec baseline: 'VeritasBenchSuite' with: [ spec repository: 'github://jordanmontt/PharoVeritasBenchSuite:main' ].
+		spec baseline: 'VeritasCormas' with: [ spec repository: 'github://jordanmontt/PharoVeritasBenchSuite:main' ].
+		spec baseline: 'VeritasDataFrame' with: [ spec repository: 'github://jordanmontt/PharoVeritasBenchSuite:main' ].
+		spec baseline: 'VeritasMicrodown' with: [ spec repository: 'github://jordanmontt/PharoVeritasBenchSuite:main' ].
+		spec baseline: 'VeritasMoose' with: [ spec repository: 'github://jordanmontt/PharoVeritasBenchSuite:main' ].
 		"Linking external dependencies"
 		spec package: 'PathSensitivePretenuring' with: [ spec requires: #( 'SendersChainTransformer' 'VeritasBenchSuite' 'PretenuringAdviceAlgorithm') ].
-
+		
 		"Groups"
 		spec group: 'default' with: #( 'core' ).
 		spec group: 'core' with: #( 'PathSensitivePretenuring' ).
 		"Pretenured methods group"
-		spec group: 'cormas-applicationMethod' with: #( 'core' 'PathSensitivePretenuring-Cormas-ApplicationMethod' ).
-		spec group: 'cormas-locationOfNew' with: #( 'core' 'PathSensitivePretenuring-Cormas-LocationOfNew' ).
-		spec group: 'cormas-callerOfNew' with: #( 'core' 'PathSensitivePretenuring-Cormas-CallerOfNew' ).
+		spec group: 'cormas-applicationMethod' with: #( 'core' 'VeritasCormas' 'PathSensitivePretenuring-Cormas-ApplicationMethod' ).
+		spec group: 'cormas-locationOfNew' with: #( 'core' 'VeritasCormas' 'PathSensitivePretenuring-Cormas-LocationOfNew' ).
+		spec group: 'cormas-callerOfNew' with: #( 'core' 'VeritasCormas' 'PathSensitivePretenuring-Cormas-CallerOfNew' ).
 		""
-		spec group: 'dataFrame-applicationMethod' with: #( 'core' 'PathSensitivePretenuring-DataFrame-ApplicationMethod' ).
-		spec group: 'dataFrame-locationOfNew' with: #( 'core' 'PathSensitivePretenuring-DataFrame-LocationOfNew' ).
-		spec group: 'dataFrame-callerOfNew' with: #( 'core' 'PathSensitivePretenuring-DataFrame-CallerOfNew' ).
+		spec group: 'dataFrame-applicationMethod' with: #( 'core' 'VeritasDataFrame' 'PathSensitivePretenuring-DataFrame-ApplicationMethod' ).
+		spec group: 'dataFrame-locationOfNew' with: #( 'core' 'VeritasDataFrame' 'PathSensitivePretenuring-DataFrame-LocationOfNew' ).
+		spec group: 'dataFrame-callerOfNew' with: #( 'core' 'VeritasDataFrame' 'PathSensitivePretenuring-DataFrame-CallerOfNew' ).
 		""
-		spec group: 'microdown-applicationMethod' with: #( 'core' 'PathSensitivePretenuring-Microdown-ApplicationMethod' ).
-		spec group: 'microdown-locationOfNew' with: #( 'core' 'PathSensitivePretenuring-Microdown-LocationOfNew' ).
-		spec group: 'microdown-callerOfNew' with: #( 'core' 'PathSensitivePretenuring-Microdown-CallerOfNew' ).
+		spec group: 'microdown-applicationMethod' with: #( 'core' 'VeritasMicrodown' 'PathSensitivePretenuring-Microdown-ApplicationMethod' ).
+		spec group: 'microdown-locationOfNew' with: #( 'core' 'VeritasMicrodown' 'PathSensitivePretenuring-Microdown-LocationOfNew' ).
+		spec group: 'microdown-callerOfNew' with: #( 'core' 'VeritasMicrodown' 'PathSensitivePretenuring-Microdown-CallerOfNew' ).
 		""
-		spec group: 'moose-applicationMethod' with: #( 'core' 'PathSensitivePretenuring-Moose-ApplicationMethod' ).
-		spec group: 'moose-locationOfNew' with: #( 'core' 'PathSensitivePretenuring-Moose-LocationOfNew' ).
-		spec group: 'moose-callerOfNew' with: #( 'core' 'PathSensitivePretenuring-Moose-CallerOfNew' ) ]
+		spec group: 'moose-applicationMethod' with: #( 'core' 'VeritasMoose' 'PathSensitivePretenuring-Moose-ApplicationMethod' ).
+		spec group: 'moose-locationOfNew' with: #( 'core' 'VeritasMoose' 'PathSensitivePretenuring-Moose-LocationOfNew' ).
+		spec group: 'moose-callerOfNew' with: #( 'core' 'VeritasMoose' 'PathSensitivePretenuring-Moose-CallerOfNew' ) ]
 ]
