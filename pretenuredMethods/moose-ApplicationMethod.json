@@ -1,0 +1,147 @@
+[
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_869662_makeRoomAtLast",
+    "source": "_pretenured_869662_makeRoomAtLast \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\n\n\t| tally newFirstIndex newLastIndex |\n\ttally := self size.\n\ttally * 2 >= lastIndex ifTrue: [\n\t\t^ self _pretenured_869662_growAtLast ].\n\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\n\tnewLastIndex := lastIndex // 2.\n\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\n\tarray\n\t\treplaceFrom: newFirstIndex\n\t\tto: newLastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray from: newLastIndex + 1 to: lastIndex put: nil.\n\tfirstIndex := newFirstIndex.\n\tlastIndex := newLastIndex"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_869662_growAtLast",
+    "source": "_pretenured_869662_growAtLast \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\n\n\t\"OrderedCollection new capacity >>> 10\"\n\n\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\n\n\t| newArray |\n\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\n\tnewArray\n\t\treplaceFrom: firstIndex\n\t\tto: lastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray := newArray"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_869662_addLast: newObject",
+    "source": "_pretenured_869662_addLast: newObject \"Add newObject to the end of the receiver. Answer newObject.\"\n\n\tlastIndex = array size ifTrue: [\n\t\tself _pretenured_869662_makeRoomAtLast ].\n\tlastIndex := lastIndex + 1.\n\t^ array at: lastIndex put: newObject"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_86169303_makeRoomAtLast",
+    "source": "_pretenured_86169303_makeRoomAtLast \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\n\n\t| tally newFirstIndex newLastIndex |\n\ttally := self size.\n\ttally * 2 >= lastIndex ifTrue: [\n\t\t^ self _pretenured_86169303_growAtLast ].\n\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\n\tnewLastIndex := lastIndex // 2.\n\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\n\tarray\n\t\treplaceFrom: newFirstIndex\n\t\tto: newLastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray from: newLastIndex + 1 to: lastIndex put: nil.\n\tfirstIndex := newFirstIndex.\n\tlastIndex := newLastIndex"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_86169303_growAtLast",
+    "source": "_pretenured_86169303_growAtLast \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\n\n\t\"OrderedCollection new capacity >>> 10\"\n\n\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\n\n\t| newArray |\n\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\n\tnewArray\n\t\treplaceFrom: firstIndex\n\t\tto: lastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray := newArray"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_86169303_addLast: newObject",
+    "source": "_pretenured_86169303_addLast: newObject \"Add newObject to the end of the receiver. Answer newObject.\"\n\n\tlastIndex = array size ifTrue: [\n\t\tself _pretenured_86169303_makeRoomAtLast ].\n\tlastIndex := lastIndex + 1.\n\t^ array at: lastIndex put: newObject"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_86169303_add: newObject",
+    "source": "_pretenured_86169303_add: newObject \"Add a new object at the end of the collection, and returns the object itself\"\n\n\t\"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\n\n\t\"Add returns the object itself\"\n\n\t\"(OrderedCollection new add: 42) >>> 42\"\n\n\t\"You may want to use yourself to return the collection itself\"\n\n\t\"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\n\n\t\"(OrderedCollection new add: 42; yourself) size >>> 1\"\n\n\t^ self _pretenured_86169303_addLast: newObject"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_796327484_makeRoomAtLast",
+    "source": "_pretenured_796327484_makeRoomAtLast \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\n\n\t| tally newFirstIndex newLastIndex |\n\ttally := self size.\n\ttally * 2 >= lastIndex ifTrue: [\n\t\t^ self _pretenured_796327484_growAtLast ].\n\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\n\tnewLastIndex := lastIndex // 2.\n\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\n\tarray\n\t\treplaceFrom: newFirstIndex\n\t\tto: newLastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray from: newLastIndex + 1 to: lastIndex put: nil.\n\tfirstIndex := newFirstIndex.\n\tlastIndex := newLastIndex"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_796327484_growAtLast",
+    "source": "_pretenured_796327484_growAtLast \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\n\n\t\"OrderedCollection new capacity >>> 10\"\n\n\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\n\n\t| newArray |\n\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\n\tnewArray\n\t\treplaceFrom: firstIndex\n\t\tto: lastIndex\n\t\twith: array\n\t\tstartingAt: firstIndex.\n\tarray := newArray"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_796327484_addLast: newObject",
+    "source": "_pretenured_796327484_addLast: newObject \"Add newObject to the end of the receiver. Answer newObject.\"\n\n\tlastIndex = array size ifTrue: [\n\t\tself _pretenured_796327484_makeRoomAtLast ].\n\tlastIndex := lastIndex + 1.\n\t^ array at: lastIndex put: newObject"
+  },
+  {
+    "class": "OrderedCollection",
+    "selector": "_pretenured_796327484_add: newObject",
+    "source": "_pretenured_796327484_add: newObject \"Add a new object at the end of the collection, and returns the object itself\"\n\n\t\"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\n\n\t\"Add returns the object itself\"\n\n\t\"(OrderedCollection new add: 42) >>> 42\"\n\n\t\"You may want to use yourself to return the collection itself\"\n\n\t\"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\n\n\t\"(OrderedCollection new add: 42; yourself) size >>> 1\"\n\n\t^ self _pretenured_796327484_addLast: newObject"
+  },
+  {
+    "class": "FreeTypeFont",
+    "selector": "_pretenured_382711116_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray",
+    "source": "_pretenured_382711116_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray \"Set the first element of aTwoElementArray to the width of leftCharacter and\n\tthe second element to the width of left character when kerned with\n\trightCharacterOrNil. Answer the receiver\n\n\tWe use a widthAndKernedWidthCache to store these values for speed\"\n\n\t| privateArray |\n\tprivateArray := (self widthAndKernedWidthCache\n\t\t                 at: leftCharacter\n\t\t                 ifAbsentPut: [ Dictionary new ])\n\t\t                at: (rightCharacterOrNil ifNil: [ 0 asCharacter ])\n\t\t                ifAbsentPut: [\n\t\t\t\t                super\n\t\t\t\t\t                widthAndKernedWidthOfLeft: leftCharacter\n\t\t\t\t\t                right: rightCharacterOrNil\n\t\t\t\t\t                into: (Array newTenured: 2) ].\n\t\"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\n\taTwoElementArray\n\t\tat: 1 put: (privateArray at: 1);\n\t\tat: 2 put: (privateArray at: 2).\n\t^ aTwoElementArray"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_382711116_at: key ifAbsentPut: aBlock",
+    "source": "_pretenured_382711116_at: key ifAbsentPut: aBlock \"Return the value at the given key.\n\tIf the key is not included in the receiver store and return the result\n\tof evaluating aBlock as the new value.\"\n\n\t^ self\n\t\t  _pretenured_382711116_at: key\n\t\t  ifAbsent: [ self at: key put: aBlock value ]"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_382711116_at: key ifAbsent: aBlock",
+    "source": "_pretenured_382711116_at: key ifAbsent: aBlock \"Answer the value associated with the key or, if key isn't found,\n\tanswer the result of evaluating aBlock.\"\n\n\t^ ((array at: (self findElementOrNil: key))\n\t\t   ifNil: [ aBlock ]\n\t\t   ifNotNil: [ :assoc | assoc ]) value"
+  },
+  {
+    "class": "FreeTypeFont",
+    "selector": "_pretenured_333867595_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray",
+    "source": "_pretenured_333867595_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray \"Set the first element of aTwoElementArray to the width of leftCharacter and\n\tthe second element to the width of left character when kerned with\n\trightCharacterOrNil. Answer the receiver\n\n\tWe use a widthAndKernedWidthCache to store these values for speed\"\n\n\t| privateArray |\n\tprivateArray := (self widthAndKernedWidthCache\n\t\t                 at: leftCharacter\n\t\t                 ifAbsentPut: [ Dictionary new ])\n\t\t                at: (rightCharacterOrNil ifNil: [ 0 asCharacter ])\n\t\t                ifAbsentPut: [\n\t\t\t\t                super\n\t\t\t\t\t                widthAndKernedWidthOfLeft: leftCharacter\n\t\t\t\t\t                right: rightCharacterOrNil\n\t\t\t\t\t                into: (Array newTenured: 2) ].\n\t\"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\n\taTwoElementArray\n\t\tat: 1 put: (privateArray at: 1);\n\t\tat: 2 put: (privateArray at: 2).\n\t^ aTwoElementArray"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_333867595_at: key ifAbsentPut: aBlock",
+    "source": "_pretenured_333867595_at: key ifAbsentPut: aBlock \"Return the value at the given key.\n\tIf the key is not included in the receiver store and return the result\n\tof evaluating aBlock as the new value.\"\n\n\t^ self at: key ifAbsent: [ self at: key put: aBlock value ]"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_333867595_at: key ifAbsent: aBlock",
+    "source": "_pretenured_333867595_at: key ifAbsent: aBlock \"Answer the value associated with the key or, if key isn't found,\n\tanswer the result of evaluating aBlock.\"\n\n\t^ ((array at: (self findElementOrNil: key))\n\t\t   ifNil: [ aBlock ]\n\t\t   ifNotNil: [ :assoc | assoc ]) value"
+  },
+  {
+    "class": "SequenceableCollection",
+    "selector": "_pretenured_29276380_copyWith: newElement",
+    "source": "_pretenured_29276380_copyWith: newElement \"Answer a copy of the receiver that is 1 bigger than the receiver and has\n\tnewElement at the last element.\"\n\n\t| newIC |\n\tnewIC := self species newTenured: self size + 1.\n\tnewIC\n\t\treplaceFrom: 1\n\t\tto: self size\n\t\twith: self\n\t\tstartingAt: 1.\n\tnewIC at: newIC size put: newElement.\n\t^ newIC"
+  },
+  {
+    "class": "MooseGroupStorage",
+    "selector": "updateCacheOnAddingOf: anElement",
+    "source": "updateCacheOnAddingOf: anElement (byType privateMooseStorageAt: anElement class)\n\t\t_pretenured_796327484_add: anElement.\n\t^ anElement"
+  },
+  {
+    "class": "FMSlotMultivalueLink",
+    "selector": "uncheckUnsafeAdd: element",
+    "source": "uncheckUnsafeAdd: element \"Calls the implementation in OrderedCollection.\"\n\n\tsuper _pretenured_869662_addLast: element"
+  },
+  {
+    "class": "MooseObject",
+    "selector": "resetPrivateState",
+    "source": "resetPrivateState entityAttributes := #(  ).\n\tcache := SmallDictionary newTenured"
+  },
+  {
+    "class": "Behavior",
+    "selector": "newTenured",
+    "source": "newTenured \"Answer a new initialized instance of the receiver (which is a class) with no indexable variables. Fail if the class is indexable.\"\n\n\t^ self basicNew initialize"
+  },
+  {
+    "class": "FM3Element",
+    "selector": "named: aString",
+    "source": "named: aString ^ self newTenured\n\t\t  name: aString;\n\t\t  yourself"
+  },
+  {
+    "class": "SmallDictionary",
+    "selector": "initialize",
+    "source": "initialize super initialize.\n\tkeys := Array new: 2.\n\tvalues := Array newTenured: 2.\n\tsize := 0"
+  },
+  {
+    "class": "MooseObject",
+    "selector": "flush",
+    "source": "flush cache initialize"
+  },
+  {
+    "class": "FMImporter",
+    "selector": "entityAt: aSerial ifAbsent: aBlock",
+    "source": "entityAt: aSerial ifAbsent: aBlock ^ serialDict _pretenured_333867595_at: aSerial ifAbsent: aBlock"
+  },
+  {
+    "class": "FMImporter",
+    "selector": "dangling: reference to: serial",
+    "source": "dangling: reference to: serial (reminderDict\n\t\t _pretenured_382711116_at: serial\n\t\t ifAbsentPut: [ OrderedCollection new ]) _pretenured_86169303_add:\n\t\treference.\n\tnumberOfDanglingReferences := numberOfDanglingReferences + 1.\n\t^ reference"
+  },
+  {
+    "class": "FM3Class",
+    "selector": "createInstance",
+    "source": "createInstance ^ implementingClass\n\t\t  ifNil: [ FMRuntimeElement new description: self ]\n\t\t  ifNotNil: [ implementingClass newTenured ]"
+  },
+  {
+    "class": "MooseObject",
+    "selector": "attributeAt: name put: value",
+    "source": "attributeAt: name put: value | aName |\n\taName := name asSymbol.\n\t1 to: entityAttributes size do: [ :n |\n\t\t\taName == (entityAttributes at: n) key ifTrue: [\n\t\t\t\t^ ((entityAttributes at: n) value: value) value ] ].\n\tentityAttributes := entityAttributes _pretenured_29276380_copyWith:\n\t\t                    aName -> value.\n\t^ entityAttributes last value"
+  }
+]

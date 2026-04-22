@@ -1,0 +1,37 @@
+[
+  {
+    "class": "CMSpace4Neighbourhood",
+    "selector": "_pretenured_469130025_initializeOrderedNeighbourhood: k",
+    "source": "_pretenured_469130025_initializeOrderedNeighbourhood: k | v i |\n\tv := Array newTenured: 4.\n\t(i := self northCell: k) > 0 ifTrue: [\n\t\tv at: 1 put: (self elementaryEntitiesAt: i) ].\n\t(i := self westCell: k) > 0 ifTrue: [\n\t\tv at: 2 put: (self elementaryEntitiesAt: i) ].\n\t(i := self southCell: k) > 0 ifTrue: [\n\t\tv at: 3 put: (self elementaryEntitiesAt: i) ].\n\t(i := self eastCell: k) > 0 ifTrue: [\n\t\tv at: 4 put: (self elementaryEntitiesAt: i) ].\n\t^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+  },
+  {
+    "class": "Association",
+    "selector": "_pretenured_342092926_key: newKey value: newValue",
+    "source": "_pretenured_342092926_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "Association",
+    "selector": "_pretenured_271742996_key: newKey value: newValue",
+    "source": "_pretenured_271742996_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "CMSpatialEntity",
+    "selector": "theOccupants",
+    "source": "theOccupants ^ theOccupants ifNil: [ theOccupants := Dictionary newTenured ]"
+  },
+  {
+    "class": "CMSpaceNeighbourhood",
+    "selector": "initializeNeighbourhood",
+    "source": "initializeNeighbourhood \" Private - Initialize aSpaceModel neighbourhood values based on the receiver \"\n\n\t1 to: self spaceModel gridSize do: [ :k |\n\t\t\t(self elementaryEntitiesAt: k) ifNotNil: [\n\t\t\t\tself _pretenured_469130025_initializeOrderedNeighbourhood: k ] ]"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "at: key put: anObject",
+    "source": "at: key put: anObject \"Set the value at key to be anObject.  If key is not found, create a\n\tnew entry for key and set is value to anObject. Answer anObject.\"\n\n\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\n\n\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\n\n\t| index assoc |\n\tindex := self findElementOrNil: key.\n\tassoc := array at: index.\n\tassoc\n\t\tifNil: [\n\t\t\t\tself\n\t\t\t\t\tatNewIndex: index\n\t\t\t\t\tput: (Association _pretenured_271742996_key: key value: anObject) ]\n\t\tifNotNil: [ assoc value: anObject ].\n\t^ anObject"
+  },
+  {
+    "class": "Object",
+    "selector": "-> anObject",
+    "source": "-> anObject \"Answer an Association between self and anObject\"\n\n\t\"The following example creates an association whose key is number 1 and value string 'one'.\"\n\n\t\"(1 -> 'one') key >>> 1\"\n\n\t\"(1 -> 'one') value >>> 'one'\"\n\n\t\"Note that key and value can be ANY object.\"\n\n\t^ Association _pretenured_342092926_key: self value: anObject"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "class": "Association",
+    "selector": "_pretenured_986937019_key: newKey value: newValue",
+    "source": "_pretenured_986937019_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_986937019_at: key put: anObject",
+    "source": "_pretenured_986937019_at: key put: anObject \"Set the value at key to be anObject.  If key is not found, create a\n\tnew entry for key and set is value to anObject. Answer anObject.\"\n\n\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\n\n\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\n\n\t| index assoc |\n\tindex := self findElementOrNil: key.\n\tassoc := array at: index.\n\tassoc\n\t\tifNil: [\n\t\t\t\tself\n\t\t\t\t\tatNewIndex: index\n\t\t\t\t\tput: (Association _pretenured_986937019_key: key value: anObject) ]\n\t\tifNotNil: [ assoc value: anObject ].\n\t^ anObject"
+  },
+  {
+    "class": "Association",
+    "selector": "_pretenured_566281400_key: newKey value: newValue",
+    "source": "_pretenured_566281400_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_566281400_at: key put: anObject",
+    "source": "_pretenured_566281400_at: key put: anObject \"Set the value at key to be anObject.  If key is not found, create a\n\tnew entry for key and set is value to anObject. Answer anObject.\"\n\n\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\n\n\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\n\n\t| index assoc |\n\tindex := self findElementOrNil: key.\n\tassoc := array at: index.\n\tassoc\n\t\tifNil: [\n\t\t\t\tself\n\t\t\t\t\tatNewIndex: index\n\t\t\t\t\tput: (Association _pretenured_566281400_key: key value: anObject) ]\n\t\tifNotNil: [ assoc value: anObject ].\n\t^ anObject"
+  },
+  {
+    "class": "MicParser",
+    "selector": "initialize",
+    "source": "initialize super initialize.\n\tdispatchTable := Dictionary new.\n\tdispatchTable at: AnchorMarkup put: MicAnchorBlock.\n\tdispatchTable at: HeaderMarkup put: MicHeaderBlock.\n\tdispatchTable at: CodeblockMarkup put: MicAbstractCodeBlock.\n\tdispatchTable\n\t\tat: AnnotatedParagraphOpeningMarkup\n\t\tput: MicAnnotatedParagraphBlock.\n\tdispatchTable\n\t\t_pretenured_566281400_at: AnnotatedParagraphBackwardCompatibleMarkup\n\t\tput: MicAnnotatedParagraphBlock.\n\tdispatchTable at: CommentedLineMarkup put: MicCommentBlock.\n\tdispatchTable at: HorizontalLineMarkup put: MicHorizontalLineBlock.\n\tdispatchTable at: MathOpeningBlockMarkup put: MicMathBlock.\n\tdispatchTable\n\t\tat: EnvironmentOpeningBlockMarkup\n\t\tput: MicEnvironmentBlock.\n\tdispatchTable at: BlockLevelRawOpenerMarkup put: MicRawParagraphBlock.\n\tdispatchTable at: MetaDataOpeningBlockMarkup put: MicMetaDataBlock.\n\tdispatchTable at: UnorderedListPlusMarkup put: MicUnorderedListBlock.\n\tdispatchTable at: UnorderedListMarkup put: MicUnorderedListBlock.\n\tdispatchTable at: UnorderedListStarMarkup put: MicUnorderedListBlock.\n\tdispatchTable\n\t\t_pretenured_986937019_at: PreformattedMarkup\n\t\tput: MicBlockQuoteBlock.\n\tdispatchTable at: TableCellMarkup put: MicTableBlock"
+  }
+]

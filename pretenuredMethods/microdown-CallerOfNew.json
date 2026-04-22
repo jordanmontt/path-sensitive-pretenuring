@@ -1,0 +1,17 @@
+[
+  {
+    "class": "Association",
+    "selector": "_pretenured_167547469_key: newKey value: newValue",
+    "source": "_pretenured_167547469_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "_pretenured_167547469_at: key put: anObject",
+    "source": "_pretenured_167547469_at: key put: anObject \"Set the value at key to be anObject.  If key is not found, create a\n\tnew entry for key and set is value to anObject. Answer anObject.\"\n\n\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\n\n\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\n\n\t| index assoc |\n\tindex := self findElementOrNil: key.\n\tassoc := array at: index.\n\tassoc\n\t\tifNil: [\n\t\t\t\tself\n\t\t\t\t\tatNewIndex: index\n\t\t\t\t\tput: (Association _pretenured_167547469_key: key value: anObject) ]\n\t\tifNotNil: [ assoc value: anObject ].\n\t^ anObject"
+  },
+  {
+    "class": "OrderedDictionary",
+    "selector": "at: aKey put: aValue",
+    "source": "at: aKey put: aValue ^ self\n\t\t  value: [ dictionary _pretenured_167547469_at: aKey put: aValue ]\n\t\t  registeringAtOrderedKeys: aKey"
+  }
+]

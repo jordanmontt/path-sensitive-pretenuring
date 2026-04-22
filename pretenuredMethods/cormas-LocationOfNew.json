@@ -1,0 +1,32 @@
+[
+  {
+    "class": "Association",
+    "selector": "_pretenured_779449057_key: newKey value: newValue",
+    "source": "_pretenured_779449057_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "Association",
+    "selector": "_pretenured_66341860_key: newKey value: newValue",
+    "source": "_pretenured_66341860_key: newKey value: newValue \"Answer an instance of me with the arguments as the key and value of\n\tthe association.\"\n\n\t^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "class": "CMAbstractModel",
+    "selector": "newEntity: aClass",
+    "source": "newEntity: aClass \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\n\n\t| anEntity |\n\tanEntity := aClass basicNewTenured\n\t\t            cormasModel: self;\n\t\t            randomNumberGenerator: randomNumberGenerator;\n\t\t            initialize;\n\t\t            yourself.\n\n\tself collectEntity: anEntity.\n\t^ anEntity"
+  },
+  {
+    "class": "CMSpace4Neighbourhood",
+    "selector": "initializeOrderedNeighbourhood: k",
+    "source": "initializeOrderedNeighbourhood: k | v i |\n\tv := Array newTenured: 4.\n\t(i := self northCell: k) > 0 ifTrue: [\n\t\tv at: 1 put: (self elementaryEntitiesAt: i) ].\n\t(i := self westCell: k) > 0 ifTrue: [\n\t\tv at: 2 put: (self elementaryEntitiesAt: i) ].\n\t(i := self southCell: k) > 0 ifTrue: [\n\t\tv at: 3 put: (self elementaryEntitiesAt: i) ].\n\t(i := self eastCell: k) > 0 ifTrue: [\n\t\tv at: 4 put: (self elementaryEntitiesAt: i) ].\n\t^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+  },
+  {
+    "class": "Dictionary",
+    "selector": "at: key put: anObject",
+    "source": "at: key put: anObject \"Set the value at key to be anObject.  If key is not found, create a\n\tnew entry for key and set is value to anObject. Answer anObject.\"\n\n\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\n\n\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\n\n\t| index assoc |\n\tindex := self findElementOrNil: key.\n\tassoc := array at: index.\n\tassoc\n\t\tifNil: [\n\t\t\t\tself\n\t\t\t\t\tatNewIndex: index\n\t\t\t\t\tput: (Association _pretenured_66341860_key: key value: anObject) ]\n\t\tifNotNil: [ assoc value: anObject ].\n\t^ anObject"
+  },
+  {
+    "class": "Object",
+    "selector": "-> anObject",
+    "source": "-> anObject \"Answer an Association between self and anObject\"\n\n\t\"The following example creates an association whose key is number 1 and value string 'one'.\"\n\n\t\"(1 -> 'one') key >>> 1\"\n\n\t\"(1 -> 'one') value >>> 'one'\"\n\n\t\"Note that key and value can be ANY object.\"\n\n\t^ Association _pretenured_779449057_key: self value: anObject"
+  }
+]

@@ -103,7 +103,6 @@ install_strategy_images() {
                     move_dataset "$name" "sbscl.json"
                     ;;
             esac
-
         done
     done
 }
