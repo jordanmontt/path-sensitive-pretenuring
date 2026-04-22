@@ -112,7 +112,9 @@ main() {
     setup_base_image
 
     install_base_images
-    install_strategy_images      
+    install_strategy_images
+
+    log "Successfully finished!"
 }
 
 main "$@"
