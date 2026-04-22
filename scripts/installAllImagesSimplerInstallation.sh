@@ -39,7 +39,7 @@ install_veritas() {
     local image_path="$1"
     local veritas_bench="$2"
 
-    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/PharoVeritasBenchSuite:main" "$veritas_bench"
+    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/PharoVeritasBenchSuite:main" "BaselineOf$veritas_bench"
     log "Installed Veritas $veritas_bench for $image_path"
 }
 
@@ -47,7 +47,7 @@ install_path_sensitive_pretenuring() {
     local image_path="$1"
     local baseline_group="$2"
 
-    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/path-sensitive-pretenuring:main" "PathSensitivePretenuring" "--groups=$baseline_group"
+    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/path-sensitive-pretenuring:main" "BaselineOfPathSensitivePretenuring" "--groups=$baseline_group"
     log "Installed Path Sensitive Pretenuring for baseline group $baseline_group for $image_path"
 }
 
