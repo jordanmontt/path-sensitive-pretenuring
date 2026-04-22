@@ -66,7 +66,7 @@ PathSensitvePretenuringExperiment >> compilePretenuredMethods [
     ^ pretenurator
 ]
 
-{ #category : 'api' }
+{ #category : 'calculating' }
 PathSensitvePretenuringExperiment >> constructAllocationGraph [
 
     self removeKernelAllocations.
@@ -74,28 +74,28 @@ PathSensitvePretenuringExperiment >> constructAllocationGraph [
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> deserializeSendersToPretenureFrom: aFileName [
+PathSensitvePretenuringExperiment >> deserializeAndInstallCompiledMethodsIn: aFileReference [
 
-    | jsonString |
-    jsonString := (FileLocator imageDirectory / aFileName) asFileReference contents.
-    sendersToPretenure := MethodWithOffsetSerializer new deserialize: jsonString
-]
+	| compiledMethods uniqueMethods potentiallyAlreadyInstalledMethods |
+	compiledMethods := CompiledMethodToSourceCodeSerializer new deserialize: aFileReference contents.
 
-{ #category : 'api - exporting' }
-PathSensitvePretenuringExperiment >> exportAllocationSites [
+	uniqueMethods := compiledMethods select: [ :method | method selector includesSubstring: 'pretenured' ].
+	potentiallyAlreadyInstalledMethods := compiledMethods reject: [ :method | 
+	    method selector includesSubstring: 'pretenured' ].
 
-    self exportAllocationSites: (Random new nextInteger: 100000000) asString , '.json'
-]
-
-{ #category : 'api - exporting' }
-PathSensitvePretenuringExperiment >> exportAllocationSites: fileName [
-
-    MethodWithOffsetSerializer new
-		serialize: sendersToPretenure
-		on: fileName asFileReference createFile writeStream
+	(uniqueMethods , potentiallyAlreadyInstalledMethods) do: [ :aCompiledMethod |
+	    aCompiledMethod methodClass
+           addSelector: aCompiledMethod selector
+           withMethod: aCompiledMethod ]
 ]
 
 { #category : 'api' }
+PathSensitvePretenuringExperiment >> exportPretenuredMethods: aWriteStream [
+
+    pretenurator exportPretenuredMethods: aWriteStream
+]
+
+{ #category : 'calculating' }
 PathSensitvePretenuringExperiment >> extractLongLivedSendersChains [
 
     sendersToPretenure := allocationSiteStrategy extractLongLivedSendersChains: allocationGraph.
@@ -125,7 +125,7 @@ PathSensitvePretenuringExperiment >> installPretenuredMethods [
     pretenurator installPretenuredMethods
 ]
 
-{ #category : 'initialization' }
+{ #category : 'api - accessing' }
 PathSensitvePretenuringExperiment >> methodProtocol: aProtocol [
 
 	pretenurator methodProtocol: aProtocol
@@ -137,24 +137,6 @@ PathSensitvePretenuringExperiment >> removeKernelAllocations [
 	rawAllocationsSamples removeAllSuchThat: [ :illEphemeron |
 		{ Context. Deprecation. Process. WeakArray. MouseMoveEvent }
 			includes: illEphemeron allocatedObjectClass ]
-]
-
-{ #category : 'api' }
-PathSensitvePretenuringExperiment >> restoreSourceCodeToOriginalState [
-
-	pretenurator restoreOriginalState
-]
-
-{ #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> sendersToPretenure [
-
-    ^ sendersToPretenure
-]
-
-{ #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> sendersToPretenure: anArrayOfArrays [
-
-    sendersToPretenure := anArrayOfArrays
 ]
 
 { #category : 'api - accessing' }

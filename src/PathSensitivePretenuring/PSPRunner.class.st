@@ -45,6 +45,12 @@ PSPRunner >> currentMethodsJitCompiled [
     ^ Smalltalk vm parameterAt: 75
 ]
 
+{ #category : 'api' }
+PSPRunner >> exportPretenuredMethods: aWriteStream [
+
+    experiment exportPretenuredMethods: aWriteStream
+]
+
 { #category : 'initialization' }
 PSPRunner >> initialize [
 
