@@ -69,6 +69,15 @@ move_dataset() {
     log "$file_name moved to $target_dir"
 }
 
+install_pretenured_methods() {
+    local image_path="$1"
+    local benchmark="$2"
+    local strategy="$3"
+    local json_file="$benchmark-$strategy.json"
+    "$PHARO_CMD" --headless "$image_path" eval --save "| file | file := (FileLocator localDirectory / 'iceberg' / 'jordanmontt' / 'path-sensitive-pretenuring' / 'pretenuredMethods' / '$json_file') asFileReference. PathSensitvePretenuringExperiment new deserializeAndInstallCompiledMethodsIn: file"
+    log "Installed pretenured methods ($json_file) for $image_path"
+}
+
 install_baseline_images() {
     for benchmark in "${!BENCHMARK_CLASSES[@]}"; do
         local veritas_bench="${BENCHMARK_CLASSES[$benchmark]}"
@@ -114,6 +123,8 @@ install_strategy_images() {
                     log "sbscl.json copied to $name"
                     ;;
             esac
+
+            install_pretenured_methods "$image_path" "$benchmark" "$strategy"
         done
     done
 }
