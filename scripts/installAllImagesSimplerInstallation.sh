@@ -107,6 +107,7 @@ install_strategy_images() {
 
         for strategy in "${STRATEGIES[@]}"; do
             local name="$benchmark-$strategy"
+            local image_path="./$name/$name.image"
             create_image "$baseline_image" "$name"
 
             case "$benchmark" in
