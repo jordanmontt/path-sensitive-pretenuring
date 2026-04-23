@@ -28,12 +28,15 @@ create_image() {
     local source_image="$1"
     local image_name="$2"
     local dir_name="${3:-$image_name}"
-    mkdir -p "$dir_name"
-    # The 'save' path is relative to the source image's directory.
-    # Since both baseimage/ and benchmark/ dirs are one level deep,
-    # "../$dir_name/$image_name" always resolves correctly.
-    "$PHARO_CMD" --headless "$source_image" save "../$dir_name/$image_name"
-    cp "$BASE_DIR"/*.sources "./$dir_name/"
+
+    local source_dir="$(dirname "$source_image")"
+    local source_basename="$(basename "$source_image" .image)"
+
+    cp -r "$source_dir" "./$dir_name"
+
+    mv "./$dir_name/$source_basename.image"   "./$dir_name/$image_name.image"
+    mv "./$dir_name/$source_basename.changes" "./$dir_name/$image_name.changes"
+
     log "Created image: $dir_name/$image_name (from $source_image)"
 }
 
