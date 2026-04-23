@@ -1,0 +1,314 @@
+[
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_368828110_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_368828110_addDependent: anObject\r\r\tself _pretenured_368828110_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_368828110_announcer\r\r\t^ self\r\t\t  _pretenured_368828110_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_368828110_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_368828110_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_368828110_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_368828110_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_368828110_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_218091658_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_218091658_addDependent: anObject\r\r\tself _pretenured_218091658_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_218091658_announcer\r\r\t^ self\r\t\t  _pretenured_218091658_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_218091658_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_218091658_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_218091658_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_218091658_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_218091658_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_424142186_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_424142186_addDependent: anObject\r\r\tself _pretenured_424142186_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_424142186_announcer\r\r\t^ self\r\t\t  _pretenured_424142186_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_424142186_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_424142186_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_424142186_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_424142186_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_424142186_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_258080039_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_258080039_addDependent: anObject\r\r\tself _pretenured_258080039_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_258080039_announcer\r\r\t^ self\r\t\t  _pretenured_258080039_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_258080039_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_258080039_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_258080039_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_258080039_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_258080039_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_671904213_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_128991071_named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_128991071_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_128991071_addDependent: anObject\r\r\tself _pretenured_128991071_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_128991071_announcer\r\r\t^ self\r\t\t  _pretenured_128991071_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_128991071_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_128991071_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_128991071_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_128991071_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_128991071_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_279020255_named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_454436520_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_817683348_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_33461589_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_229217944_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "FMDanglingReference class",
+		"sourceCode" : "_pretenured_96467430_with: aFutureAttribute\r\r\t^ self newTenured\r\t\t  parentProperty: aFutureAttribute;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_96467430_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_96467430_addDependent: anObject\r\r\tself _pretenured_96467430_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_96467430_announcer\r\r\t^ self\r\t\t  _pretenured_96467430_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_96467430_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_96467430_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_96467430_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_96467430_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_96467430_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "FMDanglingReference class",
+		"sourceCode" : "_pretenured_421622533_with: aFutureAttribute\r\r\t^ self newTenured\r\t\t  parentProperty: aFutureAttribute;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "BitBlt class",
+		"sourceCode" : "_pretenured_12114457_toForm: aForm\r\r\t^ self newTenured setDestForm: aForm"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_12114457_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_12114457_addDependent: anObject\r\r\tself _pretenured_12114457_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_12114457_announcer\r\r\t^ self\r\t\t  _pretenured_12114457_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_12114457_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_12114457_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_12114457_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_12114457_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_12114457_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "BitBlt class",
+		"sourceCode" : "_pretenured_847100086_toForm: aForm\r\r\t^ self newTenured setDestForm: aForm"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_421592011_named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "JobProgressMorph",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tself _pretenured_421592011_addDependent:\r\t\tSystemProgressMorph uniqueInstance"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_421592011_addDependent: anObject\r\r\tself _pretenured_421592011_announcer\r\t\twhen: MorphChanged , MorphChangedWithArguments\r\t\tsend: #handleUpdate:\r\t\tto: anObject.\r\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_421592011_announcer\r\r\t^ self\r\t\t  _pretenured_421592011_valueOfProperty: #announcer\r\t\t  ifAbsentPut: [ Announcer new ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_421592011_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self assureExtension\r\t\t  _pretenured_421592011_valueOfProperty: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_421592011_valueOfProperty: aSymbol ifAbsentPut: aBlock\r\t\"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r\t^ self _pretenured_421592011_assureOtherProperties\r\t\t  at: aSymbol\r\t\t  ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_421592011_assureOtherProperties\r\t\"creates an otherProperties for the receiver if needed\"\r\r\t^ otherProperties ifNil: [\r\t\t  otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_765299731_named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "resetGrafPort\r\t\"Private! Create a new grafPort for a new copy.\"\r\r\tport := GrafPort _pretenured_847100086_toForm: form.\r\tport clipRect: clipRect"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_671904213_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "WeakIdentityKeyDictionary",
+		"sourceCode" : "at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := self array at: index.\r\tassoc\r\t\tifNil: [\r\t\t\t\tself\r\t\t\t\t\tatNewIndex: index\r\t\t\t\t\tput:\r\t\t\t\t\t\t((WeakKeyAssociation\r\t\t\t\t\t\t\t  _pretenured_454436520_key: key\r\t\t\t\t\t\t\t  value: anObject) container: self) ]\r\t\tifNotNil: [ assoc value: anObject ].\r\t^ anObject"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyWith: newElement\r\t\"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r\t| newIC |\r\tnewIC := self species newTenured: self size + 1.\r\tnewIC\r\t\treplaceFrom: 1\r\t\tto: self size\r\t\twith: self\r\t\tstartingAt: 1.\r\tnewIC at: newIC size put: newElement.\r\t^ newIC"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r\t^ implementingClass\r\t\t  ifNil: [ FMRuntimeElement new description: self ]\r\t\t  ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "processSlot: aSlot in: aClass\r\r\t| prop |\r\tprop := FM3Property _pretenured_279020255_named: aSlot name.\r\tprop implementingSelector: aSlot name.\r\tprop isMultivalued: aSlot isToMany.\r\r\ttypeDict at: prop put: aSlot targetClass.\r\tmmClassDict at: prop put: aClass.\r\toppositeDict at: prop put: aSlot inverseName.\r\r\taClass\r\t\tcompiledMethodAt: aSlot name asSymbol\r\t\tifPresent: [ :aMethod | self processInfosFrom: aMethod for: prop ].\r\r\telements add: prop"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_229217944_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r\tentityAttributes := #(  ).\r\tcache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "grow\r\t\"Grow the elements array and reinsert the old elements\"\r\r\t| oldElements |\r\toldElements := array.\r\tarray := Array newTenured:\r\t\t         (HashTableSizes atLeast: oldElements size * 2).\r\ttally := 0.\r\toldElements do: [ :element |\r\t\telement ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := array at: index.\r\tassoc\r\t\tifNil: [\r\t\t\t\tself\r\t\t\t\t\tatNewIndex: index\r\t\t\t\t\tput: (Association _pretenured_817683348_key: key value: anObject) ]\r\t\tifNotNil: [ assoc value: anObject ].\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r\t\"Answer an Association between self and anObject\"\r\r\t\"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r\t\"(1 -> 'one') key >>> 1\"\r\r\t\"(1 -> 'one') value >>> 'one'\"\r\r\t\"Note that key and value can be ANY object.\"\r\r\t^ Association _pretenured_33461589_key: self value: anObject"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "pretenurePaths\r\r\t| profiler |\r\tprofiler := FiLiP new\r\t\t            profileOn: [ benchmarkClass newTenured run ];\r\t\t            yourself.\r\r\texperiment := PathSensitvePretenuringExperiment\r\t\t              onProfiler: profiler\r\t\t              traversalStrategy: strategy.\r\texperiment methodProtocol: protocol.\r\texperiment analyzeAllocations.\r\r\texperiment compilePretenuredMethods"
+	},
+	{
+		"methodClass" : "AtomicCollection",
+		"sourceCode" : "newItem\r\t\"override in subclass, if you need to instantiate queue items of different class or initialize them in some specific way\"\r\r\t^ AtomicQueueItem newTenured"
+	},
+	{
+		"methodClass" : "FMFutureProperty",
+		"sourceCode" : "referenceNumber: serial\r\r\tself addToValues: (self importer entityAt: serial ifAbsent: [\r\t\t\t\t self importer\r\t\t\t\t\t dangling: (FMDanglingReference _pretenured_421622533_with: self)\r\t\t\t\t\t to: serial ])"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "processCompiledMethod: aMethod\r\r\t| method |\r\tmethod := aMethod.\r\r\t\"If the method is a reflective method we need to ensure it is compiled and use its compiled method.\r\tA refelctive method is for exemple a method created via a metalink and that was never executed.\"\r\t(aMethod isKindOf: ReflectiveMethod) ifTrue: [\r\t\t\tmethod := aMethod\r\t\t\t\t          compileAndInstallCompiledMethod;\r\t\t\t\t          compiledMethod ].\r\tself assert: method isCompiledMethod.\r\r\t\"29 of October 2019: The MSEProperty:type:(opposite:) pragma is deprecated and should not be used anymore. But we still keep it for some time for backward compatibility.\"\r\tmethod pragmas\r\t\tdetect: [ :each |\r\t\t\t\t#( #MSEProperty:type:opposite: #MSEProperty:type:\r\t\t\t\t   #FMProperty:type:opposite: #FMProperty:type: #FMProperty:type:defaultValue: )\r\t\t\t\t\tincludes: each selector ]\r\t\tifFound: [ :pragma |\r\t\t\t\t| prop |\r\t\t\t\tprop := FM3Property _pretenured_765299731_named:\r\t\t\t\t\t        (pragma argumentAt: 1) asString.\r\t\t\t\tmethod comment ifNotNil: [ :c | prop comment: c ].\r\t\t\t\ttypeDict at: prop put: (pragma argumentAt: 2).\r\t\t\t\tmmClassDict at: prop put: method methodClass.\r\t\t\t\tpragma selector = #FMProperty:type:defaultValue: ifTrue: [\r\t\t\t\t\tprop defaultValue: (pragma argumentAt: 3) ].\r\t\t\t\t(pragma selector = #FMProperty:type: and: [\r\t\t\t\t\t\t method pragmas anySatisfy: [ :p |\r\t\t\t\t\t\t\t p selector = #withDefaultValueFromType ] ]) ifTrue: [\r\t\t\t\t\tprop hasDefaultValueFromType: true ].\r\t\t\t\t(pragma selector = #MSEProperty:type:opposite: or: [\r\t\t\t\t\t pragma selector = #FMProperty:type:opposite: ]) ifTrue: [\r\t\t\t\t\toppositeDict at: prop put: (pragma argumentAt: 3) ].\r\t\t\t\tself processInfosFrom: method for: prop.\r\r\t\t\t\telements add: prop ]"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r\t^ (ByteSymbol basicNewTenured: self size) string: self"
+	}
+]

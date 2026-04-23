@@ -1,0 +1,678 @@
+[
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_977855829_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_977855829_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_977855829_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_977855829_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_191451817_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_191451817_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_191451817_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_191451817_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_71213073_growAtLast\r\t\"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r\t\"OrderedCollection new capacity >>> 10\"\r\r\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r\t| newArray |\r\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\r\tnewArray\r\t\treplaceFrom: firstIndex\r\t\tto: lastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray := newArray"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_28927521_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_28927521_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_28927521_invalidRect: damageRect\r\r\t^ self _pretenured_28927521_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_28927521_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_28927521_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_28927521_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_28927521_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_63685995_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_63685995_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_63685995_invalidRect: damageRect\r\r\t^ self _pretenured_63685995_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_63685995_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_63685995_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_63685995_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_63685995_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_63685995_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39831012_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_39831012_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39831012_invalidRect: damageRect\r\r\t^ self _pretenured_39831012_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39831012_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_39831012_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_39831012_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_39831012_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_500598133_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_500598133_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_500598133_invalidRect: damageRect\r\r\t^ self _pretenured_500598133_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_500598133_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_500598133_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_500598133_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_500598133_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_500598133_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_500598133_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_500598133_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_500598133_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39502734_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_39502734_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39502734_invalidRect: damageRect\r\r\t^ self _pretenured_39502734_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_39502734_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_39502734_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_39502734_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_39502734_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_39502734_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_39502734_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_39502734_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_39502734_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_217542785_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_217542785_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_214036480_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_214036480_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_214036480_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_214036480_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_214036480_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_214036480_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_667946952_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_667946952_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_667946952_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_667946952_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_667946952_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_667946952_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_325121400_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_325121400_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_283676272_setLeft: left right: right top: top bottom: bottom\r\r\torigin := (left min: right) _pretenured_283676272_wQJfi:\r\t\t          (top min: bottom).\r\tcorner := (left max: right) @ (top max: bottom)"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_305468912_at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := array at: index.\r\tassoc\r\t\tifNil: [\r\t\t\t\tself\r\t\t\t\t\tatNewIndex: index\r\t\t\t\t\tput: (Association _pretenured_305468912_key: key value: anObject) ]\r\t\tifNotNil: [ assoc value: anObject ].\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_305468912_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_845560167_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_845560167_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_845560167_invalidRect: damageRect\r\r\t^ self _pretenured_845560167_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_845560167_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_845560167_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_845560167_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_845560167_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_845560167_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_845560167_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_845560167_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_845560167_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_649129246_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_649129246_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_649129246_invalidRect: damageRect\r\r\t^ self _pretenured_649129246_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_649129246_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_649129246_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_649129246_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_649129246_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_649129246_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_649129246_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_649129246_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_649129246_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_753879984_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_753879984_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_753879984_invalidRect: damageRect\r\r\t^ self _pretenured_753879984_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_753879984_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_753879984_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_753879984_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_753879984_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_394467677_changed\r\t\"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r\t^ fullBounds\r\t\t  ifNil: [ self invalidRect: self privateFullBounds ]\r\t\t  ifNotNil: [ self _pretenured_394467677_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_394467677_invalidRect: damageRect\r\r\t^ self _pretenured_394467677_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_394467677_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_394467677_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_394467677_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_394467677_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_611142733_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_837235594_grow\r\t\"Grow the elements array and reinsert the old elements\"\r\r\t| oldElements |\r\toldElements := array.\r\tarray := Array newTenured:\r\t\t         (HashTableSizes atLeast: oldElements size * 2).\r\ttally := 0.\r\toldElements do: [ :element |\r\t\telement ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_876278766_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_876278766_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_876278766_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_876278766_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_630008269_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_630008269_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_630008269_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_630008269_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_926833032_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_926833032_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_926833032_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_926833032_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_926833032_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_926833032_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_438003300_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_438003300_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_438003300_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_438003300_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_438003300_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_438003300_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_212890312_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_212890312_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_627193799_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_627193799_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_296324254_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_296324254_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_296324254_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_296324254_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_296324254_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_296324254_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_730436672_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_730436672_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_730436672_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_730436672_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_730436672_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_730436672_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_765002758_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  origin: origin + factor\r\t\t  corner: (corner _pretenured_765002758_vIeqd: factor)"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_765002758_vIeqd: arg\r\t\"Answer a Point that is the sum of the receiver and arg.\"\r\r\t\"((2@2) + (100@200)) >>> (102@202)\"\r\r\t\"((2@2) + 200) >>> (202@202)\"\r\r\targ isPoint ifTrue: [\r\t\t^ x + arg x _pretenured_765002758_wQJfi: y + arg y ].\r\t^ arg adaptToPoint: self andSend: #+"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_122336532_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_122336532_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_122336532_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_122336532_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_122336532_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_122336532_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_122336532_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_122336532_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_823162206_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_823162206_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_823162206_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_823162206_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_823162206_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_823162206_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_58381052_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_58381052_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_58381052_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_58381052_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_259216455_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_259216455_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_259216455_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_259216455_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_259216455_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_259216455_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_392278600_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_392278600_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_392278600_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_392278600_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_392278600_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_392278600_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_392278600_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_392278600_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_124325351_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_124325351_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_24448101_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_24448101_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_24448101_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_24448101_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_260059971_invalidRect: aRectangle from: aMorph\r\r\t| damageRect |\r\taRectangle hasPositiveExtent ifFalse: [ ^ self ].\r\tdamageRect := aRectangle.\r\taMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r\t\t\tself clipSubmorphs ifTrue: [\r\t\t\t\t\tdamageRect := aRectangle\r\t\t\t\t\t\t              _pretenured_260059971_intersect:\r\t\t\t\t\t\t              self clippingBounds\r\t\t\t\t\t\t              ifNone: [ ^ self ] ] ].\r\towner ifNotNil: [ owner invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_260059971_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_260059971_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_260059971_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_595744247_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_595744247_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_260838179_boundingBox\r\r\t^ Rectangle\r\t\t  origin: (0 _pretenured_260838179_wQJfi: 0)\r\t\t  corner: width @ height"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "_pretenured_459754724_createSymbol\r\r\t^ (ByteSymbol basicNewTenured: self size) string: self"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_77112055_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_77112055_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_77112055_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_77112055_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_77112055_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_77112055_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_294124645_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  origin: origin + factor\r\t\t  corner: (corner _pretenured_294124645_vIeqd: factor)"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_294124645_vIeqd: arg\r\t\"Answer a Point that is the sum of the receiver and arg.\"\r\r\t\"((2@2) + (100@200)) >>> (102@202)\"\r\r\t\"((2@2) + 200) >>> (202@202)\"\r\r\targ isPoint ifTrue: [\r\t\t^ x + arg x _pretenured_294124645_wQJfi: y + arg y ].\r\t^ arg adaptToPoint: self andSend: #+"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_352127746_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_352127746_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_352127746_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_352127746_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_352127746_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_352127746_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_373168807_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_373168807_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_373168807_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_373168807_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_373168807_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_373168807_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_976365939_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  _pretenured_976365939_origin: origin + factor\r\t\t  corner: corner + factor"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_976365939_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_976365939_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_976365939_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_976365939_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_522605199_translateBy: factor\r\t\"Answer a Rectangle translated by factor, a Point or a scalar.\"\r\r\t^ Rectangle\r\t\t  origin: origin + factor\r\t\t  corner: (corner _pretenured_522605199_vIeqd: factor)"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_522605199_vIeqd: arg\r\t\"Answer a Point that is the sum of the receiver and arg.\"\r\r\t\"((2@2) + (100@200)) >>> (102@202)\"\r\r\t\"((2@2) + 200) >>> (202@202)\"\r\r\targ isPoint ifTrue: [\r\t\t^ x + arg x _pretenured_522605199_wQJfi: y + arg y ].\r\t^ arg adaptToPoint: self andSend: #+"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_755997037_copyWith: newElement\r\t\"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r\t| newIC |\r\tnewIC := self species newTenured: self size + 1.\r\tnewIC\r\t\treplaceFrom: 1\r\t\tto: self size\r\t\twith: self\r\t\tstartingAt: 1.\r\tnewIC at: newIC size put: newElement.\r\t^ newIC"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_342715214_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: (left _pretenured_342715214_wQJfi: top)\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_426990745_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_426990745_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_426990745_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_426990745_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_426990745_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) _pretenured_426990745_wQJfi:\r\t\t          (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_960199795_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  origin: left @ top\r\t\t  corner: (right _pretenured_960199795_wQJfi: bottom)"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_693999952_intersect: aRectangle ifNone: aBlock\r\t\"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r\t| aPoint left right top bottom |\r\t(self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r\taPoint := aRectangle origin.\r\tleft := aPoint x max: origin x.\r\ttop := aPoint y max: origin y.\r\taPoint := aRectangle corner.\r\tright := aPoint x min: corner x.\r\tbottom := aPoint y min: corner y.\r\t^ Rectangle\r\t\t  _pretenured_693999952_origin: left @ top\r\t\t  corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_693999952_origin: originPoint corner: cornerPoint\r\t\"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_693999952_setPoint: originPoint\r\t\t  point: cornerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_693999952_setPoint: pt1 point: pt2\r\r\torigin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r\tcorner := (pt1 x max: pt2 x) _pretenured_693999952_wQJfi:\r\t\t          (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_716101134_at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := array at: index.\r\tassoc\r\t\tifNil: [\r\t\t\t\tself\r\t\t\t\t\tatNewIndex: index\r\t\t\t\t\tput: (Association _pretenured_716101134_key: key value: anObject) ]\r\t\tifNotNil: [ assoc value: anObject ].\r\t^ anObject"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_716101134_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_835552875_asIntegerPoint\r\t\"Convert me to an integer point transforming both of my coordinates\r\tto integers using #asInteger. If x and y are already represented\r\tby integers return myself, otherwise create a new Point instance.\"\r\r\tself isIntegerPoint ifTrue: [ ^ self ].\r\t^ x asInteger _pretenured_835552875_wQJfi: y asInteger"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "attributeAt: name put: value\r\r\t| aName |\r\taName := name asSymbol.\r\t1 to: entityAttributes size do: [ :n |\r\t\t\taName == (entityAttributes at: n) key ifTrue: [\r\t\t\t\t^ ((entityAttributes at: n) value: value) value ] ].\r\tentityAttributes := entityAttributes _pretenured_755997037_copyWith:\r\t\t                    aName -> value.\r\t^ entityAttributes last value"
+	},
+	{
+		"methodClass" : "TransformMorph",
+		"sourceCode" : "invalidRect: damageRect from: aMorph\r\t\"Translate damage reports from submorphs by the scrollOffset.\"\r\r\taMorph == self\r\t\tifTrue: [ super invalidRect: damageRect from: self ]\r\t\tifFalse: [\r\t\t\t\tsuper\r\t\t\t\t\t_pretenured_260059971_invalidRect:\r\t\t\t\t\t\t(((transform localBoundsToGlobal: damageRect)\r\t\t\t\t\t\t\t  _pretenured_595744247_intersect: bounds\r\t\t\t\t\t\t\t  ifNone: [ ^ self ]) expandBy: 1)\r\t\t\t\t\tfrom: self ]"
+	},
+	{
+		"methodClass" : "RubSegmentMorph",
+		"sourceCode" : "drawBorderOn: aCanvas usingEnds: anArray\r\t\"Display my border on the canvas.\"\r\r\t| bigClipRect style |\r\tstyle := self borderStyle.\r\tbigClipRect := aCanvas clipRect expandBy: self borderWidth + 1 // 2.\r\tself lineSegmentsDo: [ :p1 :p2 |\r\t\t\t| p1i p2i |\r\t\t\tp1i := p1 _pretenured_835552875_asIntegerPoint.\r\t\t\tp2i := p2 asIntegerPoint.\r\t\t\tstyle drawLineFrom: p1i to: p2i on: aCanvas ]"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r\t^ implementingClass\r\t\t  ifNil: [ FMRuntimeElement new description: self ]\r\t\t  ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r\tentityAttributes := #(  ).\r\tcache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "color: aColor\r\t\"Set the receiver's color.  Directly set the color if appropriate, else go by way of fillStyle\"\r\r\t(aColor isColor or: [ aColor isKindOf: InfiniteForm ]) ifFalse: [\r\t\t^ self fillStyle: aColor ].\r\tcolor = aColor ifFalse: [\r\t\t\tself assureExtension.\r\t\t\textension fillStyle: nil.\r\t\t\tcolor := aColor.\r\t\t\tself _pretenured_394467677_changed ]"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "copyClipRect: aRectangle\r\r\t^ self\r\t\t  copyOrigin: origin\r\t\t  clipRect: (aRectangle _pretenured_522605199_translateBy: origin)"
+	},
+	{
+		"methodClass" : "Symbol class",
+		"sourceCode" : "rawIntern: aStringOrSymbol\r\r\t^ (self findInterned: aStringOrSymbol) ifNil: [\r\t\t  NewSymbols add: aStringOrSymbol _pretenured_459754724_createSymbol ]"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "flush\r\r\tcache initialize"
+	},
+	{
+		"methodClass" : "BitBlt",
+		"sourceCode" : "setDestForm: df\r\r\t| bb |\r\tbb := df _pretenured_260838179_boundingBox.\r\tdestForm := df.\r\tclipX := bb left.\r\tclipY := bb top.\r\tclipWidth := bb width.\r\tclipHeight := bb height"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key ifAbsentPut: aBlock\r\t\"Return the value at the given key.\r\tIf the key is not included in the receiver store and return the result\r\tof evaluating aBlock as the new value.\"\r\r\t^ self\r\t\t  at: key\r\t\t  ifAbsent: [ self _pretenured_305468912_at: key put: aBlock value ]"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "boundingBox\r\r\t^ Rectangle\r\t\t  _pretenured_191451817_origin: 0 @ 0\r\t\t  corner: width @ height"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r\t\"Answer an Association between self and anObject\"\r\r\t\"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r\t\"(1 -> 'one') key >>> 1\"\r\r\t\"(1 -> 'one') value >>> 'one'\"\r\r\t\"Note that key and value can be ANY object.\"\r\r\t^ Association _pretenured_611142733_key: self value: anObject"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "privateMooseStorageAt: key\r\t\"I exist only for performance reasons. I avoid to create a #ifAbsent: block. In moose we call this so much that the creation cost of the block and its garbage collection is too high :(\"\r\r\t\"Cannot be easly inline due to array usage\"\r\r\t^ ((array at: (self findElementOrNil: key))\r\t\t   ifNil: [\r\t\t   self _pretenured_716101134_at: key put: OrderedCollection new ]\r\t\t   ifNotNil: [ :assoc | assoc ]) value"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "frameAndFillRectangle: r fillColor: fillColor borderWidth: borderWidth borderColor: borderColor\r\r\t| rect |\r\trect := r _pretenured_352127746_translateBy: origin.\r\t\"draw the border of the rectangle\"\r\tborderColor isTransparent ifFalse: [\r\t\t\tself setFillColor: borderColor.\r\t\t\t(r area > 10000 or: [ fillColor isTranslucent ])\r\t\t\t\tifTrue: [ port frameRect: rect borderWidth: borderWidth ]\r\t\t\t\tifFalse: [ \"for small rectangles, it's faster to fill the entire outer rectangle\r\t\t\t\t\tthan to compute and fill the border rects\"\r\t\t\t\t\tport fillRect: rect offset: origin ] ].\r\r\t\"fill the inside\"\r\tfillColor isTransparent ifFalse: [\r\t\t\tself setFillColor: fillColor.\r\t\t\tport fillRect: (rect insetBy: borderWidth) offset: origin ]"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "copyOrigin: aPoint clipRect: aRectangle\r\t\"Return a copy of this canvas with the given origin. The clipping rectangle of this canvas is the intersection of the given rectangle and the receiver's current clipping rectangle. This allows the clipping rectangles of nested clipping morphs to be composed.\"\r\r\t^ self copy setOrigin: aPoint clipRect: (clipRect\r\t\t\t   _pretenured_325121400_intersect: aRectangle\r\t\t\t   ifNone: [ \"well, now we will clip everything\"\r\t\t\t   0 @ 0 corner: 0 @ 0 ])"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "clipRect\r\t\"Return the currently active clipping rectangle\"\r\r\t^ clipRect _pretenured_765002758_translateBy: origin negated"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "drawSubmorphsOn: aCanvas\r\t\"Display submorphs back to front\"\r\r\t| drawBlock |\r\tsubmorphs isEmpty ifTrue: [ ^ self ].\r\tdrawBlock := [ :canvas |\r\t             submorphs reverseDo: [ :m | canvas fullDrawMorph: m ] ].\r\tself clipSubmorphs\r\t\tifTrue: [\r\t\t\t\taCanvas\r\t\t\t\t\tclipBy: (aCanvas clipRect\r\t\t\t\t\t\t\t _pretenured_627193799_intersect: self clippingBounds\r\t\t\t\t\t\t\t ifNone: [ ^ self ])\r\t\t\t\t\tduring: drawBlock ]\r\t\tifFalse: [ drawBlock value: aCanvas ]"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "fullCheck\r\t\"Keep array at least 1/4 free for decent hash behavior\"\r\r\tarray size - tally < (array size // 4 max: 1) ifTrue: [\r\t\tself _pretenured_837235594_grow ]"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "left: left right: right top: top bottom: bottom\r\t\"Answer an instance of me whose left, right, top, and bottom coordinates\r\tare determined by the arguments.\"\r\r\t^ self basicNew\r\t\t  _pretenured_283676272_setLeft: left\r\t\t  right: right\r\t\t  top: top\r\t\t  bottom: bottom"
+	},
+	{
+		"methodClass" : "StringMorph",
+		"sourceCode" : "fitContents\r\r\t| newBounds boundsChanged |\r\tnewBounds := self measureContents.\r\tboundsChanged := bounds extent ~= newBounds.\r\tself extent: newBounds. \"default short-circuits if bounds not changed\"\r\tboundsChanged ifFalse: [ self _pretenured_39502734_changed ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "makeRoomAtLast\r\t\"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r\t| tally newFirstIndex newLastIndex |\r\ttally := self size.\r\ttally * 2 >= lastIndex ifTrue: [\r\t\t^ self _pretenured_71213073_growAtLast ].\r\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\r\tnewLastIndex := lastIndex // 2.\r\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\r\tarray\r\t\treplaceFrom: newFirstIndex\r\t\tto: newLastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray from: newLastIndex + 1 to: lastIndex put: nil.\r\tfirstIndex := newFirstIndex.\r\tlastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "truncated\r\t\"Answer a Rectangle whose origin and corner have any fractional parts removed. Answer the receiver if its coordinates are already integral.\"\r\r\t(origin x isInteger and: [\r\t\t\t origin y isInteger and: [\r\t\t\t\t corner x isInteger and: [ corner y isInteger ] ] ]) ifTrue: [\r\t\t^ self ].\r\r\t^ Rectangle\r\t\t  _pretenured_630008269_origin: origin truncated\r\t\t  corner: corner truncated"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "copyOffset: aPoint clipRect: sourceClip\r\t\"Make a copy of me offset by aPoint, and further clipped\r\tby sourceClip, a rectangle in the un-offset coordinates\"\r\r\t^ self\r\t\t  copyOrigin: aPoint + origin\r\t\t  clipRect: ((sourceClip translateBy: origin)\r\t\t\t\t   _pretenured_693999952_intersect: clipRect\r\t\t\t\t   ifNone: [ 0 @ 0 corner: 0 @ 0 ])"
+	}
+]

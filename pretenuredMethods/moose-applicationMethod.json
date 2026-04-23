@@ -1,0 +1,154 @@
+[
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_746544395_add: newObject\r\t\"Add a new object at the end of the collection, and returns the object itself\"\r\r\t\"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r\t\"Add returns the object itself\"\r\r\t\"(OrderedCollection new add: 42) >>> 42\"\r\r\t\"You may want to use yourself to return the collection itself\"\r\r\t\"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r\t\"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r\t^ self _pretenured_746544395_addLast: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_746544395_addLast: newObject\r\t\"Add newObject to the end of the receiver. Answer newObject.\"\r\r\tlastIndex = array size ifTrue: [\r\t\tself _pretenured_746544395_makeRoomAtLast ].\r\tlastIndex := lastIndex + 1.\r\t^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_746544395_makeRoomAtLast\r\t\"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r\t| tally newFirstIndex newLastIndex |\r\ttally := self size.\r\ttally * 2 >= lastIndex ifTrue: [\r\t\t^ self _pretenured_746544395_growAtLast ].\r\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\r\tnewLastIndex := lastIndex // 2.\r\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\r\tarray\r\t\treplaceFrom: newFirstIndex\r\t\tto: newLastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray from: newLastIndex + 1 to: lastIndex put: nil.\r\tfirstIndex := newFirstIndex.\r\tlastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_746544395_growAtLast\r\t\"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r\t\"OrderedCollection new capacity >>> 10\"\r\r\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r\t| newArray |\r\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\r\tnewArray\r\t\treplaceFrom: firstIndex\r\t\tto: lastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray := newArray"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_883914067_add: newObject\r\t\"Include newObject as one of the receiver's elements, but only if\r\tnot already present. Answer newObject.\"\r\r\t| index |\r\tindex := self scanFor: newObject.\r\t(array at: index) ifNil: [\r\t\t\tself\r\t\t\t\t_pretenured_883914067_atNewIndex: index\r\t\t\t\tput: newObject asCollectionElement ].\r\t^ newObject"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "_pretenured_883914067_atNewIndex: index put: anObject\r\r\tarray at: index put: anObject.\r\ttally := tally + 1.\r\tself _pretenured_883914067_fullCheck"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "_pretenured_883914067_fullCheck\r\t\"Keep array at least 1/4 free for decent hash behavior\"\r\r\tarray size - tally < (array size // 4 max: 1) ifTrue: [\r\t\tself _pretenured_883914067_grow ]"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_883914067_grow\r\t\"Grow the elements array and reinsert the old elements\"\r\r\t| oldElements |\r\toldElements := array.\r\tarray := Array newTenured:\r\t\t         (HashTableSizes atLeast: oldElements size * 2).\r\ttally := 0.\r\toldElements do: [ :element |\r\t\telement ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_694037398_add: newObject\r\t\"Include newObject as one of the receiver's elements, but only if\r\tnot already present. Answer newObject.\"\r\r\t| index |\r\tindex := self scanFor: newObject.\r\t(array at: index) ifNil: [\r\t\t\tself\r\t\t\t\t_pretenured_694037398_atNewIndex: index\r\t\t\t\tput: newObject asCollectionElement ].\r\t^ newObject"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "_pretenured_694037398_atNewIndex: index put: anObject\r\r\tarray at: index put: anObject.\r\ttally := tally + 1.\r\tself _pretenured_694037398_fullCheck"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "_pretenured_694037398_fullCheck\r\t\"Keep array at least 1/4 free for decent hash behavior\"\r\r\tarray size - tally < (array size // 4 max: 1) ifTrue: [\r\t\tself _pretenured_694037398_grow ]"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_694037398_grow\r\t\"Grow the elements array and reinsert the old elements\"\r\r\t| oldElements |\r\toldElements := array.\r\tarray := Array newTenured:\r\t\t         (HashTableSizes atLeast: oldElements size * 2).\r\ttally := 0.\r\toldElements do: [ :element |\r\t\telement ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_771942929_add: newObject\r\t\"Add a new object at the end of the collection, and returns the object itself\"\r\r\t\"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r\t\"Add returns the object itself\"\r\r\t\"(OrderedCollection new add: 42) >>> 42\"\r\r\t\"You may want to use yourself to return the collection itself\"\r\r\t\"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r\t\"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r\t^ self _pretenured_771942929_addLast: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_771942929_addLast: newObject\r\t\"Add newObject to the end of the receiver. Answer newObject.\"\r\r\tlastIndex = array size ifTrue: [\r\t\tself _pretenured_771942929_makeRoomAtLast ].\r\tlastIndex := lastIndex + 1.\r\t^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_771942929_makeRoomAtLast\r\t\"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r\t| tally newFirstIndex newLastIndex |\r\ttally := self size.\r\ttally * 2 >= lastIndex ifTrue: [\r\t\t^ self _pretenured_771942929_growAtLast ].\r\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\r\tnewLastIndex := lastIndex // 2.\r\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\r\tarray\r\t\treplaceFrom: newFirstIndex\r\t\tto: newLastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray from: newLastIndex + 1 to: lastIndex put: nil.\r\tfirstIndex := newFirstIndex.\r\tlastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_771942929_growAtLast\r\t\"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r\t\"OrderedCollection new capacity >>> 10\"\r\r\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r\t| newArray |\r\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\r\tnewArray\r\t\treplaceFrom: firstIndex\r\t\tto: lastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray := newArray"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_183620750_addLast: newObject\r\t\"Add newObject to the end of the receiver. Answer newObject.\"\r\r\tlastIndex = array size ifTrue: [\r\t\tself _pretenured_183620750_makeRoomAtLast ].\r\tlastIndex := lastIndex + 1.\r\t^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_183620750_makeRoomAtLast\r\t\"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r\t| tally newFirstIndex newLastIndex |\r\ttally := self size.\r\ttally * 2 >= lastIndex ifTrue: [\r\t\t^ self _pretenured_183620750_growAtLast ].\r\ttally = 0 ifTrue: [ ^ self resetTo: 1 ].\r\tnewLastIndex := lastIndex // 2.\r\tnewFirstIndex := newLastIndex - lastIndex + firstIndex.\r\tarray\r\t\treplaceFrom: newFirstIndex\r\t\tto: newLastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray from: newLastIndex + 1 to: lastIndex put: nil.\r\tfirstIndex := newFirstIndex.\r\tlastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_183620750_growAtLast\r\t\"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r\t\"OrderedCollection new capacity >>> 10\"\r\r\t\"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r\t| newArray |\r\tnewArray := self class arrayType newTenured: (array size * 2 max: 1).\r\tnewArray\r\t\treplaceFrom: firstIndex\r\t\tto: lastIndex\r\t\twith: array\r\t\tstartingAt: firstIndex.\r\tarray := newArray"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_843607772_copyWith: newElement\r\t\"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r\t| newIC |\r\tnewIC := self species newTenured: self size + 1.\r\tnewIC\r\t\treplaceFrom: 1\r\t\tto: self size\r\t\twith: self\r\t\tstartingAt: 1.\r\tnewIC at: newIC size put: newElement.\r\t^ newIC"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array new: 2.\r\tvalues := Array newTenured: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r\tsuper initialize.\r\tkeys := Array newTenured: 2.\r\tvalues := Array new: 2.\r\tsize := 0"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "attributeAt: name put: value\r\r\t| aName |\r\taName := name asSymbol.\r\t1 to: entityAttributes size do: [ :n |\r\t\t\taName == (entityAttributes at: n) key ifTrue: [\r\t\t\t\t^ ((entityAttributes at: n) value: value) value ] ].\r\tentityAttributes := entityAttributes _pretenured_843607772_copyWith:\r\t\t                    aName -> value.\r\t^ entityAttributes last value"
+	},
+	{
+		"methodClass" : "MooseGroupStorage",
+		"sourceCode" : "updateCacheOnAddingOf: anElement\r\r\t(byType privateMooseStorageAt: anElement class)\r\t\t_pretenured_771942929_add: anElement.\r\t^ anElement"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "named: aString\r\r\t^ self newTenured\r\t\t  name: aString;\r\t\t  yourself"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink",
+		"sourceCode" : "uncheckUnsafeAdd: element\r\t\"Calls the implementation in OrderedCollection.\"\r\r\tsuper _pretenured_183620750_addLast: element"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r\t^ implementingClass\r\t\t  ifNil: [ FMRuntimeElement new description: self ]\r\t\t  ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "flush\r\r\tcache initialize"
+	},
+	{
+		"methodClass" : "FMModel",
+		"sourceCode" : "add: element\r\r\telements _pretenured_694037398_add: element.\r\tself postAdd: element"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r\tentityAttributes := #(  ).\r\tcache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "dangling: reference to: serial\r\r\t(reminderDict at: serial ifAbsentPut: [ OrderedCollection new ])\r\t\t_pretenured_746544395_add: reference.\r\tnumberOfDanglingReferences := numberOfDanglingReferences + 1.\r\t^ reference"
+	},
+	{
+		"methodClass" : "FM3Trait",
+		"sourceCode" : "addUser: aFM3Type\r\r\tself users _pretenured_883914067_add: aFM3Type"
+	}
+]

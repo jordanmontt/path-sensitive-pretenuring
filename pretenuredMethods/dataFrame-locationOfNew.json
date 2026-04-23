@@ -1,0 +1,14 @@
+[
+	{
+		"methodClass" : "String class",
+		"sourceCode" : "newTenured: sizeRequested\r\t\"Return a new instance with the number of indexable variables specified by the argument.\"\r\r\t^ self == String\r\t\t  ifTrue: [ ByteString new: sizeRequested ]\r\t\t  ifFalse: [ self basicNewTenured: sizeRequested ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyFrom: start to: stop\r\t\"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r\t| newSize |\r\tnewSize := stop - start + 1.\r\t^ (self species newTenured: newSize)\r\t\t  replaceFrom: 1\r\t\t  to: newSize\r\t\t  with: self\r\t\t  startingAt: start"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r\t^ recordClass newTenured: size"
+	}
+]
