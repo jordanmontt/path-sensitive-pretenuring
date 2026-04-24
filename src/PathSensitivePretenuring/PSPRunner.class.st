@@ -142,7 +142,8 @@ PSPRunner >> run [
     
     self writeJitMeasurements.
 
-    ^ finalTime - initialTime
+	"Rebench expects seconds"
+    ^ ((finalTime - initialTime) / 1000) asFloat
 ]
 
 { #category : 'api' }
