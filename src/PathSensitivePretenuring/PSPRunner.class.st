@@ -159,12 +159,10 @@ PSPRunner >> writeJitMeasurements [
 	fileName := 'jit-measurements.json'.
 	fileReference := (FileLocator imageDirectory / fileName) asFileReference.
 
-	measurements := fileReference exists
-		ifTrue: [
-			| existing |
-			existing := NeoJSONReader fromString: fileReference contents.
-			existing , { metricsDict } ]
-		ifFalse: [ { metricsDict } ].
+	measurements := OrderedCollection new.
+	fileReference exists ifTrue: [
+		measurements addAll: (NeoJSONReader fromString: fileReference contents) ].
+	measurements add: metricsDict.
 
 	fileReference writeStreamDo: [ :stream |
 		stream nextPutAll: (NeoJSONWriter toStringPretty: measurements) ].
