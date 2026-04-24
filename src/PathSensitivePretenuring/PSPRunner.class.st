@@ -153,12 +153,19 @@ PSPRunner >> strategy: aStrategy [
 
 { #category : 'writing' }
 PSPRunner >> writeJitMeasurements [
+	| metricsDict fileName fileReference measurements |
 
-    | writeStream tempDict jsonFileName |
-    tempDict := self jitMetricsAsDictionary.
-    jsonFileName := 'jit-measurements' , (Random new nextIntegerBetween: 1 and: 1000000) asString , '.json'.
+	metricsDict := self jitMetricsAsDictionary.
+	fileName := 'jit-measurements.json'.
+	fileReference := (FileLocator imageDirectory / fileName) asFileReference.
 
-    writeStream := (FileLocator imageDirectory / jsonFileName) asFileReference writeStream.
-    [ writeStream nextPutAll: (NeoJSONWriter toStringPretty: tempDict) ]
-        ensure: [ writeStream close ]
+	measurements := fileReference exists
+		ifTrue: [
+			| existing |
+			existing := NeoJSONReader fromString: fileReference contents.
+			existing , { metricsDict } ]
+		ifFalse: [ { metricsDict } ].
+
+	fileReference writeStreamDo: [ :stream |
+		stream nextPutAll: (NeoJSONWriter toStringPretty: measurements) ].
 ]
