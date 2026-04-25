@@ -51,9 +51,7 @@ install_veritas() {
 
 install_path_sensitive_pretenuring() {
     local image_path="$1"
-    "$PHARO_CMD" --headless "$image_path" metacello install \
-        "github://jordanmontt/path-sensitive-pretenuring:main" \
-        "BaselineOfPathSensitivePretenuring"
+    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/path-sensitive-pretenuring:main" "BaselineOfPathSensitivePretenuring"
     log "Installed Path Sensitive Pretenuring for $image_path"
 }
 
@@ -64,7 +62,7 @@ copy_dataset() {
     log "$file_name copied to $target_dir"
 }
 
-move_dataset_from_veritas_repo() {
+copy_dataset_from_veritas_repo() {
     local target_dir="$1"
     local file_name="$2"
     cp "./$target_dir/pharo-local/iceberg/jordanmontt/PharoVeritasBenchSuite/files/$file_name" "./$target_dir/"
@@ -94,7 +92,7 @@ install_baseline_images() {
                 copy_dataset "$benchmark" "tiny_fifty_times_larger_dataset.csv"
                 ;;
             moose)
-                move_dataset_from_veritas_repo "$benchmark" "sbscl.json"
+                copy_dataset_from_veritas_repo "$benchmark" "sbscl.json"
                 ;;
         esac
     done
