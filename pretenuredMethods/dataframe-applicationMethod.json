@@ -1,0 +1,62 @@
+[
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_next\r\t\"Read the next record.\r\tI will return an instance of recordClass.\"\r\r\t^ recordClassIsIndexable\r\t\t  ifTrue: [ self _pretenured_2850078_readNextRecordAsArray ]\r\t\t  ifFalse: [ self readNextRecordAsObject ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_readNextRecordAsArray\r\r\tfieldAccessors ifNotNil: [\r\t\tself fieldCount: (fieldAccessors count: [ :each | each notNil ]) ].\r\t^ fieldCount\r\t\t  ifNil: [\r\t\t\t\t  | record |\r\t\t\t\t  record := self readFirstRecord.\r\t\t\t\t  self fieldCount: record size.\r\t\t\t\t  record ]\r\t\t  ifNotNil: [ self _pretenured_2850078_readNextRecord ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_readNextRecord\r\r\t| record |\r\trecord := self recordClassNew: fieldCount.\r\tfieldAccessors\r\t\tifNil: [\r\t\t\tself _pretenured_2850078_readNextRecordWithoutFieldAccessors:\r\t\t\t\trecord ]\r\t\tifNotNil: [ self readNextRecordWithFieldAccessors: record ].\r\tself handleEndOfRecord.\r\t^ record"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_readNextRecordWithoutFieldAccessors: record\r\r\t1 to: fieldCount do: [ :each |\r\t\t\trecord at: each put: self _pretenured_2850078_readField.\r\t\t\teach = fieldCount ifFalse: [ self handleSeparator ] ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_readField\r\r\t| field |\r\tfield := self peekQuote\r\t\t         ifTrue: [ self readQuotedField ]\r\t\t         ifFalse: [ self _pretenured_2850078_readUnquotedField ].\r\t(field ~= emptyFieldValue and: [ emptyFieldInput notNil ]) ifTrue: [\r\t\t(emptyFieldInput value: field) ifTrue: [ ^ emptyFieldValue ] ].\r\t^ field"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_readUnquotedField\r\r\t(self atEnd or: [ self peekSeparator or: [ self peekEndOfLine ] ])\r\t\tifTrue: [ ^ emptyFieldValue ].\r\t^ self _pretenured_2850078_stringStreamContents: [ :stream |\r\t\t\t  [\r\t\t\t  self atEnd or: [ self peekSeparator or: [ self peekEndOfLine ] ] ]\r\t\t\t\t  whileFalse: [ stream nextPut: self nextChar ] ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_2850078_stringStreamContents: block\r\t\"Like String streamContents: block\r\tbut reusing the underlying buffer for improved efficiency\"\r\r\tstringStream ifNil: [ stringStream := (String new: 32) writeStream ].\r\tstringStream reset.\r\tblock value: stringStream.\r\t^ stringStream _pretenured_2850078_contents"
+	},
+	{
+		"methodClass" : "WriteStream",
+		"sourceCode" : "_pretenured_2850078_contents\r\r\treadLimit := readLimit max: position.\r\t^ collection _pretenured_2850078_copyFrom: 1 to: position"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_2850078_copyFrom: start to: stop\r\t\"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r\t| newSize |\r\tnewSize := stop - start + 1.\r\t^ (self species newTenured: newSize)\r\t\t  replaceFrom: 1\r\t\t  to: newSize\r\t\t  with: self\r\t\t  startingAt: start"
+	},
+	{
+		"methodClass" : "String class",
+		"sourceCode" : "newTenured: sizeRequested\r\t\"Return a new instance with the number of indexable variables specified by the argument.\"\r\r\t^ self == String\r\t\t  ifTrue: [ ByteString new: sizeRequested ]\r\t\t  ifFalse: [ self basicNewTenured: sizeRequested ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_670896223_next\r\t\"Read the next record.\r\tI will return an instance of recordClass.\"\r\r\t^ recordClassIsIndexable\r\t\t  ifTrue: [ self _pretenured_670896223_readNextRecordAsArray ]\r\t\t  ifFalse: [ self readNextRecordAsObject ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_670896223_readNextRecordAsArray\r\r\tfieldAccessors ifNotNil: [\r\t\tself fieldCount: (fieldAccessors count: [ :each | each notNil ]) ].\r\t^ fieldCount\r\t\t  ifNil: [\r\t\t\t\t  | record |\r\t\t\t\t  record := self readFirstRecord.\r\t\t\t\t  self fieldCount: record size.\r\t\t\t\t  record ]\r\t\t  ifNotNil: [ self _pretenured_670896223_readNextRecord ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_670896223_readNextRecord\r\r\t| record |\r\trecord := self _pretenured_670896223_recordClassNew: fieldCount.\r\tfieldAccessors\r\t\tifNil: [ self readNextRecordWithoutFieldAccessors: record ]\r\t\tifNotNil: [ self readNextRecordWithFieldAccessors: record ].\r\tself handleEndOfRecord.\r\t^ record"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_670896223_recordClassNew: size\r\r\t^ recordClass newTenured: size"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readOnlyRowsWith: aReader\r\r\trows := OrderedCollection new.\r\r\t[ aReader atEnd ] whileFalse: [\r\t\trows add: aReader _pretenured_670896223_next ]"
+	}
+]

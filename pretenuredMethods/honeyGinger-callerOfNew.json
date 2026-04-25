@@ -1,0 +1,22 @@
+[
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_31417436_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_648705350_new: newSize streamContents: blockWithArg\r\t\"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r\t\"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r\t| stream |\r\tstream := WriteStream on: (self streamSpecies newTenured: newSize).\r\tblockWithArg value: stream.\r\t\"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r\t^ stream position = stream originalContents size\r\t\t  ifTrue: [ stream originalContents ]\r\t\t  ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "FreeTypeCache",
+		"sourceCode" : "atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r\t| charCodeTable typeTable scaleTable entry v vSize |\r\tmutex criticalReleasingOnError: [\r\t\t\tcharCodeTable := fontTable\r\t\t\t\t                 at: aFreeTypeFont\r\t\t\t\t                 ifAbsentPut: [ self dictionaryClass new: 60 ].\r\t\t\ttypeTable := charCodeTable\r\t\t\t\t             at: charCodeInteger\r\t\t\t\t             ifAbsentPut: [ self dictionaryClass new: 10 ].\r\t\t\tscaleTable := typeTable\r\t\t\t\t              at: typeFlag\r\t\t\t\t              ifAbsentPut: [ self dictionaryClass newTenured: 1 ].\r\t\t\tentry := scaleTable at: scale ifAbsent: [ ].\r\t\t\tentry ifNotNil: [\r\t\t\t\t\tfifo moveDown: entry.\r\t\t\t\t\t^ entry object ].\r\t\t\tv := aBlock\r\t\t\t\t     on: Error\r\t\t\t\t     do: [ :error |\r\t\t\t\t\t\t     self\r\t\t\t\t\t\t\t     removeIfEmptyScaleTable: scaleTable\r\t\t\t\t\t\t\t     type: typeFlag\r\t\t\t\t\t\t\t     typeTable: typeTable\r\t\t\t\t\t\t\t     charCode: charCodeInteger\r\t\t\t\t\t\t\t     charCodeTable: charCodeTable\r\t\t\t\t\t\t\t     font: aFreeTypeFont.\r\t\t\t\t\t\t     error pass ].\r\t\t\tvSize := self sizeOf: v.\r\t\t\t(maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r\t\t\t\t\tself\r\t\t\t\t\t\tremoveIfEmptyScaleTable: scaleTable\r\t\t\t\t\t\ttype: typeFlag\r\t\t\t\t\t\ttypeTable: typeTable\r\t\t\t\t\t\tcharCode: charCodeInteger\r\t\t\t\t\t\tcharCodeTable: charCodeTable\r\t\t\t\t\t\tfont: aFreeTypeFont.\r\t\t\t\t\t^ v ].\r\t\t\tused := used + vSize.\r\t\t\tentry := self fifoEntryClass new\r\t\t\t\t         font: aFreeTypeFont;\r\t\t\t\t         charCode: charCodeInteger;\r\t\t\t\t         type: typeFlag;\r\t\t\t\t         scale: scale;\r\t\t\t\t         object: v;\r\t\t\t\t         yourself.\r\t\t\tscaleTable at: scale put: entry.\r\t\t\tfifo addLast: entry.\r\t\t\tmaximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r\t\t\t^ v ]"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r\t\"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r\t\"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r\t\"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r\t| index assoc |\r\tindex := self findElementOrNil: key.\r\tassoc := array at: index.\r\tassoc\r\t\tifNil: [\r\t\t\t\tself\r\t\t\t\t\tatNewIndex: index\r\t\t\t\t\tput: (Association _pretenured_31417436_key: key value: anObject) ]\r\t\tifNotNil: [ assoc value: anObject ].\r\t^ anObject"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "streamContents: blockWithArg\r\t\"Build an instance of the receiver by writing elements to a stream.\r\tMore specifically: blockWithArg will be given a WriteStream on an instance of the receiver.\r\tInside blockWithArg you write elements to the stream to build up the collection.\r\tAt the end, the contents of the stream up to that point will be returned.\r\tNote that the underlying collection grows as needed.\"\r\r\t\"(Array streamContents: [ :out | out nextPut: 1; nextPutAll: #(2 3 4); nextPut: 5 ]) >>> #(1 2 3 4 5)\"\r\r\t^ self _pretenured_648705350_new: 100 streamContents: blockWithArg"
+	}
+]
