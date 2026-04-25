@@ -63,7 +63,7 @@ move_dataset() {
     log "$file_name moved to $target_dir"
 }
 
-install_pretenured_methods() {
+profile_and_export_pretenured_methods() {
     local image_path="$1"
     local benchmark="$2"
     local strategy="$3"
@@ -115,7 +115,7 @@ install_strategy_images() {
                     ;;
             esac
 
-            install_pretenured_methods "$image_path" "$benchmark" "$strategy" "$veritas_bench"
+            profile_and_export_pretenured_methods "$image_path" "$benchmark" "$strategy" "$veritas_bench"
         done
     done
 }
