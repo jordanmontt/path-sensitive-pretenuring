@@ -8,10 +8,11 @@ PHARO_CMD="$BASE_DIR/pharo"
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
     ["honeyGinger"]="VeritasHoneyGinger"
-    ["microdown"]="VeritasMicrodown"
-    ["dataFrame"]="VeritasDataFrame"
+    ["dataframe"]="VeritasDataFrame"
     ["moose"]="VeritasMoose"
 )
+
+STRATEGIES=("applicationMethod" "callerOfNew" "locationOfNew")
 
 log() { echo; echo "▸ $*"; echo; }
 
@@ -47,13 +48,12 @@ install_veritas() {
     log "Installed Veritas $veritas_bench for $image_path"
 }
 
-download_spec2_book() {
-    local target_dir="$1"
-    local TMP_CLONE_DIR
-    TMP_CLONE_DIR=$(mktemp -d)
-    git clone --quiet --depth=1 https://github.com/SquareBracketAssociates/BuildingApplicationWithSpec2.git "$TMP_CLONE_DIR"
-    mv "$TMP_CLONE_DIR" "./$target_dir/Spec2Book"
-    log "Spec2Book downloaded for $target_dir"
+install_path_sensitive_pretenuring() {
+    local image_path="$1"
+    "$PHARO_CMD" --headless "$image_path" metacello install \
+        "github://jordanmontt/path-sensitive-pretenuring:main" \
+        "BaselineOfPathSensitivePretenuring"
+    log "Installed Path Sensitive Pretenuring for $image_path"
 }
 
 move_dataset() {
@@ -61,6 +61,15 @@ move_dataset() {
     local file_name="$2"
     mv "./$target_dir/pharo-local/iceberg/jordanmontt/PharoVeritasBenchSuite/files/$file_name" "./$target_dir/"
     log "$file_name moved to $target_dir"
+}
+
+install_pretenured_methods() {
+    local image_path="$1"
+    local benchmark="$2"
+    local strategy="$3"
+    local json_file="$benchmark-$strategy.json"
+    "$PHARO_CMD" --headless "$image_path" eval --save "| file | file := (FileLocator localDirectory / 'iceberg' / 'jordanmontt' / 'path-sensitive-pretenuring' / 'pretenuredMethods' / '$json_file') asFileReference. PathSensitvePretenuringExperiment new deserializeAndInstallCompiledMethodsIn: file"
+    log "Installed pretenured methods ($json_file) for $image_path"
 }
 
 install_baseline_images() {
@@ -73,10 +82,7 @@ install_baseline_images() {
         install_veritas "$image_path" "$veritas_bench"
 
         case "$benchmark" in
-            microdown)
-                download_spec2_book "$benchmark"
-                ;;
-            dataFrame)
+            dataframe)
                 move_dataset "$benchmark" "tiny_dataset.csv"
                 ;;
             moose)
@@ -86,9 +92,35 @@ install_baseline_images() {
     done
 }
 
+install_strategy_images() {
+    for benchmark in "${!BENCHMARK_CLASSES[@]}"; do
+        local baseline_image="./$benchmark/$benchmark.image"
+
+        for strategy in "${STRATEGIES[@]}"; do
+            local name="$benchmark-$strategy"
+            local image_path="./$name/$name.image"
+            create_image "$baseline_image" "$name"
+
+            case "$benchmark" in
+                dataframe)
+                    cp "./$benchmark/tiny_dataset.csv" "./$name/"
+                    log "tiny_dataset.csv copied to $name"
+                    ;;
+                moose)
+                    cp "./$benchmark/sbscl.json" "./$name/"
+                    log "sbscl.json copied to $name"
+                    ;;
+            esac
+
+            install_pretenured_methods "$image_path" "$benchmark" "$strategy"
+        done
+    done
+}
+
 main() {
     setup_base_image
     install_baseline_images
+    install_strategy_images
     log "Successfully finished!"
 }
 

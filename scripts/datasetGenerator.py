@@ -27,9 +27,9 @@ def run_dataset_generation(n_rows, n_columns, file_name):
 
 # run_dataset_generation(200000, 5, 'tiny_ten_times_larger_dataset.csv')
 
-# run_dataset_generation(1000000, 5, 'tiny_fifty_times_larger_dataset.csv')
+run_dataset_generation(1000000, 5, 'tiny_fifty_times_larger_dataset.csv')
 
-run_dataset_generation(2000000, 5, 'tiny_one_hundred_times_larger_dataset.csv')
+# run_dataset_generation(2000000, 5, 'tiny_one_hundred_times_larger_dataset.csv')
 
 # run_dataset_generation(10000000, 5, 'tiny_five_hundred_times_larger_dataset.csv')
 
