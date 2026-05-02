@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="baseimage"
 BASE_IMAGE_FILE="$BASE_DIR/Pharo.image"
 PHARO_CMD="$BASE_DIR/pharo"
@@ -52,7 +53,14 @@ install_path_sensitive_pretenuring() {
     log "Installed Path Sensitive Pretenuring for $image_path"
 }
 
-move_dataset() {
+copy_dataset() {
+    local target_dir="$1"
+    local file_name="$2"
+    cp "$SCRIPT_DIR/$file_name" "./$target_dir/"
+    log "$file_name copied to $target_dir"
+}
+
+move_dataset_from_veritas_repo() {
     local target_dir="$1"
     local file_name="$2"
     mv "./$target_dir/pharo-local/iceberg/jordanmontt/PharoVeritasBenchSuite/files/$file_name" "./$target_dir/"
@@ -80,10 +88,10 @@ install_baseline_images() {
 
         case "$benchmark" in
             dataframe)
-                move_dataset "$benchmark" "tiny_fifty_times_larger_dataset.csv"
+                copy_dataset "$benchmark" "tiny_fifty_times_larger_dataset.csv"
                 ;;
             moose)
-                move_dataset "$benchmark" "sbscl.json"
+                move_dataset_from_veritas_repo "$benchmark" "sbscl.json"
                 ;;
         esac
     done
