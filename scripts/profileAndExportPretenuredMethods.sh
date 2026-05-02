@@ -60,11 +60,14 @@ copy_dataset() {
     log "$file_name copied to $target_dir"
 }
 
-move_dataset_from_veritas_repo() {
-    local target_dir="$1"
-    local file_name="$2"
-    mv "./$target_dir/pharo-local/iceberg/jordanmontt/PharoVeritasBenchSuite/files/$file_name" "./$target_dir/"
-    log "$file_name moved to $target_dir"
+get_strategy_object() {
+    local strategy="$1"
+    local veritas_bench="$2"
+    case "$strategy" in
+        applicationMethod) echo "ApplicationMethodStrategy setUpForApplicationPackages: $veritas_bench applicationPackages" ;;
+        callerOfNew)       echo "CallerOfNewStrategy new" ;;
+        locationOfNew)     echo "TextualLocationOfNewStrategy new" ;;
+    esac
 }
 
 profile_and_export_pretenured_methods() {
@@ -73,8 +76,17 @@ profile_and_export_pretenured_methods() {
     local strategy="$3"
     local veritas_bench="$4"
     local json_file="$benchmark-$strategy.json"
-    "$PHARO_CMD" --headless "$image_path" eval --save "| fileName writeStream | fileName := '$json_file'. writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream. PSPRunner new benchmarkClass: $veritas_bench; pretenurePaths; exportPretenuredMethods: writeStream"
+    local strategy_object
+    strategy_object="$(get_strategy_object "$strategy" "$veritas_bench")"
+    "$PHARO_CMD" --headless "$image_path" eval --save "| fileName writeStream | fileName := '$json_file'. writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream. PSPRunner new strategy: ($strategy_object); benchmarkClass: $veritas_bench; pretenurePaths; exportPretenuredMethods: writeStream"
     log "Exported pretenured methods ($json_file) for $image_path"
+}
+
+move_dataset_from_veritas_repo() {
+    local target_dir="$1"
+    local file_name="$2"
+    mv "./$target_dir/pharo-local/iceberg/jordanmontt/PharoVeritasBenchSuite/files/$file_name" "./$target_dir/"
+    log "$file_name moved to $target_dir"
 }
 
 install_baseline_images() {
