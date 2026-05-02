@@ -27,17 +27,15 @@ setup_base_image() {
 create_image() {
     local source_image="$1"
     local image_name="$2"
-    local dir_name="${3:-$image_name}"
 
     local source_dir="$(dirname "$source_image")"
     local source_basename="$(basename "$source_image" .image)"
 
-    cp -r "$source_dir" "./$dir_name"
+    cp -r "$source_dir" "./$image_name"
+    mv "./$image_name/$source_basename.image"   "./$image_name/$image_name.image"
+    mv "./$image_name/$source_basename.changes" "./$image_name/$image_name.changes"
 
-    mv "./$dir_name/$source_basename.image"   "./$dir_name/$image_name.image"
-    mv "./$dir_name/$source_basename.changes" "./$dir_name/$image_name.changes"
-
-    log "Created image: $dir_name/$image_name (from $source_image)"
+    log "Created image: $image_name (from $source_image)"
 }
 
 install_veritas() {
@@ -50,9 +48,7 @@ install_veritas() {
 
 install_path_sensitive_pretenuring() {
     local image_path="$1"
-    "$PHARO_CMD" --headless "$image_path" metacello install \
-        "github://jordanmontt/path-sensitive-pretenuring:main" \
-        "BaselineOfPathSensitivePretenuring"
+    "$PHARO_CMD" --headless "$image_path" metacello install "github://jordanmontt/path-sensitive-pretenuring:main" "BaselineOfPathSensitivePretenuring"
     log "Installed Path Sensitive Pretenuring for $image_path"
 }
 
@@ -68,9 +64,8 @@ profile_and_export_pretenured_methods() {
     local benchmark="$2"
     local strategy="$3"
     local veritas_bench="$4"
-
     local json_file="$benchmark-$strategy.json"
-    "$PHARO_CMD" --headless "$image_path" eval --save "| fileName writeStream |fileName := '$json_file'.writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.PSPRunner new	benchmarkClass: $veritas_bench;	pretenurePaths;	exportPretenuredMethods: writeStream"
+    "$PHARO_CMD" --headless "$image_path" eval --save "| fileName writeStream | fileName := '$json_file'. writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream. PSPRunner new benchmarkClass: $veritas_bench; pretenurePaths; exportPretenuredMethods: writeStream"
     log "Exported pretenured methods ($json_file) for $image_path"
 }
 
@@ -85,7 +80,7 @@ install_baseline_images() {
 
         case "$benchmark" in
             dataframe)
-                move_dataset "$benchmark" "tiny_dataset.csv"
+                move_dataset "$benchmark" "tiny_fifty_times_larger_dataset.csv"
                 ;;
             moose)
                 move_dataset "$benchmark" "sbscl.json"
@@ -96,25 +91,13 @@ install_baseline_images() {
 
 install_strategy_images() {
     for benchmark in "${!BENCHMARK_CLASSES[@]}"; do
-        local baseline_image="./$benchmark/$benchmark.image"
         local veritas_bench="${BENCHMARK_CLASSES[$benchmark]}"
+        local baseline_image="./$benchmark/$benchmark.image"
 
         for strategy in "${STRATEGIES[@]}"; do
             local name="$benchmark-$strategy"
             local image_path="./$name/$name.image"
             create_image "$baseline_image" "$name"
-
-            case "$benchmark" in
-                dataframe)
-                    cp "./$benchmark/tiny_dataset.csv" "./$name/"
-                    log "tiny_dataset.csv copied to $name"
-                    ;;
-                moose)
-                    cp "./$benchmark/sbscl.json" "./$name/"
-                    log "sbscl.json copied to $name"
-                    ;;
-            esac
-
             profile_and_export_pretenured_methods "$image_path" "$benchmark" "$strategy" "$veritas_bench"
         done
     done
