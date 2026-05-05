@@ -6,10 +6,11 @@ Class {
 		'benchmarkClass',
 		'methodsJitCompiled',
 		'blocksJitCompiled',
-		'jitCompilationTime',
 		'jitBlockCompilationTime',
 		'experiment',
-		'protocol'
+		'protocol',
+		'jitMethodsCompilationTime',
+		'gcTime'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -60,16 +61,6 @@ PSPRunner >> installPretenuredMethods [
     experiment installPretenuredMethods
 ]
 
-{ #category : 'writing' }
-PSPRunner >> jitMetricsAsDictionary [
-
-	^ Dictionary newFrom: {
-			  (#methodsJitCompiled -> methodsJitCompiled).
-			  (#jitCompilationTime -> jitCompilationTime).
-			  (#blocksJitCompiled -> blocksJitCompiled).
-			  (#jitBlockCompilationTime -> jitBlockCompilationTime) }
-]
-
 { #category : 'api' }
 PSPRunner >> methodProtocol: aString [
 
@@ -94,33 +85,35 @@ PSPRunner >> pretenurePaths [
 ]
 
 { #category : 'jit measurements' }
-PSPRunner >> recordBaselineJitMetrics [
+PSPRunner >> recordBaselineVmMetrics [
 
     methodsJitCompiled := self currentMethodsJitCompiled.
     blocksJitCompiled := self currentBlocksJitCompiled.
-    jitCompilationTime := self currentJitCompilationTime.
-    jitBlockCompilationTime := self currentJitBlockCompilationTime
+    jitMethodsCompilationTime := self currentJitCompilationTime.
+    jitBlockCompilationTime := self currentJitBlockCompilationTime.
+    gcTime := Smalltalk vm totalGCTime.
 ]
 
 { #category : 'jit measurements' }
-PSPRunner >> recordDeltasJitMetrics [
+PSPRunner >> recordDeltasVmMetrics [
 
     methodsJitCompiled := self currentMethodsJitCompiled - methodsJitCompiled.
     blocksJitCompiled := self currentBlocksJitCompiled - blocksJitCompiled.
-    jitCompilationTime := self currentJitCompilationTime - jitCompilationTime.
-    jitBlockCompilationTime := self currentJitBlockCompilationTime - jitBlockCompilationTime
+    jitMethodsCompilationTime := self currentJitCompilationTime - jitMethodsCompilationTime.
+    jitBlockCompilationTime := self currentJitBlockCompilationTime - jitBlockCompilationTime.
+    gcTime := Smalltalk vm totalGCTime - gcTime 
 ]
 
 { #category : 'api' }
 PSPRunner >> run [
     | initialTime finalTime |
-    self recordBaselineJitMetrics.
+    self recordBaselineVmMetrics.
 
     initialTime := Time millisecondClockValue.
     benchmarkClass new run.
     finalTime := Time millisecondClockValue.
 
-    self recordDeltasJitMetrics.
+    self recordDeltasVmMetrics.
     self writeJitMeasurements.
 
 	"Rebench expects seconds"
@@ -133,10 +126,21 @@ PSPRunner >> strategy: aStrategy [
 ]
 
 { #category : 'writing' }
+PSPRunner >> vmMetricsAsDictionary [
+
+	^ Dictionary newFrom: {
+			  (#methodsJitCompiled -> methodsJitCompiled).
+			  (#jitMethodsCompilationTime -> jitMethodsCompilationTime).
+			  (#blocksJitCompiled -> blocksJitCompiled).
+			  (#jitBlockCompilationTime -> jitBlockCompilationTime).
+			  (#gcTime -> gcTime) }
+]
+
+{ #category : 'writing' }
 PSPRunner >> writeJitMeasurements [
 	| metricsDict fileName fileReference measurements |
 
-	metricsDict := self jitMetricsAsDictionary.
+	metricsDict := self vmMetricsAsDictionary.
 	fileName := 'jit-measurements.json'.
 	fileReference := (FileLocator imageDirectory / fileName) asFileReference.
 
