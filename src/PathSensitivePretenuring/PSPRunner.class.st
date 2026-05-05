@@ -8,10 +8,6 @@ Class {
 		'blocksJitCompiled',
 		'jitCompilationTime',
 		'jitBlockCompilationTime',
-		'totalMethodsJitCompiled',
-		'totalBlocksJitCompiled',
-		'totalJitCompilationTime',
-		'totalJitBlockCompilationTime',
 		'experiment',
 		'protocol'
 	],
@@ -66,16 +62,12 @@ PSPRunner >> installPretenuredMethods [
 
 { #category : 'writing' }
 PSPRunner >> jitMetricsAsDictionary [
-    ^ Dictionary newFrom: {
-            #methodsJitCompiled -> methodsJitCompiled.
-            #jitCompilationTime -> jitCompilationTime.
-            #blocksJitCompiled -> blocksJitCompiled.
-            #jitBlockCompilationTime -> jitBlockCompilationTime.
 
-            #totalMethodsJitCompiled -> totalMethodsJitCompiled.
-            #totalJitCompilationTime -> totalJitCompilationTime.
-            #totalBlocksJitCompiled -> totalBlocksJitCompiled.
-            #totalJitBlockCompilationTime -> totalJitBlockCompilationTime }
+	^ Dictionary newFrom: {
+			  (#methodsJitCompiled -> methodsJitCompiled).
+			  (#jitCompilationTime -> jitCompilationTime).
+			  (#blocksJitCompiled -> blocksJitCompiled).
+			  (#jitBlockCompilationTime -> jitBlockCompilationTime) }
 ]
 
 { #category : 'api' }
@@ -119,15 +111,6 @@ PSPRunner >> recordDeltasJitMetrics [
     jitBlockCompilationTime := self currentJitBlockCompilationTime - jitBlockCompilationTime
 ]
 
-{ #category : 'jit measurements' }
-PSPRunner >> recordTotalJitMetrics [
-
-    totalMethodsJitCompiled := self currentMethodsJitCompiled.
-    totalBlocksJitCompiled := self currentBlocksJitCompiled.
-    totalJitCompilationTime := self currentJitCompilationTime.
-    totalJitBlockCompilationTime := self currentJitBlockCompilationTime
-]
-
 { #category : 'api' }
 PSPRunner >> run [
     | initialTime finalTime |
@@ -138,8 +121,6 @@ PSPRunner >> run [
     finalTime := Time millisecondClockValue.
 
     self recordDeltasJitMetrics.
-    self recordTotalJitMetrics.
-    
     self writeJitMeasurements.
 
 	"Rebench expects seconds"
