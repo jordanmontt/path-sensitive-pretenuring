@@ -17,7 +17,8 @@ Class {
 		'allocationSiteClassificator',
 		'rawAllocationsSamples',
 		'allocationGraph',
-		'sendersToPretenure'
+		'sendersToPretenure',
+		'ambiguityThreshold'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -39,6 +40,12 @@ PathSensitvePretenuringExperiment >> allocationSiteStrategy: aStrategy [
 	allocationSiteStrategy := aStrategy
 ]
 
+{ #category : 'initialization' }
+PathSensitvePretenuringExperiment >> ambiguityThreshold: aNumber [
+
+	allocationSiteClassificator ambiguityThreshold: aNumber
+]
+
 { #category : 'api' }
 PathSensitvePretenuringExperiment >> analyzeAllocations [
 
@@ -48,7 +55,8 @@ PathSensitvePretenuringExperiment >> analyzeAllocations [
 
 	allocationSiteStrategy setUpForGraph: allocationGraph.
 	allocationGraph traverseLongLivedSenderChainsUsing: allocationSiteStrategy.
-   sendersToPretenure := self extractLongLivedSendersChains
+   sendersToPretenure := self extractLongLivedSendersChains.
+1halt.
 ]
 
 { #category : 'calculating' }
@@ -107,7 +115,7 @@ PathSensitvePretenuringExperiment >> initialize [
 
     super initialize.
 
-    allocationSiteClassificator := PretenuringAdviceAlgorithm new.
+    allocationSiteClassificator := PathSensitivePretenuringAdviceAlgorithm new.
     pretenurator := AllocationSitesPretenurer new.
     sendersToPretenure := OrderedCollection new
 ]

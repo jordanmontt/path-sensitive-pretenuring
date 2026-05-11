@@ -11,12 +11,19 @@ Class {
 		'incrementalGCTime',
 		'jitCompiledMethods',
 		'jitCompiledBlocks',
-		'jitBlocksCompilationTime'
+		'jitBlocksCompilationTime',
+		'ambiguityThreshold'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
 	#tag : 'Experiment'
 }
+
+{ #category : 'initialization' }
+PSPRunner >> ambiguityThreshold: aNumber [
+
+	ambiguityThreshold := aNumber
+]
 
 { #category : 'api' }
 PSPRunner >> benchmarkClass: aClass [
@@ -53,7 +60,8 @@ PSPRunner >> exportPretenuredMethods: aWriteStream [
 PSPRunner >> initialize [
 
 	super initialize.
-	protocol := 'automatically-generated'
+	protocol := 'automatically-generated'.
+	ambiguityThreshold := 0.9
 ]
 
 { #category : 'api' }
@@ -76,9 +84,11 @@ PSPRunner >> pretenurePaths [
 		            profileOn: [ benchmarkClass new run ];
 		            yourself.
 
-	experiment := PathSensitvePretenuringExperiment
-		              onProfiler: profiler
-		              traversalStrategy: strategy.
+	experiment := PathSensitvePretenuringExperiment new
+							setUpForProfiler: profiler;
+							allocationSiteStrategy: strategy;
+							ambiguityThreshold: ambiguityThreshold;
+							yourself.
 	experiment methodProtocol: protocol.
 	experiment analyzeAllocations.
 
