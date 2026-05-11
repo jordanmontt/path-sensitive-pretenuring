@@ -64,10 +64,10 @@ get_strategy_object() {
     local strategy="$1"
     local veritas_bench="$2"
     case "$strategy" in
-        applicationMethod) echo "ApplicationMethodStrategy setUpForApplicationPackages: $veritas_bench applicationPackages" ;;
+        applicationMethod) echo "ApplicationMethodPretenuringStrategy setUpForApplicationPackages: $veritas_bench applicationPackages" ;;
         psp)       echo "PSPPretenuringStrategy new" ;;
         psp70)       echo "PSPPretenuringStrategy70 new" ;;
-        locationOfNew)     echo "TextualLocationOfNewStrategy new" ;;
+        locationOfNew)     echo "TextualLocationOfNewPretenuringStrategy new" ;;
     esac
 }
 
