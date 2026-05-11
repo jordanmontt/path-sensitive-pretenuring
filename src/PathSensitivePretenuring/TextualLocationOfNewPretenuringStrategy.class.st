@@ -1,5 +1,5 @@
 Class {
-	#name : 'TextualLocationOfNewStrategy',
+	#name : 'TextualLocationOfNewPretenuringStrategy',
 	#superclass : 'AbstractPretenuringStrategy',
 	#category : 'PathSensitivePretenuring-Pretenuring-Graph-Traversal',
 	#package : 'PathSensitivePretenuring',
@@ -7,7 +7,7 @@ Class {
 }
 
 { #category : 'initialization' }
-TextualLocationOfNewStrategy class >> setUpForGraph: allocationGarph [
+TextualLocationOfNewPretenuringStrategy class >> setUpForGraph: allocationGarph [
 
     ^ self new
           setUpForGraph: allocationGarph;
@@ -15,13 +15,13 @@ TextualLocationOfNewStrategy class >> setUpForGraph: allocationGarph [
 ]
 
 { #category : 'api' }
-TextualLocationOfNewStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
+TextualLocationOfNewPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
 
     ^ anAllocationGraphNode isTextualAllocationSite
 ]
 
 { #category : 'api' }
-TextualLocationOfNewStrategy >> setUpForGraph: allocationGraph [
+TextualLocationOfNewPretenuringStrategy >> setUpForGraph: allocationGraph [
 
     | textualAllocationMethods samples |
     samples := allocationGraph samples.
