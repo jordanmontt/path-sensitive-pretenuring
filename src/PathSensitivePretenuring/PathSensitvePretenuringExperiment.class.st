@@ -13,12 +13,11 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'pretenurator',
-		'allocationSiteStrategy',
 		'allocationSiteClassificator',
 		'rawAllocationsSamples',
 		'allocationGraph',
 		'sendersToPretenure',
-		'ambiguityThreshold'
+		'pretenuringStrategy'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -30,14 +29,8 @@ PathSensitvePretenuringExperiment class >> onProfiler: aProfiler traversalStrate
 
     ^ self new
           setUpForProfiler: aProfiler;
-          allocationSiteStrategy: aStrategy;
+          pretenuringStrategy: aStrategy;
           yourself
-]
-
-{ #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> allocationSiteStrategy: aStrategy [
-
-	allocationSiteStrategy := aStrategy
 ]
 
 { #category : 'initialization' }
@@ -53,10 +46,9 @@ PathSensitvePretenuringExperiment >> analyzeAllocations [
 
    	self classifyEdgesByLifetime.
 
-	allocationSiteStrategy setUpForGraph: allocationGraph.
-	allocationGraph traverseLongLivedSenderChainsUsing: allocationSiteStrategy.
-   sendersToPretenure := self extractLongLivedSendersChains.
-1halt.
+	pretenuringStrategy setUpForGraph: allocationGraph.
+	allocationGraph traverseLongLivedSenderChainsUsing: pretenuringStrategy.
+   sendersToPretenure := self extractLongLivedSendersChains
 ]
 
 { #category : 'calculating' }
@@ -106,7 +98,7 @@ PathSensitvePretenuringExperiment >> exportPretenuredMethods: aWriteStream [
 { #category : 'calculating' }
 PathSensitvePretenuringExperiment >> extractLongLivedSendersChains [
 
-    sendersToPretenure := allocationSiteStrategy extractLongLivedSendersChains: allocationGraph.
+    sendersToPretenure := pretenuringStrategy extractLongLivedSendersChains: allocationGraph.
     ^ sendersToPretenure
 ]
 
@@ -115,7 +107,6 @@ PathSensitvePretenuringExperiment >> initialize [
 
     super initialize.
 
-    allocationSiteClassificator := PathSensitivePretenuringAdviceAlgorithm new.
     pretenurator := AllocationSitesPretenurer new.
     sendersToPretenure := OrderedCollection new
 ]
@@ -139,6 +130,13 @@ PathSensitvePretenuringExperiment >> methodProtocol: aProtocol [
 	pretenurator methodProtocol: aProtocol
 ]
 
+{ #category : 'api - accessing' }
+PathSensitvePretenuringExperiment >> pretenuringStrategy: aStrategy [
+
+	pretenuringStrategy := aStrategy.
+	allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm
+]
+
 { #category : 'calculating' }
 PathSensitvePretenuringExperiment >> removeKernelAllocations [
 
@@ -152,6 +150,7 @@ PathSensitvePretenuringExperiment >> setUpForProfiler: aProfiler [
 
 	rawAllocationsSamples := aProfiler objectAllocations copy.
 	"The ephemerons of the profiler, the allocation samples, are always ordered by time."
+
 	allocationSiteClassificator
 		startTime: aProfiler objectAllocations first initializationTime;
 		endTime: aProfiler endTime

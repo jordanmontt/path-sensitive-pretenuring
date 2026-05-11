@@ -85,8 +85,8 @@ PSPRunner >> pretenurePaths [
 		            yourself.
 
 	experiment := PathSensitvePretenuringExperiment new
+							pretenuringStrategy: strategy;
 							setUpForProfiler: profiler;
-							allocationSiteStrategy: strategy;
 							ambiguityThreshold: ambiguityThreshold;
 							yourself.
 	experiment methodProtocol: protocol.
