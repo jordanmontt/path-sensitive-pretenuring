@@ -84,17 +84,19 @@ MerlinPretenuringAdviceAlgorithm >> calculateMaxLiveSize [
 MerlinPretenuringAdviceAlgorithm >> classifyAllocationSites [
 
 	groupedAllocationSites keysAndValuesDo: [ :allocationGraphComponent :allocationSiteBin |
-		| is ss ls wasClassified |
+		| is ss ls wasClassified relativeHlf relativeHif |
 		wasClassified := false.
 		is := allocationSiteBin immortalObjects sum: #sizeInBytes.
 		ss := allocationSiteBin shortLivedObjects sum: #sizeInBytes.
 		ls := allocationSiteBin longLivedObjects sum: #sizeInBytes.
+		relativeHif := (is + ss + ls) * hif.
+		relativeHlf := (is + ss + ls) * hlf.
 
-		is > (ss + ls + hif) ifTrue: [
+		is > (ss + ls + relativeHif) ifTrue: [
 			allocationSiteBin classification: #immortal.
 			allocationGraphComponent beImmortal.
 			wasClassified := true ].
-		(wasClassified not and: [ is + ls > (ss + hlf) ]) ifTrue: [
+		(wasClassified not and: [ is + ls > (ss + relativeHlf) ]) ifTrue: [
 			allocationSiteBin classification: #long.
 			allocationGraphComponent beLongLived.
 			wasClassified := true ].
