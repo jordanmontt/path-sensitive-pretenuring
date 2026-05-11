@@ -9,7 +9,7 @@ The algorithm works as follow:
  
 "
 Class {
-	#name : 'PathSensitvePretenuringExperiment',
+	#name : 'PathSensitvePretenuring',
 	#superclass : 'Object',
 	#instVars : [
 		'pretenurator',
@@ -24,23 +24,14 @@ Class {
 	#tag : 'Experiment'
 }
 
-{ #category : 'instance creation' }
-PathSensitvePretenuringExperiment class >> onProfiler: aProfiler traversalStrategy: aStrategy [
-
-    ^ self new
-          setUpForProfiler: aProfiler;
-          pretenuringStrategy: aStrategy;
-          yourself
-]
-
 { #category : 'initialization' }
-PathSensitvePretenuringExperiment >> ambiguityThreshold: aNumber [
+PathSensitvePretenuring >> ambiguityThreshold: aNumber [
 
 	allocationSiteClassificator ambiguityThreshold: aNumber
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> analyzeAllocations [
+PathSensitvePretenuring >> analyzeAllocations [
 
    self constructAllocationGraph.
 
@@ -52,7 +43,7 @@ PathSensitvePretenuringExperiment >> analyzeAllocations [
 ]
 
 { #category : 'calculating' }
-PathSensitvePretenuringExperiment >> classifyEdgesByLifetime [
+PathSensitvePretenuring >> classifyEdgesByLifetime [
 
     allocationSiteClassificator
         setUpForAllocationGraph: allocationGraph;
@@ -60,21 +51,21 @@ PathSensitvePretenuringExperiment >> classifyEdgesByLifetime [
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> compilePretenuredMethods [
+PathSensitvePretenuring >> compilePretenuredMethods [
 
     pretenurator compilePretenuredPathsFrom: sendersToPretenure.
     ^ pretenurator
 ]
 
 { #category : 'calculating' }
-PathSensitvePretenuringExperiment >> constructAllocationGraph [
+PathSensitvePretenuring >> constructAllocationGraph [
 
     self removeKernelAllocations.
     allocationGraph := AllocationGraph onSamples: rawAllocationsSamples
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> deserializeAndInstallCompiledMethodsIn: aFileReference [
+PathSensitvePretenuring >> deserializeAndInstallCompiledMethodsFrom: aFileReference [
 
 	| compiledMethods uniqueMethods potentiallyAlreadyInstalledMethods |
 	compiledMethods := CompiledMethodToSourceCodeSerializer new deserialize: aFileReference contents.
@@ -90,20 +81,20 @@ PathSensitvePretenuringExperiment >> deserializeAndInstallCompiledMethodsIn: aFi
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> exportPretenuredMethods: aWriteStream [
+PathSensitvePretenuring >> exportPretenuredMethods: aWriteStream [
 
     pretenurator exportPretenuredMethods: aWriteStream
 ]
 
 { #category : 'calculating' }
-PathSensitvePretenuringExperiment >> extractLongLivedSendersChains [
+PathSensitvePretenuring >> extractLongLivedSendersChains [
 
     sendersToPretenure := pretenuringStrategy extractLongLivedSendersChains: allocationGraph.
     ^ sendersToPretenure
 ]
 
 { #category : 'initialization' }
-PathSensitvePretenuringExperiment >> initialize [
+PathSensitvePretenuring >> initialize [
 
     super initialize.
 
@@ -112,33 +103,33 @@ PathSensitvePretenuringExperiment >> initialize [
 ]
 
 { #category : 'inspector' }
-PathSensitvePretenuringExperiment >> inspector: aBuilder [
+PathSensitvePretenuring >> inspector: aBuilder [
 
     <inspectorPresentationOrder: 1 title: 'To Pretenure Sites'>
     ^ sendersToPretenure inspectionItems: aBuilder
 ]
 
 { #category : 'api' }
-PathSensitvePretenuringExperiment >> installPretenuredMethods [
+PathSensitvePretenuring >> installPretenuredMethods [
 
     pretenurator installPretenuredMethods
 ]
 
 { #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> methodProtocol: aProtocol [
+PathSensitvePretenuring >> methodProtocol: aProtocol [
 
 	pretenurator methodProtocol: aProtocol
 ]
 
 { #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> pretenuringStrategy: aStrategy [
+PathSensitvePretenuring >> pretenuringStrategy: aStrategy [
 
 	pretenuringStrategy := aStrategy.
 	allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm
 ]
 
 { #category : 'calculating' }
-PathSensitvePretenuringExperiment >> removeKernelAllocations [
+PathSensitvePretenuring >> removeKernelAllocations [
 
 	rawAllocationsSamples removeAllSuchThat: [ :illEphemeron |
 		{ Context. Deprecation. Process. WeakArray. MouseMoveEvent }
@@ -146,7 +137,7 @@ PathSensitvePretenuringExperiment >> removeKernelAllocations [
 ]
 
 { #category : 'api - accessing' }
-PathSensitvePretenuringExperiment >> setUpForProfiler: aProfiler [
+PathSensitvePretenuring >> setUpForProfiler: aProfiler [
 
 	rawAllocationsSamples := aProfiler objectAllocations copy.
 	"The ephemerons of the profiler, the allocation samples, are always ordered by time."

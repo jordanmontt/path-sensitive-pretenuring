@@ -1,6 +1,7 @@
 Class {
 	#name : 'PSPClassInstaller',
 	#superclass : 'Object',
-	#category : 'PathSensitivePretenuring',
-	#package : 'PathSensitivePretenuring'
+	#category : 'PathSensitivePretenuring-Utilities',
+	#package : 'PathSensitivePretenuring',
+	#tag : 'Utilities'
 }

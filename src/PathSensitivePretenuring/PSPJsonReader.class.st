@@ -4,8 +4,9 @@ Class {
 	#instVars : [
 		'jsonFileName'
 	],
-	#category : 'PathSensitivePretenuring',
-	#package : 'PathSensitivePretenuring'
+	#category : 'PathSensitivePretenuring-Utilities',
+	#package : 'PathSensitivePretenuring',
+	#tag : 'Utilities'
 }
 
 { #category : 'as yet unclassified' }

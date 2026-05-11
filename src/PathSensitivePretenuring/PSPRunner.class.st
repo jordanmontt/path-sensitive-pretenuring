@@ -19,7 +19,7 @@ Class {
 	#tag : 'Experiment'
 }
 
-{ #category : 'initialization' }
+{ #category : 'api' }
 PSPRunner >> ambiguityThreshold: aNumber [
 
 	ambiguityThreshold := aNumber
@@ -84,15 +84,16 @@ PSPRunner >> pretenurePaths [
 		            profileOn: [ benchmarkClass new run ];
 		            yourself.
 
-	experiment := PathSensitvePretenuringExperiment new
+	experiment := PathSensitvePretenuring new
 							pretenuringStrategy: strategy;
 							setUpForProfiler: profiler;
 							ambiguityThreshold: ambiguityThreshold;
+							methodProtocol: protocol;
 							yourself.
-	experiment methodProtocol: protocol.
-	experiment analyzeAllocations.
 
-	experiment compilePretenuredMethods
+	experiment
+		analyzeAllocations;
+		compilePretenuredMethods
 ]
 
 { #category : 'vm measurements' }
