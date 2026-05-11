@@ -74,7 +74,7 @@ install_pretenured_methods() {
     local benchmark="$2"
     local strategy="$3"
     local json_file="$benchmark-$strategy.json"
-    "$PHARO_CMD" --headless "$image_path" eval --save "| file | file := (FileLocator localDirectory / 'iceberg' / 'jordanmontt' / 'path-sensitive-pretenuring' / 'pretenuredMethods' / '$json_file') asFileReference. PathSensitvePretenuringExperiment new deserializeAndInstallCompiledMethodsIn: file"
+    "$PHARO_CMD" --headless "$image_path" eval --save "| file | file := (FileLocator localDirectory / 'iceberg' / 'jordanmontt' / 'path-sensitive-pretenuring' / 'pretenuredMethods' / '$json_file') asFileReference. PathSensitvePretenuring new deserializeAndInstallCompiledMethodsFrom: file"
     log "Installed pretenured methods ($json_file) for $image_path"
 }
 

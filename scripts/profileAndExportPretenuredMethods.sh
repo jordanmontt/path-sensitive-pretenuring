@@ -13,7 +13,7 @@ declare -A BENCHMARK_CLASSES=(
     ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("applicationMethod" "callerOfNew" "locationOfNew")
+STRATEGIES=("applicationMethod" "psp" "psp70" "locationOfNew")
 
 log() { echo; echo "▸ $*"; echo; }
 
@@ -65,7 +65,8 @@ get_strategy_object() {
     local veritas_bench="$2"
     case "$strategy" in
         applicationMethod) echo "ApplicationMethodStrategy setUpForApplicationPackages: $veritas_bench applicationPackages" ;;
-        callerOfNew)       echo "CallerOfNewStrategy new" ;;
+        psp)       echo "PSPPretenuringStrategy new" ;;
+        psp70)       echo "PSPPretenuringStrategy70 new" ;;
         locationOfNew)     echo "TextualLocationOfNewStrategy new" ;;
     esac
 }
