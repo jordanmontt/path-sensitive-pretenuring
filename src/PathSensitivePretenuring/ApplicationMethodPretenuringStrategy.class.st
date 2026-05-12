@@ -21,7 +21,7 @@ ApplicationMethodPretenuringStrategy class >> setUpForApplicationPackages: aList
 ApplicationMethodPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
 
     ^ (self isApplicationMethod: anAllocationGraphNode)
-      and: [ (self hasNotAnyIncomingShortLivedEdges: anAllocationGraphNode)
+      and: [ (self hasOnlyLongLivedEdges: anAllocationGraphNode)
       and: [ self edgesHaveSameAllocatedObjectTypes: aListOfEdges ] ]
 ]
 

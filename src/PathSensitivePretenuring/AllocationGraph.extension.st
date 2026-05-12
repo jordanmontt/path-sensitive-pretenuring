@@ -4,8 +4,11 @@ Extension { #name : 'AllocationGraph' }
 AllocationGraph >> traverseLongLivedSenderChainsUsing: aStrategy [
 
 	self leaves do: [ :leaf | 
-		"leaf allocatedObjectTypes do: [ :type |"
-			self traverseLongLivedSenderChainsUsingDFS: aStrategy node: leaf pathUntilNow: {  } "type: type ]" ]
+			self traverseLongLivedSenderChainsUsingDFS: aStrategy node: leaf pathUntilNow: ({}) ].
+	
+	"self leaves do: [ :leaf | 
+		leaf allocatedObjectTypes do: [ :type |
+			self traverseLongLivedSenderChainsUsingDFS: aStrategy node: leaf pathUntilNow: {  } type: type ] ]"
 ]
 
 { #category : '*PathSensitivePretenuring' }

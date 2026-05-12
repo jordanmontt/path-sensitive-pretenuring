@@ -49,9 +49,9 @@ AbstractPretenuringStrategy >> extractLongLivedSendersChains: allocationGraph [
 ]
 
 { #category : 'private' }
-AbstractPretenuringStrategy >> hasNotAnyIncomingShortLivedEdges: anAllocationGraphNode [
+AbstractPretenuringStrategy >> hasOnlyLongLivedEdges: anAllocationGraphNode [
 
-    ^ anAllocationGraphNode incomingEdges noneSatisfy: #isShortLived
+    ^ anAllocationGraphNode incomingEdges allSatisfy: #isLongLived
 ]
 
 { #category : 'api' }
