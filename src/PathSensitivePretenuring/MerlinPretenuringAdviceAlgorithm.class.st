@@ -147,9 +147,10 @@ MerlinPretenuringAdviceAlgorithm >> isObjectImmortal: illEphe [
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> isObjectShortLived: illEphe [
 
-	| age |
-	age := illEphe lifetime / self maxLiveSize.
-	^ age < (taThreshold * self maxLiveSize)
+	| age maxSize |
+	maxSize := self maxLiveSize.
+	age := (illEphe lifetime / maxSize) asFloat.
+	^ age < (taThreshold * maxSize)
 ]
 
 { #category : 'api' }
