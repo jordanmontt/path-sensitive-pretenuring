@@ -135,3 +135,21 @@ GraphTraversalTest >> testTraverseLongLivedSenderChainsSimpleStrategy [
 	self assert: expectedSendersChains size equals: sendersChains size.
 	self assertCollection: expectedSendersChains hasSameElements: sendersChains
 ]
+
+{ #category : 'tests' }
+GraphTraversalTest >> testTraverseTextualStrategyOnlyGetsLongLivedEdges [
+
+	| sendersChains expectedSendersChains |
+	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (AllocationGraphFixture class >> #entryPoint)).
+
+	expectedSendersChains := {
+		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew) } }.
+	
+	expectedSendersChains do: [ :array | array do: #beLongLived].
+
+	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy setUpForGraph: allocationGraph).
+	sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
+
+	self assert: expectedSendersChains size equals: sendersChains size.
+	self assertCollection: expectedSendersChains hasSameElements: sendersChains
+]
