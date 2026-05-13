@@ -1,0 +1,9 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'PathSensitivePretenuring',
+      #directory : 'src',
+      #platforms : [ #pharo ]
+    }
+  ]
+}
