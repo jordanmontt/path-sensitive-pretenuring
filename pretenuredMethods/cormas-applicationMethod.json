@@ -20,15 +20,15 @@
 		"sourceCode" : "_pretenured_key: newKey value: newValue\r\t\"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r\t^ self basicNewTenured key: newKey value: newValue"
 	},
 	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "recordData\r\r\tdata add: (self activeProbes collect: [ :probe |\r\t\t\t probe name _pretenured_zyIsf: probe value ]) asDictionary"
+	},
+	{
 		"methodClass" : "CMSpace4Neighbourhood",
 		"sourceCode" : "initializeOrderedNeighbourhood: k\r\t\"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r\t| v i |\r\tv := Array newTenured: 4.\r\t(i := self northCell: k) > 0 ifTrue: [\r\t\tv at: 1 put: (self elementaryEntitiesAt: i) ].\r\t(i := self westCell: k) > 0 ifTrue: [\r\t\tv at: 2 put: (self elementaryEntitiesAt: i) ].\r\t(i := self southCell: k) > 0 ifTrue: [\r\t\tv at: 3 put: (self elementaryEntitiesAt: i) ].\r\t(i := self eastCell: k) > 0 ifTrue: [\r\t\tv at: 4 put: (self elementaryEntitiesAt: i) ].\r\t^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
 	},
 	{
 		"methodClass" : "CMSpatialEntity",
 		"sourceCode" : "addOccupant: anObject\r\r\t(self theOccupants\r\t\t _pretenured_at: anObject class name\r\t\t ifAbsentPut: [ OrderedCollection new ]) add: anObject"
-	},
-	{
-		"methodClass" : "CMSimulation",
-		"sourceCode" : "recordData\r\r\tdata add: (self activeProbes collect: [ :probe |\r\t\t\t probe name _pretenured_zyIsf: probe value ]) asDictionary"
 	}
 ]
