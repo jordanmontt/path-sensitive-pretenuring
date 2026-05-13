@@ -3,8 +3,10 @@ SmalltalkCISpec {
     SCIMetacelloLoadSpec {
       #baseline : 'PathSensitivePretenuring',
       #directory : 'src',
-      #platforms : [ #pharo ],
-      #failOnZeroTests : false
+      #platforms : [ #pharo ]
     }
-  ]
+  ],
+  #testing : {
+    #failOnZeroTests : false
+  }
 }
