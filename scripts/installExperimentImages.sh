@@ -8,12 +8,10 @@ PHARO_CMD="$BASE_DIR/pharo"
 
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
-    ["honeyGinger"]="VeritasHoneyGinger"
     ["dataframe"]="VeritasDataFrame"
-    ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("applicationMethod" "callerOfNew" "locationOfNew")
+STRATEGIES=("applicationMethod" "psp" "psp70" "locationOfNew")
 
 log() { echo; echo "▸ $*"; echo; }
 
