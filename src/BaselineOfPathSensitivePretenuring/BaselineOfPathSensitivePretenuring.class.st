@@ -19,7 +19,7 @@ BaselineOfPathSensitivePretenuring >> baseline: spec [
 { #category : 'baselines' }
 BaselineOfPathSensitivePretenuring >> declareDependencyLinks: spec [
 
-	spec package: 'PathSensitivePretenuring' with: [ spec requires: #( 'SendersChainTransformer' 'VeritasBenchSuite' 'PretenuringAdviceAlgorithm' ) ].
+	spec package: 'PathSensitivePretenuring' with: [ spec requires: #( 'SendersChainTransformer' 'VeritasBenchSuite' ) ].
 
 ]
 
