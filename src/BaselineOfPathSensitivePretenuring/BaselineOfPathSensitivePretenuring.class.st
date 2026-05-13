@@ -45,5 +45,6 @@ BaselineOfPathSensitivePretenuring >> declareGroups: spec [
 { #category : 'baselines' }
 BaselineOfPathSensitivePretenuring >> declarePackages: spec [
 
-	spec package: 'PathSensitivePretenuring'
+	spec package: 'PathSensitivePretenuring'.
+	spec package: 'PathSensitivePretenuring-Tests'
 ]
