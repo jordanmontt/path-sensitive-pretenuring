@@ -7,18 +7,14 @@ Class {
 }
 
 { #category : 'api' }
-TextualLocationOfNewPretenuringStrategy >> trimChain: aFullChain forBag: aBag [
-	"Walk the chain from the deepest sender upward; keep the prefix up to and including
-	the first frame whose method is the bag's textualAllocatorMethod (the first
-	instance-side method that called new / basicNew, as captured by FiLiP). This is the
-	shortest chain that still ends at the textual allocator. If the textual allocator is
-	not found in the chain (truncated stack at FiLiP's depth cap), return empty."
+TextualLocationOfNewPretenuringStrategy >> trimAllocationPath: allocationPath forBag: aBag [
 
-	| target index |
-	aFullChain isEmpty ifTrue: [ ^ OrderedCollection new ].
-	target := aBag textualAllocatorMethod.
-	target ifNil: [ ^ OrderedCollection new ].
-	index := aFullChain findFirst: [ :each | each method = target ].
+	| textualAllocatorMethod index |
+	allocationPath isEmpty ifTrue: [ ^ OrderedCollection new ].
+
+	textualAllocatorMethod := aBag textualAllocatorMethod.
+	index := allocationPath findFirst: [ :each | each method = textualAllocatorMethod ].
+
 	index = 0 ifTrue: [ ^ OrderedCollection new ].
-	^ (aFullChain first: index) asOrderedCollection
+	^ (allocationPath first: index) asOrderedCollection
 ]

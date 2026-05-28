@@ -37,14 +37,11 @@ PathSensitvePretenuring >> analyzeAllocations [
 	self classifyEdgesByLifetime.
 
 	pretenuringStrategy setUpForBags: self bags.
-	sendersToPretenure := pretenuringStrategy
-		                      extractLongLivedSendersChains: self bags
+	sendersToPretenure := pretenuringStrategy extractLongLivedSendersChains: self bags
 ]
 
 { #category : 'accessing' }
 PathSensitvePretenuring >> bags [
-	"All AllocationSiteBins produced by the classifier, including short-lived ones not
-	pruned by the threshold. Useful for inspection."
 
 	^ allocationSiteClassificator groupedAllocationSites values
 ]

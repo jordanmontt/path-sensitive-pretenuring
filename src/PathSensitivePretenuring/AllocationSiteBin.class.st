@@ -1,9 +1,9 @@
 "
 I am one bag of allocation samples in the bag-of-stacks pipeline.
 
-My identity is the pair (sendersCallStack, allocatedType): every FiLiPEphemeron whose full call stack and allocated type match mine accumulates in my #samples collection. Two bags with different prefixes never merge - this is the central property that distinguishes the bag-of-stacks pipeline from the previous graph-based one.
+My identity is the pair (sendersCallStack, allocatedType): every FiLiPEphemeron whose full call stack and allocated type match mine accumulates in my #samples collection. Two bags with different methods never merge.
 
-I am also the unit of classification: the Pretenuring Advice algorithm bins my samples into #immortalObjects / #shortLivedObjects / #longLivedObjects and then tags me #immortal / #short / #long via #beImmortal / #beShortLived / #beLongLived. After classification, the strategy reads my #chain to obtain the IllMethodWithOffset sequence that the rewriter consumes.
+I am also the unit of classification: the Pretenuring Advice algorithm bins my samples into #immortalObjects / #shortLivedObjects / #longLivedObjects and then tags me #immortal / #short / #long. After classification, the strategy reads my #path to obtain the IllMethodWithOffset sequence that the rewriter consumes.
 "
 Class {
 	#name : 'AllocationSiteBin',
@@ -47,15 +47,15 @@ AllocationSiteBin >> addImmortalObject: object [
 ]
 
 { #category : 'api' }
-AllocationSiteBin >> addSample: aFiLiPEphemeron [
-
-	samples add: aFiLiPEphemeron
-]
-
-{ #category : 'api' }
 AllocationSiteBin >> addLongLivedObject: object [
 
 	longLivedObjects add: object
+]
+
+{ #category : 'api' }
+AllocationSiteBin >> addSample: aFiLiPEphemeron [
+
+	samples add: aFiLiPEphemeron
 ]
 
 { #category : 'api' }
@@ -110,25 +110,6 @@ AllocationSiteBin >> beShortLived [
 	classification := #short
 ]
 
-{ #category : 'api' }
-AllocationSiteBin >> chain [
-	"The chain of (method, bytecode-offset) pairs that the senders-chain rewriter
-	consumes. The deepest frame's offset is dropped: under the same convention used
-	by the legacy graph extraction, an edge offset is the offset within the caller of
-	the call to the next-deeper frame. So given a stack [m1, off1, m2, off2, ..., mN, offN]
-	with m1 the deepest, the chain is [(m2, off2), ..., (mN, offN)], deepest sender first."
-
-	| chain isFirst |
-	chain := OrderedCollection new.
-	isFirst := true.
-	sendersCallStack methodWithOffsetDo: [ :method :offset |
-		isFirst
-			ifTrue: [ isFirst := false ]
-			ifFalse: [
-				chain add: (IllMethodWithOffset method: method offset: offset) ] ].
-	^ chain
-]
-
 { #category : 'accessing' }
 AllocationSiteBin >> classification [
 
@@ -142,10 +123,10 @@ AllocationSiteBin >> classification: obj [
 ]
 
 { #category : 'testing' }
-AllocationSiteBin >> containsClass: anObjClass [
+AllocationSiteBin >> containsClass: aClass [
 
 	| block |
-	block := [ :e | e allocatedObjectClass = anObjClass ].
+	block := [ :e | e allocatedObjectClass = aClass ].
 	^ (longLivedObjects contains: block) or: [
 		  (immortalObjects contains: block) or: [
 			  shortLivedObjects contains: block ] ]
@@ -215,6 +196,13 @@ AllocationSiteBin >> longLivedObjects [
 	^ longLivedObjects
 ]
 
+{ #category : 'api' }
+AllocationSiteBin >> path [
+	"First element is the allocator primitive"
+
+	^ sendersCallStack asMethodWithOffsetCollection allButFirst
+]
+
 { #category : 'printing' }
 AllocationSiteBin >> printOn: aStream [
 
@@ -249,11 +237,8 @@ AllocationSiteBin >> shortLivedObjects [
 
 { #category : 'accessing' }
 AllocationSiteBin >> textualAllocatorMethod [
-	"All samples in a bag share their call stack, so they share their textual
-	allocator (the first instance-side method that called new / basicNew, as
-	captured by FiLiP). Reading it from any sample is therefore safe."
+	"All samples in a bag share their call stack"
 
-	samples isEmpty ifTrue: [ ^ nil ].
 	^ samples first textualAllocatorMethod
 ]
 

@@ -11,12 +11,12 @@ Class {
 }
 
 { #category : 'helpers' }
-BagOfStacksTest >> mockSampleStack: aFlatArray type: aClass [
+BagOfStacksTest >> mockSampleStack: aFlatMethodsAndOffsets type: aClass [
 
 	^ MockedEphemeron new
-		  sendersCallStack: (IllSendersCallStack senders: aFlatArray);
+		  sendersCallStack: (IllSendersCallStack senders: aFlatMethodsAndOffsets);
 		  allocatedObjectClass: aClass;
-		  textualAllocatorMethod: aFlatArray first;
+		  textualAllocatorMethod: aFlatMethodsAndOffsets first;
 		  initializationTime: 0;
 		  finalizationTime: 100;
 		  sizeInBytes: 16;
@@ -26,23 +26,22 @@ BagOfStacksTest >> mockSampleStack: aFlatArray type: aClass [
 { #category : 'tests' }
 BagOfStacksTest >> testApplicationMethodStrategyTrimsAtFirstAppFrame [
 
-	| basicNew nonAppFrame appFrame bag chain strategy result |
+	| basicNew nonAppFrame appFrame bag path strategy result |
 	basicNew := Behavior >> #basicNew.
 	nonAppFrame := Object >> #yourself.
-	appFrame := Collection >> #species.
+	appFrame := Collection >> #copyWith:.
 
 	bag := AllocationSiteBin
-		       forStack: (IllSendersCallStack senders:
-				        { basicNew. 0. nonAppFrame. 4. appFrame. 8 })
+		       forStack: (IllSendersCallStack senders: { basicNew. 0. nonAppFrame. 4. appFrame. 8 })
 		       type: Array.
 	bag addSample: (self mockSampleStack: { appFrame. 0 } type: Array).
-	chain := bag chain.
+	path := bag path.
 
 	strategy := ApplicationMethodPretenuringStrategy new
 		            setUpForApplicationPackages: { appFrame package };
 		            yourself.
 
-	result := strategy trimChain: chain forBag: bag.
+	result := strategy trimAllocationPath: path forBag: bag.
 
 	self assert: result size equals: 2.
 	self assert: result first method equals: nonAppFrame.
@@ -54,7 +53,7 @@ BagOfStacksTest >> testBagsWithSameKeyAreEqual [
 
 	| stack a b |
 	stack := IllSendersCallStack senders: {
-			         (Object >> #yourself). 0.
+			         Behavior >> #basicNew. 0.
 			         (Object >> #printOn:). 4 }.
 	a := AllocationSiteBin forStack: stack type: Array.
 	b := AllocationSiteBin forStack: stack type: Array.
@@ -66,14 +65,14 @@ BagOfStacksTest >> testBagsWithSameKeyAreEqual [
 { #category : 'tests' }
 BagOfStacksTest >> testChainDropsLeafOffsetAndPreservesDepthFirstOrder [
 
-	| m1 m2 m3 stack bag chain |
-	m1 := Object >> #yourself.
+	| allocatorPrimitive m2 m3 stack bag chain |
+	allocatorPrimitive := Behavior >> #basicNew.
 	m2 := Object >> #printOn:.
-	m3 := Collection >> #species.
-	stack := IllSendersCallStack senders: { m1. 11. m2. 22. m3. 33 }.
+	m3 := Collection >> #copyWith:.
+	stack := IllSendersCallStack senders: { allocatorPrimitive. 11. m2. 22. m3. 33 }.
 
 	bag := AllocationSiteBin forStack: stack type: Array.
-	chain := bag chain.
+	chain := bag path.
 
 	self assert: chain size equals: 2.
 	self assert: chain first method equals: m2.
@@ -84,13 +83,11 @@ BagOfStacksTest >> testChainDropsLeafOffsetAndPreservesDepthFirstOrder [
 
 { #category : 'tests' }
 BagOfStacksTest >> testClassifierKeepsDistinctPrefixesSeparate [
-	"The defining property of bag-of-stacks: two samples with different prefixes do not
-	merge, even when they share a suffix and allocate the same type."
 
 	| leaf shared a b sampleA sampleB classifier |
-	leaf := Object >> #yourself.
+	leaf := Behavior >> #basicNew.
 	shared := Object >> #printOn:.
-	a := Collection >> #species.
+	a := Collection >> #copyWith:.
 	b := Behavior >> #basicNew.
 
 	sampleA := self mockSampleStack: { leaf. 0. shared. 4. a. 8 } type: Array.
@@ -107,13 +104,11 @@ BagOfStacksTest >> testClassifierKeepsDistinctPrefixesSeparate [
 BagOfStacksTest >> testClassifierKeepsDistinctTypesSeparate [
 
 	| leaf shared sampleA sampleB classifier |
-	leaf := Object >> #yourself.
+	leaf := Behavior >> #basicNew.
 	shared := Object >> #printOn:.
 
 	sampleA := self mockSampleStack: { leaf. 0. shared. 4 } type: Array.
-	sampleB := self
-		           mockSampleStack: { leaf. 0. shared. 4 }
-		           type: OrderedCollection.
+	sampleB := self mockSampleStack: { leaf. 0. shared. 4 } type: OrderedCollection.
 
 	classifier := MerlinPretenuringAdviceAlgorithm new
 		              setUpForSamples: { sampleA. sampleB };
@@ -143,25 +138,22 @@ BagOfStacksTest >> testClassifierMergesIdenticalSamples [
 
 { #category : 'tests' }
 BagOfStacksTest >> testTextualLocationOfNewStrategyTrimsAtTextualAllocator [
-	"Full stack: [basicNew, ocNew, asoc, generateReport] with asoc as the textual allocator.
-	 Full chain (leaf offset dropped): [(ocNew, 4), (asoc, 8), (generateReport, 12)].
-	 Expected trim: [(ocNew, 4), (asoc, 8)]."
 
 	| basicNew ocNew asoc generateReport bag chain strategy result |
 	basicNew := Behavior >> #basicNew.
 	ocNew := Object >> #yourself.
 	asoc := Object >> #printOn:.
-	generateReport := Collection >> #species.
+	generateReport := Collection >> #copyWith:.
 
 	bag := AllocationSiteBin
 		       forStack: (IllSendersCallStack senders:
 				        { basicNew. 0. ocNew. 4. asoc. 8. generateReport. 12 })
 		       type: Array.
 	bag addSample: (self mockSampleStack: { asoc. 0 } type: Array).
-	chain := bag chain.
+	chain := bag path.
 
 	strategy := TextualLocationOfNewPretenuringStrategy new.
-	result := strategy trimChain: chain forBag: bag.
+	result := strategy trimAllocationPath: chain forBag: bag.
 
 	self assert: result size equals: 2.
 	self assert: result first method equals: ocNew.

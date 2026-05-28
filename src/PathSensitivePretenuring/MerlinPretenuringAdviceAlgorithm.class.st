@@ -18,7 +18,9 @@ Class {
 		'endTime',
 		'taThreshold',
 		'hif',
-		'hlf'
+		'hlf',
+		'pruningThreshold',
+		'trimThreshold'
 	],
 	#category : 'PathSensitivePretenuring-Pretenuring-Graph-Traversal',
 	#package : 'PathSensitivePretenuring',
@@ -29,12 +31,6 @@ Class {
 MerlinPretenuringAdviceAlgorithm >> allSamples [
 
 	^ groupedAllocationSites keys flatCollect: #samples
-]
-
-{ #category : 'initialization' }
-MerlinPretenuringAdviceAlgorithm >> ambiguityThreshold: aNumber [
-
-
 ]
 
 { #category : 'calculating' }
@@ -117,6 +113,7 @@ MerlinPretenuringAdviceAlgorithm >> endTime: anInteger [
 
 { #category : 'accessing' }
 MerlinPretenuringAdviceAlgorithm >> groupedAllocationSites [
+
 	^ groupedAllocationSites
 ]
 
@@ -127,7 +124,8 @@ MerlinPretenuringAdviceAlgorithm >> initialize [
 
 	taThreshold := 0.45.
 	hif := 0.
-	hlf := 0.6
+	hlf := 0.6.
+	trimThreshold := 25
 ]
 
 { #category : 'calculating' }
@@ -171,28 +169,30 @@ MerlinPretenuringAdviceAlgorithm >> pruneAllocationSites [
 	groupedAllocationSites := Dictionary newFrom: sitesWithSignificantSize
 ]
 
-{ #category : 'calculating' }
+{ #category : 'accessing' }
 MerlinPretenuringAdviceAlgorithm >> pruningThreshold [
 
-	^ 0.000002
+	^ pruningThreshold
+]
+
+{ #category : 'accessing' }
+MerlinPretenuringAdviceAlgorithm >> pruningThreshold: aNumber [
+
+	pruningThreshold := aNumber
 ]
 
 { #category : 'api' }
 MerlinPretenuringAdviceAlgorithm >> setUpForSamples: aCollectionOfFiLiPEphemerons [
-	"Build one AllocationSiteBin per unique (sendersCallStack, allocatedType). The bag is
-	used as both key and value because AllocationSiteBin implements # = and #hash on
-	(stack, type). Samples whose stack is missing or empty are skipped: they cannot be
-	assigned a calling context and are therefore not pretenurable."
 
 	groupedAllocationSites := Dictionary new.
 	aCollectionOfFiLiPEphemerons do: [ :sample |
 		| stack bag |
-		stack := sample sendersCallStack.
+		stack := sample sendersCallStack first: (self trimThreshold min: sample sendersCallStack size).
 		(stack notNil and: [ stack senders isNotEmpty ]) ifTrue: [
 			bag := AllocationSiteBin
 				       forStack: stack
 				       type: sample allocatedObjectClass.
-			bag := groupedAllocationSites at: bag ifAbsentPut: [ bag ].
+			bag := groupedAllocationSites at: bag ifAbsentPut: bag.
 			bag addSample: sample ] ]
 ]
 
@@ -212,4 +212,16 @@ MerlinPretenuringAdviceAlgorithm >> startTime: anInteger [
 MerlinPretenuringAdviceAlgorithm >> totalTime [
 
 	^ endTime - startTime
+]
+
+{ #category : 'accessing' }
+MerlinPretenuringAdviceAlgorithm >> trimThreshold [
+
+	^ trimThreshold
+]
+
+{ #category : 'accessing' }
+MerlinPretenuringAdviceAlgorithm >> trimThreshold: aNumber [
+
+	trimThreshold := aNumber
 ]

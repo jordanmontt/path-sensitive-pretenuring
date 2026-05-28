@@ -23,7 +23,7 @@ AbstractPretenuringStrategy >> extractLongLivedSendersChains: aCollectionOfBags 
 	aCollectionOfBags do: [ :bag |
 		bag isLongOrImmortal ifTrue: [
 			| trimmed |
-			trimmed := self trimChain: bag chain forBag: bag.
+			trimmed := self trimAllocationPath: bag path forBag: bag.
 			trimmed isEmpty ifFalse: [ sendersToPretenure add: trimmed ] ] ].
 	^ sendersToPretenure
 ]
@@ -36,15 +36,13 @@ AbstractPretenuringStrategy >> newClassificationAlgorithm [
 
 { #category : 'api' }
 AbstractPretenuringStrategy >> setUpForBags: aCollectionOfBags [
-	"Hook for strategies that need to inspect all bags before trimming. Default: no-op."
 
-
+	
 ]
 
 { #category : 'api' }
-AbstractPretenuringStrategy >> trimChain: aFullChain forBag: aBag [
-	"Return an OrderedCollection<IllMethodWithOffset> obtained by slicing aFullChain,
-	keeping its deepest-first order. An empty result means 'skip this bag'."
+AbstractPretenuringStrategy >> trimAllocationPath: allocationPath forBag: aBag [
+	"Return an OrderedCollection<IllMethodWithOffset> or empty collection"
 
 	^ self subclassResponsibility
 ]

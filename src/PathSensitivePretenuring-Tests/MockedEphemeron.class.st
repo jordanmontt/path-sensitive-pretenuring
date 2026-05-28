@@ -35,40 +35,6 @@ MockedEphemeron >> finalizationTime [
 ]
 
 { #category : 'accessing' }
-MockedEphemeron >> lifetime [
-
-	^ finalizationTime - initializationTime
-]
-
-{ #category : 'accessing' }
-MockedEphemeron >> sendersCallStack [
-	"Defaults to a one-frame synthetic stack so unconfigured mocks have a valid stack
-	under the new bag-of-stacks classifier. Tests that need distinct contexts pass one in."
-
-	^ sendersCallStack ifNil: [
-		  IllSendersCallStack senders: { Object >> #yourself. 0 } ]
-]
-
-{ #category : 'accessing' }
-MockedEphemeron >> sendersCallStack: anIllSendersCallStack [
-
-	sendersCallStack := anIllSendersCallStack
-]
-
-{ #category : 'accessing' }
-MockedEphemeron >> textualAllocatorMethod [
-	"Polymorphic with FiLiPEphemeron. Defaults to the method used in the default mock stack."
-
-	^ textualAllocatorMethod ifNil: [ Object >> #yourself ]
-]
-
-{ #category : 'accessing' }
-MockedEphemeron >> textualAllocatorMethod: aCompiledMethod [
-
-	textualAllocatorMethod := aCompiledMethod
-]
-
-{ #category : 'accessing' }
 MockedEphemeron >> finalizationTime: anInteger [
 
     finalizationTime := anInteger
@@ -93,6 +59,27 @@ MockedEphemeron >> key: aKey [
 ]
 
 { #category : 'accessing' }
+MockedEphemeron >> lifetime [
+
+	^ finalizationTime - initializationTime
+]
+
+{ #category : 'accessing' }
+MockedEphemeron >> sendersCallStack [
+	"Defaults to a one-frame synthetic stack so unconfigured mocks have a valid stack
+	under the new bag-of-stacks classifier. Tests that need distinct contexts pass one in."
+
+	^ sendersCallStack ifNil: [
+		  IllSendersCallStack senders: { Object >> #yourself. 0 } ]
+]
+
+{ #category : 'accessing' }
+MockedEphemeron >> sendersCallStack: anIllSendersCallStack [
+
+	sendersCallStack := anIllSendersCallStack
+]
+
+{ #category : 'accessing' }
 MockedEphemeron >> sizeInBytes [
 
     ^ sizeInBytes
@@ -102,4 +89,17 @@ MockedEphemeron >> sizeInBytes [
 MockedEphemeron >> sizeInBytes: anInteger [
 
     sizeInBytes := anInteger
+]
+
+{ #category : 'accessing' }
+MockedEphemeron >> textualAllocatorMethod [
+	"Polymorphic with FiLiPEphemeron. Defaults to the method used in the default mock stack."
+
+	^ textualAllocatorMethod ifNil: [ Object >> #yourself ]
+]
+
+{ #category : 'accessing' }
+MockedEphemeron >> textualAllocatorMethod: aCompiledMethod [
+
+	textualAllocatorMethod := aCompiledMethod
 ]
