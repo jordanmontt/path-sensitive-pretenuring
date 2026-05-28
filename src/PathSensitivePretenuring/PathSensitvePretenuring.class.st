@@ -2,11 +2,11 @@
 The algorithm works as follow:
 
 1. Data cleaning. Clean noise if any.
-2. Allocation graph. Create an allocation graph using the samples as an input. The samples are objects obtained during profiling that contain information about the stack, the object lifetime, etc.
-3. Identify the allocation sites using different strategies. Mark the nodes in the graph.
-4. Classify the allocation sites as long or short using Blackburn's algorithm.
-5. Rewrite the code from the allocation site to the primitive allocator creating an unique path. 
- 
+2. Bag-of-stacks build. Group every FiLiPEphemeron by (sendersCallStack, allocatedType) using AllocationSiteBin as the bag. Two samples land in the same bag only if their full call stack and allocated type match exactly. Distinct prefixes never merge.
+3. Classify the bags as short, long, or immortal using Blackburn's algorithm (immortal merged into long-lived for Pharo's two-generation VM).
+4. Trim each long-lived bag's chain via the configured strategy (ApplicationMethod or TextualLocationOfNew).
+5. Rewrite the code along the trimmed chains, creating unique paths for the pretenured allocations.
+
 "
 Class {
 	#name : 'PathSensitvePretenuring',
@@ -15,7 +15,6 @@ Class {
 		'pretenurator',
 		'allocationSiteClassificator',
 		'rawAllocationsSamples',
-		'allocationGraph',
 		'sendersToPretenure',
 		'pretenuringStrategy'
 	],
@@ -33,20 +32,28 @@ PathSensitvePretenuring >> ambiguityThreshold: aNumber [
 { #category : 'api' }
 PathSensitvePretenuring >> analyzeAllocations [
 
-   self constructAllocationGraph.
+	self removeKernelAllocations.
 
-   	self classifyEdgesByLifetime.
+	self classifyEdgesByLifetime.
 
-	pretenuringStrategy setUpForGraph: allocationGraph.
-	allocationGraph traverseLongLivedSenderChainsUsing: pretenuringStrategy.
-   sendersToPretenure := self extractLongLivedSendersChains
+	pretenuringStrategy setUpForBags: self bags.
+	sendersToPretenure := pretenuringStrategy
+		                      extractLongLivedSendersChains: self bags
+]
+
+{ #category : 'accessing' }
+PathSensitvePretenuring >> bags [
+	"All AllocationSiteBins produced by the classifier, including short-lived ones not
+	pruned by the threshold. Useful for inspection."
+
+	^ allocationSiteClassificator groupedAllocationSites values
 ]
 
 { #category : 'calculating' }
 PathSensitvePretenuring >> classifyEdgesByLifetime [
 
     allocationSiteClassificator
-        setUpForAllocationGraph: allocationGraph;
+        setUpForSamples: rawAllocationsSamples;
         classifyEdgesByLifetime
 ]
 
@@ -55,13 +62,6 @@ PathSensitvePretenuring >> compilePretenuredMethods [
 
     pretenurator compilePretenuredPathsFrom: sendersToPretenure.
     ^ pretenurator
-]
-
-{ #category : 'calculating' }
-PathSensitvePretenuring >> constructAllocationGraph [
-
-    self removeKernelAllocations.
-    allocationGraph := AllocationGraph onSamples: rawAllocationsSamples
 ]
 
 { #category : 'api' }
@@ -84,13 +84,6 @@ PathSensitvePretenuring >> deserializeAndInstallCompiledMethodsFrom: aFileRefere
 PathSensitvePretenuring >> exportPretenuredMethods: aWriteStream [
 
     pretenurator exportPretenuredMethods: aWriteStream
-]
-
-{ #category : 'calculating' }
-PathSensitvePretenuring >> extractLongLivedSendersChains [
-
-    sendersToPretenure := pretenuringStrategy extractLongLivedSendersChains: allocationGraph.
-    ^ sendersToPretenure
 ]
 
 { #category : 'initialization' }

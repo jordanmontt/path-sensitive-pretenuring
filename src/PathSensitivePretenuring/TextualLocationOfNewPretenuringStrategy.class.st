@@ -6,26 +6,19 @@ Class {
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
-{ #category : 'initialization' }
-TextualLocationOfNewPretenuringStrategy class >> setUpForGraph: allocationGarph [
-
-    ^ self new
-          setUpForGraph: allocationGarph;
-          yourself
-]
-
 { #category : 'api' }
-TextualLocationOfNewPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
+TextualLocationOfNewPretenuringStrategy >> trimChain: aFullChain forBag: aBag [
+	"Walk the chain from the deepest sender upward; keep the prefix up to and including
+	the first frame whose method is the bag's textualAllocatorMethod (the first
+	instance-side method that called new / basicNew, as captured by FiLiP). This is the
+	shortest chain that still ends at the textual allocator. If the textual allocator is
+	not found in the chain (truncated stack at FiLiP's depth cap), return empty."
 
-    ^ anAllocationGraphNode isTextualAllocationSite
-        and: [ self hasOnlyLongLivedEdges: aListOfEdges ]
-]
-
-{ #category : 'api' }
-TextualLocationOfNewPretenuringStrategy >> setUpForGraph: allocationGraph [
-
-    | textualAllocationMethods samples |
-    samples := allocationGraph samples.
-    textualAllocationMethods := samples collect: #textualAllocatorMethod as: Set.
-    textualAllocationMethods do: [ :aMethod | (allocationGraph nodeFor: aMethod) beTextualAllocationSite ]
+	| target index |
+	aFullChain isEmpty ifTrue: [ ^ OrderedCollection new ].
+	target := aBag textualAllocatorMethod.
+	target ifNil: [ ^ OrderedCollection new ].
+	index := aFullChain findFirst: [ :each | each method = target ].
+	index = 0 ifTrue: [ ^ OrderedCollection new ].
+	^ (aFullChain first: index) asOrderedCollection
 ]

@@ -17,22 +17,31 @@ ApplicationMethodPretenuringStrategy class >> setUpForApplicationPackages: aList
           yourself
 ]
 
-{ #category : 'api' }
-ApplicationMethodPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
-
-    ^ (self isApplicationMethod: anAllocationGraphNode)
-      and: [ (self hasOnlyLongLivedEdges: aListOfEdges)
-      and: [ self edgesHaveSameAllocatedObjectTypes: aListOfEdges ] ]
-]
-
 { #category : 'private' }
-ApplicationMethodPretenuringStrategy >> isApplicationMethod: anAllocationGraphNode [
+ApplicationMethodPretenuringStrategy >> isApplicationMethod: aCompiledMethod [
 
-    ^ applicationPackages includes: anAllocationGraphNode method package
+    ^ applicationPackages includes: aCompiledMethod package
 ]
 
 { #category : 'private' }
 ApplicationMethodPretenuringStrategy >> setUpForApplicationPackages: aListOfPackages [
 
     applicationPackages := aListOfPackages asSet
+]
+
+{ #category : 'api' }
+ApplicationMethodPretenuringStrategy >> trimChain: aFullChain forBag: aBag [
+	"Walk the chain from the deepest sender upward; keep the prefix up to and including
+	the first frame whose method's package is in #applicationPackages. If no frame is in
+	an application package, return empty so the bag is skipped (matches the legacy DFS
+	behaviour, which would never have recorded such a chain)."
+
+	| index |
+	aFullChain isEmpty ifTrue: [ ^ OrderedCollection new ].
+	(applicationPackages isNil or: [ applicationPackages isEmpty ]) ifTrue: [
+		^ OrderedCollection new ].
+	index := aFullChain findFirst: [ :each |
+		         self isApplicationMethod: each method ].
+	index = 0 ifTrue: [ ^ OrderedCollection new ].
+	^ (aFullChain first: index) asOrderedCollection
 ]

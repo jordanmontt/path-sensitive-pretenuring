@@ -24,9 +24,9 @@ PretenuringAdviceAlgorithmTest >> testCalculateMaxLiveSize [
 
 	| mockedAllocationGraph |
 	mockedAllocationGraph := MockedClassForMaxSizeTest new.
-	
+
 	classificator
-		allocationGraph: mockedAllocationGraph;
+		setUpForSamples: mockedAllocationGraph allocatedSamples;
 		startTime: mockedAllocationGraph initialTime;
 		endTime: mockedAllocationGraph endTime.
 

@@ -3,10 +3,10 @@ Allocation sites classification algorithm. Paper: https://www.steveblackburn.org
 
 The algorithm works as follows:
 
-1. Setup. It receives an allocation graph as an input. It takes the nodes of the graph and creates ""allocation bin"" objects, an internal helper data structure, and does some data cleaning.
-2. Pruning. It prunes the allocation sites that have total allocation less than 0.000002 times the total allocation.
-3. Allocation Site Identification. It traverses the graph and it identifies all the possible allocation sites. It can use different strategies to ask to each node if it is an allocation site.
-4. (Optional) Return the allocations that are long or lived
+1. Setup. It receives the collection of FiLiPEphemeron samples as input. It groups them into AllocationSiteBin instances keyed by (sendersCallStack, allocatedType): one bag per unique calling context + type. Two samples whose stacks differ never merge.
+2. Pruning. Bags whose own sample count falls below 0.000002 x totalProgramAllocations are dropped.
+3. Classification. Each remaining bag has its samples binned (immortal / short-lived / long-lived) and the bag is tagged accordingly via #beImmortal / #beLongLived / #beShortLived.
+4. (Optional) Return the bags classified as long or immortal.
 "
 Class {
 	#name : 'MerlinPretenuringAdviceAlgorithm',
@@ -18,41 +18,40 @@ Class {
 		'endTime',
 		'taThreshold',
 		'hif',
-		'hlf',
-		'allocationGraph'
+		'hlf'
 	],
 	#category : 'PathSensitivePretenuring-Pretenuring-Graph-Traversal',
 	#package : 'PathSensitivePretenuring',
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
-{ #category : 'accessing' }
-MerlinPretenuringAdviceAlgorithm >> allocationGraph: anAllocationGraph [
+{ #category : 'private' }
+MerlinPretenuringAdviceAlgorithm >> allSamples [
 
-	allocationGraph := anAllocationGraph
+	^ groupedAllocationSites keys flatCollect: #samples
 ]
 
 { #category : 'initialization' }
 MerlinPretenuringAdviceAlgorithm >> ambiguityThreshold: aNumber [
 
-	
+
 ]
 
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> binObjects [
 
-	groupedAllocationSites keysDo: [ :allocationGraphComponent |
-		allocationGraphComponent allocatedSamples do: [ :illEphe |
+	groupedAllocationSites keysDo: [ :bag |
+		bag allocatedSamples do: [ :illEphe |
 			| isObjectClassified |
 			isObjectClassified := false.
 			(self isObjectImmortal: illEphe) ifTrue: [
-					(groupedAllocationSites at: allocationGraphComponent) addImmortalObject: illEphe.
+					bag addImmortalObject: illEphe.
 					isObjectClassified := true ].
 			(isObjectClassified not and: [ self isObjectShortLived: illEphe ]) ifTrue: [
-					(groupedAllocationSites at: allocationGraphComponent) addShortLivedObject: illEphe.
+					bag addShortLivedObject: illEphe.
 					isObjectClassified := true ].
 			isObjectClassified ifFalse: [
-					(groupedAllocationSites at: allocationGraphComponent) addLongLivedObject: illEphe ] ] ]
+					bag addLongLivedObject: illEphe ] ] ]
 ]
 
 { #category : 'calculating' }
@@ -60,16 +59,17 @@ MerlinPretenuringAdviceAlgorithm >> calculateMaxLiveSize [
 
     | currentTime aliveObjectsSize allocatedSamples deathObjects |
     maxLiveSize := 0.
-    allocatedSamples := allocationGraph allocatedSamples sorted: [ :v1 :v2 |
+    allocatedSamples := self allSamples sorted: [ :v1 :v2 |
 				v1 initializationTime < v2 initializationTime ].
-    deathObjects := (allocationGraph allocatedSamples sorted: [ :v1 :v2 |
+    deathObjects := (self allSamples sorted: [ :v1 :v2 |
 				v1 finalizationTime < v2 finalizationTime ]) readStream.
 
     aliveObjectsSize := 0.
     allocatedSamples do: [ :illiEphemeron |
 		currentTime := illiEphemeron initializationTime.
-		
-		[ deathObjects peek finalizationTime <= currentTime ] whileTrue: [
+
+		[ deathObjects atEnd not and: [
+			deathObjects peek finalizationTime <= currentTime ] ] whileTrue: [
 				| theDeadObject |
 				theDeadObject := deathObjects next.
 				aliveObjectsSize := aliveObjectsSize - theDeadObject sizeInBytes ].
@@ -83,26 +83,22 @@ MerlinPretenuringAdviceAlgorithm >> calculateMaxLiveSize [
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> classifyAllocationSites [
 
-	groupedAllocationSites keysAndValuesDo: [ :allocationGraphComponent :allocationSiteBin |
+	groupedAllocationSites valuesDo: [ :bag |
 		| is ss ls wasClassified relativeHlf relativeHif |
 		wasClassified := false.
-		is := allocationSiteBin immortalObjects sum: #sizeInBytes.
-		ss := allocationSiteBin shortLivedObjects sum: #sizeInBytes.
-		ls := allocationSiteBin longLivedObjects sum: #sizeInBytes.
+		is := bag immortalObjects sum: #sizeInBytes.
+		ss := bag shortLivedObjects sum: #sizeInBytes.
+		ls := bag longLivedObjects sum: #sizeInBytes.
 		relativeHif := (is + ss + ls) * hif.
 		relativeHlf := (is + ss + ls) * hlf.
 
 		is > (ss + ls + relativeHif) ifTrue: [
-			allocationSiteBin classification: #immortal.
-			allocationGraphComponent beImmortal.
+			bag beImmortal.
 			wasClassified := true ].
 		(wasClassified not and: [ is + ls > (ss + relativeHlf) ]) ifTrue: [
-			allocationSiteBin classification: #long.
-			allocationGraphComponent beLongLived.
+			bag beLongLived.
 			wasClassified := true ].
-		wasClassified ifFalse: [
-			allocationSiteBin classification: #short.
-			allocationGraphComponent beShortLived ] ]
+		wasClassified ifFalse: [ bag beShortLived ] ]
 ]
 
 { #category : 'api' }
@@ -156,7 +152,7 @@ MerlinPretenuringAdviceAlgorithm >> isObjectShortLived: illEphe [
 { #category : 'api' }
 MerlinPretenuringAdviceAlgorithm >> longLivedAllocationSites [
 
-    ^ groupedAllocationSites select: #isLongOrImmortal
+	^ groupedAllocationSites values select: #isLongOrImmortal
 ]
 
 { #category : 'accessing' }
@@ -169,9 +165,9 @@ MerlinPretenuringAdviceAlgorithm >> maxLiveSize [
 MerlinPretenuringAdviceAlgorithm >> pruneAllocationSites [
 
 	| totalProgramAllocations sitesWithSignificantSize |
-	totalProgramAllocations := allocationGraph allocatedSamples size.
+	totalProgramAllocations := self allSamples size.
 	sitesWithSignificantSize := groupedAllocationSites associations reject: [ :assoc |
-			assoc key allocatedSamples size < (self pruningThreshold * totalProgramAllocations) ].
+			assoc key samples size < (self pruningThreshold * totalProgramAllocations) ].
 	groupedAllocationSites := Dictionary newFrom: sitesWithSignificantSize
 ]
 
@@ -182,15 +178,22 @@ MerlinPretenuringAdviceAlgorithm >> pruningThreshold [
 ]
 
 { #category : 'api' }
-MerlinPretenuringAdviceAlgorithm >> setUpForAllocationGraph: anAllocationGraph [
+MerlinPretenuringAdviceAlgorithm >> setUpForSamples: aCollectionOfFiLiPEphemerons [
+	"Build one AllocationSiteBin per unique (sendersCallStack, allocatedType). The bag is
+	used as both key and value because AllocationSiteBin implements # = and #hash on
+	(stack, type). Samples whose stack is missing or empty are skipped: they cannot be
+	assigned a calling context and are therefore not pretenurable."
 
-    allocationGraph := anAllocationGraph.
-
-    groupedAllocationSites := Dictionary new.
-    allocationGraph edges do: [ :edge |
-        groupedAllocationSites
-            at: edge
-            ifAbsentPut: (AllocationSiteBin new allocationSite: edge; yourself) ]
+	groupedAllocationSites := Dictionary new.
+	aCollectionOfFiLiPEphemerons do: [ :sample |
+		| stack bag |
+		stack := sample sendersCallStack.
+		(stack notNil and: [ stack senders isNotEmpty ]) ifTrue: [
+			bag := AllocationSiteBin
+				       forStack: stack
+				       type: sample allocatedObjectClass.
+			bag := groupedAllocationSites at: bag ifAbsentPut: [ bag ].
+			bag addSample: sample ] ]
 ]
 
 { #category : 'accessing' }
