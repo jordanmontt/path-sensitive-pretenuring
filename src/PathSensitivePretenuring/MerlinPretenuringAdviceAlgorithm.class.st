@@ -187,7 +187,7 @@ MerlinPretenuringAdviceAlgorithm >> setUpForSamples: aCollectionOfFiLiPEphemeron
 	groupedAllocationSites := Dictionary new.
 	aCollectionOfFiLiPEphemerons do: [ :sample |
 		| stack bag |
-		stack := sample sendersCallStack first: (self trimThreshold min: sample sendersCallStack size).
+		stack := sample sendersCallStack.
 		(stack notNil and: [ stack senders isNotEmpty ]) ifTrue: [
 			bag := AllocationSiteBin
 				       forStack: stack
