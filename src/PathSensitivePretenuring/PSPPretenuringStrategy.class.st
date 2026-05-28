@@ -15,6 +15,7 @@ PSPPretenuringStrategy >> newClassificationAlgorithm [
 { #category : 'api' }
 PSPPretenuringStrategy >> trimAllocationPath: allocationPath forBag: aBag [
 
+	"Old code"
 	"pathUntilNow ifEmpty: [ ^ false ].
 	^ pathUntilNow last isLongLived"
 
