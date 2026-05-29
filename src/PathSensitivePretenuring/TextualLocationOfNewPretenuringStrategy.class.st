@@ -17,8 +17,7 @@ TextualLocationOfNewPretenuringStrategy class >> setUpForGraph: allocationGarph 
 { #category : 'api' }
 TextualLocationOfNewPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
 
-    ^ anAllocationGraphNode isTextualAllocationSite
-        and: [ self hasOnlyLongLivedEdges: aListOfEdges ]
+    ^ anAllocationGraphNode isTextualAllocationSite and: [ aListOfEdges last isLongLived ]
 ]
 
 { #category : 'api' }

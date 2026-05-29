@@ -40,9 +40,3 @@ PSPPretenuringAdviceAlgorithm >> initialize [
 	super initialize.
 	ambiguityThreshold := 0.9
 ]
-
-{ #category : 'calculating' }
-PSPPretenuringAdviceAlgorithm >> pruningThreshold [
-
-	^ 0.01
-]

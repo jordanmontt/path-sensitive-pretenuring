@@ -178,7 +178,7 @@ MerlinPretenuringAdviceAlgorithm >> pruneAllocationSites [
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> pruningThreshold [
 
-	^ 0.000002
+	^ 0.01
 ]
 
 { #category : 'api' }
