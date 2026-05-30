@@ -6,7 +6,7 @@ Class {
 }
 
 { #category : 'api' }
-NodeBasedPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: aListOfEdges [
+NodeBasedPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: allocationStack [
 
-    ^ anAllocatorNode isAllocationSite
+	^ anAllocatorNode isAllocationSite
 ]

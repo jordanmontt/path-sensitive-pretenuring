@@ -7,10 +7,10 @@ Class {
 }
 
 { #category : 'api' }
-PSPPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: pathUntilNow [
+PSPPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: allocationStack [
 
-	pathUntilNow ifEmpty: [ ^ false ].
-	^ pathUntilNow last isLongLived
+	allocationStack ifEmpty: [ ^ false ].
+	^ allocationStack last isLongLived
 ]
 
 { #category : 'instance creation' }

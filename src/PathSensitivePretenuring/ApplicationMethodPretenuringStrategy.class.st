@@ -18,10 +18,10 @@ ApplicationMethodPretenuringStrategy class >> setUpForApplicationPackages: aList
 ]
 
 { #category : 'api' }
-ApplicationMethodPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: aListOfEdges [
+ApplicationMethodPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: allocationStack [
 
-    ^ (self isApplicationMethod: anAllocationGraphNode)
-      and: [ self edgesHaveSameAllocatedObjectTypes: aListOfEdges ]
+	^ (self isApplicationMethod: anAllocationGraphNode) and: [
+		  self edgesHaveSameAllocatedObjectTypes: allocationStack ]
 ]
 
 { #category : 'private' }

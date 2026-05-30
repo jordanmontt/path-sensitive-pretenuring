@@ -1,40 +1,35 @@
 Extension { #name : 'AllocationGraph' }
 
 { #category : '*PathSensitivePretenuring' }
-AllocationGraph >> traverseLongLivedSenderChainsUsing: aStrategy [
+AllocationGraph >> traverseLongLivedAllocationStack: allocationStack using: aStrategy [
 
-	self leaves do: [ :leaf |
-			leaf allocatedObjectTypes do: [ :type |
-					(leaf allocatedSamples
-						 select: [ :sample | sample allocatedObjectClass = type ]
-						 thenCollect: [ :sample | sample sendersCallStack ]) asSet do: [
-							:callstackOfType |
-							self
-								traverseLongLivedSenderChainsUsingDFS: aStrategy
-								node: leaf
-								pathUntilNow: callstackOfType
-								type: type ] ] ]
+    | depth currentCallStack theCurrentNode |
+    depth := 0.
+    currentCallStack := OrderedCollection new.
+
+    "The first one is the allocator method"
+    allocationStack asMethodWithOffsetCollection allButFirstDo: [ :methodWithOffset |
+        | theEdge |
+        depth > 20 ifTrue: [ ^ self ].
+
+        theCurrentNode := self nodeFor: methodWithOffset method.
+        [ theEdge := theCurrentNode edgeForOffset: methodWithOffset offset ] on: NotFound do: [ :ex | ^ self ].
+        currentCallStack add: theEdge.
+        (aStrategy isAllocationSite: theCurrentNode fromAllocationPath: currentCallStack) ifTrue: [
+            theCurrentNode
+                beAllocationSite;
+                appendCallStack: currentCallStack.
+            ^ self ].
+        depth := depth + 1 ]
 ]
 
 { #category : '*PathSensitivePretenuring' }
-AllocationGraph >> traverseLongLivedSenderChainsUsingDFS: aStrategy node: currentNode pathUntilNow: pathUntilNow type: aType [
+AllocationGraph >> traverseLongLivedSenderChainsUsing: aStrategy [
 
-	| depth currentCallStack theCurrentNode |
-	depth := 0.
-	currentCallStack := OrderedCollection new.
-	pathUntilNow asMethodWithOffsetCollection allButFirstDo: [ :methodWithOffset |
-			| theEdge |
-			depth > 20 ifTrue: [ ^ self ].
-			theCurrentNode := (self nodeFor: methodWithOffset method).
-			[theEdge := theCurrentNode edgeForOffset: methodWithOffset offset.]
-				on: NotFound do: [ :ex | "if the edge if absent..." ^ self ].
-			currentCallStack add: theEdge.
-			(aStrategy
-				 isAllocationSite: theCurrentNode
-				 fromAllocationPath: currentCallStack) ifTrue: [
-					theCurrentNode
-						beAllocationSite;
-						appendCallStack: currentCallStack.
-					^ self ].
-			depth := depth + 1 ]
+    self leaves do: [ :leaf |
+        leaf allocatedObjectTypes do: [ :type |
+            | callStacksOfType |
+            callStacksOfType := leaf allocatedSamples collect: [ :sample | sample sendersCallStack ] as: Set.
+            callStacksOfType do: [ :callStackOfType | 
+                self traverseLongLivedAllocationStack: callStackOfType using: aStrategy ] ] ]
 ]
