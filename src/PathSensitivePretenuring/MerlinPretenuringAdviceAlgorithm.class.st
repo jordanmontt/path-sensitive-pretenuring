@@ -19,7 +19,8 @@ Class {
 		'taThreshold',
 		'hif',
 		'hlf',
-		'allocationGraph'
+		'allocationGraph',
+		'pruningThreshold'
 	],
 	#category : 'PathSensitivePretenuring-Pretenuring-Graph-Traversal',
 	#package : 'PathSensitivePretenuring',
@@ -131,7 +132,8 @@ MerlinPretenuringAdviceAlgorithm >> initialize [
 
 	taThreshold := 0.45.
 	hif := 0.
-	hlf := 0.6
+	hlf := 0.6.
+	pruningThreshold := 0.0
 ]
 
 { #category : 'calculating' }
@@ -171,14 +173,20 @@ MerlinPretenuringAdviceAlgorithm >> pruneAllocationSites [
 	| totalProgramAllocations sitesWithSignificantSize |
 	totalProgramAllocations := allocationGraph allocatedSamples size.
 	sitesWithSignificantSize := groupedAllocationSites associations reject: [ :assoc |
-			assoc key allocatedSamples size < (self pruningThreshold * totalProgramAllocations) ].
+			assoc key allocatedSamples size < (pruningThreshold * totalProgramAllocations) ].
 	groupedAllocationSites := Dictionary newFrom: sitesWithSignificantSize
 ]
 
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> pruningThreshold [
 
-	^ 0.01
+	^ pruningThreshold
+]
+
+{ #category : 'calculating' }
+MerlinPretenuringAdviceAlgorithm >> pruningThreshold: aNumber [
+
+	pruningThreshold := aNumber
 ]
 
 { #category : 'api' }

@@ -17,7 +17,9 @@ Class {
 		'rawAllocationsSamples',
 		'allocationGraph',
 		'sendersToPretenure',
-		'pretenuringStrategy'
+		'pretenuringStrategy',
+		'profiler',
+		'ambiguityThreshold'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -27,7 +29,7 @@ Class {
 { #category : 'initialization' }
 PathSensitvePretenuring >> ambiguityThreshold: aNumber [
 
-	allocationSiteClassificator ambiguityThreshold: aNumber
+	ambiguityThreshold := aNumber
 ]
 
 { #category : 'api' }
@@ -45,9 +47,17 @@ PathSensitvePretenuring >> analyzeAllocations [
 { #category : 'calculating' }
 PathSensitvePretenuring >> classifyEdgesByLifetime [
 
-    allocationSiteClassificator
-        setUpForAllocationGraph: allocationGraph;
-        classifyEdgesByLifetime
+	allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm.
+
+	"Set up"
+	allocationSiteClassificator
+		startTime: rawAllocationsSamples first initializationTime;
+		endTime: profiler endTime;
+		setUpForAllocationGraph: allocationGraph.
+	ambiguityThreshold ifNotNil: [ allocationSiteClassificator ambiguityThreshold: ambiguityThreshold ].
+
+	"API call"
+	allocationSiteClassificator classifyEdgesByLifetime
 ]
 
 { #category : 'api' }
@@ -124,8 +134,7 @@ PathSensitvePretenuring >> methodProtocol: aProtocol [
 { #category : 'api - accessing' }
 PathSensitvePretenuring >> pretenuringStrategy: aStrategy [
 
-	pretenuringStrategy := aStrategy.
-	allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm
+	pretenuringStrategy := aStrategy
 ]
 
 { #category : 'calculating' }
@@ -139,11 +148,7 @@ PathSensitvePretenuring >> removeKernelAllocations [
 { #category : 'api - accessing' }
 PathSensitvePretenuring >> setUpForProfiler: aProfiler [
 
+	profiler := aProfiler.
 	rawAllocationsSamples := aProfiler objectAllocations copy.
-	"The ephemerons of the profiler, the allocation samples, are always ordered by time."
-
-	allocationSiteClassificator
-		startTime: aProfiler objectAllocations first initializationTime;
-		endTime: aProfiler endTime
-
+	"The ephemerons of the profiler, the allocation samples, are always ordered by birth time."
 ]

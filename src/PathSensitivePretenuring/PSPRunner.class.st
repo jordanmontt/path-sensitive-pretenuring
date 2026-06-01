@@ -81,15 +81,16 @@ PSPRunner >> pretenurePaths [
 
 	| profiler |
 	profiler := FiLiP new
+		            samplingRate: 1;
 		            profileOn: [ benchmarkClass new run ];
 		            yourself.
 
 	experiment := PathSensitvePretenuring new
-							pretenuringStrategy: strategy;
-							setUpForProfiler: profiler;
-							ambiguityThreshold: ambiguityThreshold;
-							methodProtocol: protocol;
-							yourself.
+		              pretenuringStrategy: strategy;
+		              setUpForProfiler: profiler;
+		              ambiguityThreshold: ambiguityThreshold;
+		              methodProtocol: protocol;
+		              yourself.
 
 	experiment
 		analyzeAllocations;
