@@ -2,7 +2,6 @@ Class {
 	#name : 'PSPRunner',
 	#superclass : 'Object',
 	#instVars : [
-		'strategy',
 		'benchmarkClass',
 		'experiment',
 		'protocol',
@@ -12,7 +11,9 @@ Class {
 		'jitCompiledMethods',
 		'jitCompiledBlocks',
 		'jitBlocksCompilationTime',
-		'ambiguityThreshold'
+		'ambiguityThreshold',
+		'samplingRate',
+		'pretenuringStrategy'
 	],
 	#category : 'PathSensitivePretenuring-Experiment',
 	#package : 'PathSensitivePretenuring',
@@ -61,7 +62,8 @@ PSPRunner >> initialize [
 
 	super initialize.
 	protocol := 'automatically-generated'.
-	ambiguityThreshold := 0.9
+	ambiguityThreshold := 0.9.
+	samplingRate := 1 / 100 "Same as FiLiP"
 ]
 
 { #category : 'api' }
@@ -81,12 +83,12 @@ PSPRunner >> pretenurePaths [
 
 	| profiler |
 	profiler := FiLiP new
-		            samplingRate: 1;
+		            samplingRate: samplingRate;
 		            profileOn: [ benchmarkClass new run ];
 		            yourself.
 
 	experiment := PathSensitvePretenuring new
-		              pretenuringStrategy: strategy;
+		              pretenuringStrategy: pretenuringStrategy;
 		              setUpForProfiler: profiler;
 		              ambiguityThreshold: ambiguityThreshold;
 		              methodProtocol: protocol;
@@ -95,6 +97,11 @@ PSPRunner >> pretenurePaths [
 	experiment
 		analyzeAllocations;
 		compilePretenuredMethods
+]
+
+{ #category : 'api' }
+PSPRunner >> pretenuringStrategy: aStrategy [
+    pretenuringStrategy := aStrategy
 ]
 
 { #category : 'vm measurements' }
@@ -138,8 +145,15 @@ PSPRunner >> run [
 ]
 
 { #category : 'api' }
-PSPRunner >> strategy: aStrategy [
-    strategy := aStrategy
+PSPRunner >> samplingRate [
+
+	^ samplingRate
+]
+
+{ #category : 'api' }
+PSPRunner >> samplingRate: aNumber [
+
+	samplingRate := aNumber
 ]
 
 { #category : 'writing' }
