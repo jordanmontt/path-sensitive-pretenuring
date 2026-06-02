@@ -7,11 +7,10 @@ BASE_IMAGE_FILE="$BASE_DIR/Pharo.image"
 PHARO_CMD="$BASE_DIR/pharo"
 
 declare -A BENCHMARK_CLASSES=(
-    ["cormas"]="VeritasCormas"
     ["dataframe"]="VeritasDataFrame"
 )
 
-STRATEGIES=("applicationMethod" "psp" "psp70" "locationOfNew")
+STRATEGIES=("psp" "psp70" "psp80")
 
 log() { echo; echo "▸ $*"; echo; }
 
