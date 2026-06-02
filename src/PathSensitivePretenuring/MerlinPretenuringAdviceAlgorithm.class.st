@@ -133,7 +133,7 @@ MerlinPretenuringAdviceAlgorithm >> initialize [
 	taThreshold := 0.45.
 	hif := 0.
 	hlf := 0.6.
-	pruningThreshold := 0.0
+	pruningThreshold := 0.01
 ]
 
 { #category : 'calculating' }
