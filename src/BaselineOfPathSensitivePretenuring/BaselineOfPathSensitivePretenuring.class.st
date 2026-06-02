@@ -39,7 +39,7 @@ BaselineOfPathSensitivePretenuring >> declareExternalDependencies: spec [
 BaselineOfPathSensitivePretenuring >> declareGroups: spec [
 
 	spec group: 'default' with: #( 'core' ).
-	spec group: 'core'    with: #( 'PathSensitivePretenuring' )
+	spec group: 'core'    with: #( 'PathSensitivePretenuring' 'PathSensitivePretenuring-Tests' )
 ]
 
 { #category : 'baselines' }
