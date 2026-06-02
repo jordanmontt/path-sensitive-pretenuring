@@ -20,7 +20,7 @@ BaselineOfPathSensitivePretenuring >> baseline: spec [
 BaselineOfPathSensitivePretenuring >> declareDependencyLinks: spec [
 
 	spec package: 'PathSensitivePretenuring' with: [ spec requires: #( 'SendersChainTransformer' 'VeritasBenchSuite' ) ].
-
+	spec package: 'PathSensitivePretenuring-Tests' with: [ spec requires: #( 'PathSensitivePretenuring' ) ].
 ]
 
 { #category : 'baselines' }
