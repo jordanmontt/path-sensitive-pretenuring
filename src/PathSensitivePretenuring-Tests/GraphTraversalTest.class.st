@@ -122,10 +122,10 @@ GraphTraversalTest >> testTraverseLongLivedSenderChainsSimpleStrategy [
 	(allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m7) beAllocationSite.
 
 	expectedSendersChains := {
-		{
+		OrderedCollection newFrom: {
 			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m4 to: Behavior >> #basicNew).
 			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m7 to: AllocationGraphFixture class >> #m4) }.
-		{
+		OrderedCollection newFrom: {
 			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m5 to: Behavior >> #basicNew).
 			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m7 to: AllocationGraphFixture class >> #m5) } }.
 	
@@ -133,7 +133,7 @@ GraphTraversalTest >> testTraverseLongLivedSenderChainsSimpleStrategy [
 	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
+	self assertCollection: expectedSendersChains hasSameElements: sendersChains
 ]
 
 { #category : 'tests' }
