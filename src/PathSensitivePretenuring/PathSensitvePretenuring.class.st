@@ -70,7 +70,6 @@ PathSensitvePretenuring >> compilePretenuredMethods [
 { #category : 'calculating' }
 PathSensitvePretenuring >> constructAllocationGraph [
 
-    self removeKernelAllocations.
     allocationGraph := AllocationGraph onSamples: rawAllocationsSamples
 ]
 
@@ -148,7 +147,8 @@ PathSensitvePretenuring >> removeKernelAllocations [
 { #category : 'api - accessing' }
 PathSensitvePretenuring >> setUpForProfiler: aProfiler [
 
-	profiler := aProfiler.
-	rawAllocationsSamples := aProfiler objectAllocations copy.
-	"The ephemerons of the profiler, the allocation samples, are always ordered by birth time."
+   profiler := aProfiler.
+   rawAllocationsSamples := aProfiler objectAllocations copy.
+   "The ephemerons of the profiler, the allocation samples, are always ordered by birth time."
+   self removeKernelAllocations
 ]
