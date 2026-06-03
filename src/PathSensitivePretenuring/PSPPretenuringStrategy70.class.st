@@ -6,6 +6,12 @@ Class {
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
+{ #category : 'class initialization' }
+PSPPretenuringStrategy70 class >> fileName [
+
+   ^ 'psp70'
+]
+
 { #category : 'instance creation' }
 PSPPretenuringStrategy70 >> newClassificationAlgorithm [
 

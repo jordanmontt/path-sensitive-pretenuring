@@ -100,6 +100,34 @@ PSPRunner >> pretenurePaths [
 ]
 
 { #category : 'api' }
+PSPRunner >> pretenurePathsForAllStrategies [
+
+   | profiler traversalStrategies |
+   profiler := FiLiP new
+                  samplingRate: samplingRate;
+                  profileOn: [ benchmarkClass new run ];
+                  yourself.
+
+   experiment := PathSensitvePretenuring new
+                    setUpForProfiler: profiler;
+                    methodProtocol: protocol;
+                    yourself.
+
+   traversalStrategies := { PSPPretenuringStrategy100. PSPPretenuringStrategy85. 
+				PSPPretenuringStrategy70. TextualLocationOfNewPretenuringStrategy }.	
+	
+   traversalStrategies do: [ :strategyClass |
+		| fileName writeStream |
+		fileName := benchmarkClass fileName , '-' , strategyClass fileName, '.json'.
+		writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
+		experiment
+			pretenuringStrategy: strategyClass new;
+			analyzeAllocations;
+			compilePretenuredMethods;
+			exportPretenuredMethods: writeStream ]
+]
+
+{ #category : 'api' }
 PSPRunner >> pretenuringStrategy: aStrategy [
     pretenuringStrategy := aStrategy
 ]

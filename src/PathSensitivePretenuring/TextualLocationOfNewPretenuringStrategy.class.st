@@ -6,19 +6,16 @@ Class {
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
-{ #category : 'initialization' }
-TextualLocationOfNewPretenuringStrategy class >> setUpForGraph: allocationGarph [
+{ #category : 'class initialization' }
+TextualLocationOfNewPretenuringStrategy class >> fileName [
 
-    ^ self new
-          setUpForGraph: allocationGarph;
-          yourself
+   ^ 'textual'
 ]
 
 { #category : 'api' }
 TextualLocationOfNewPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: allocationStack [
 
-	^ anAllocationGraphNode isTextualAllocationSite and: [
-		  allocationStack last isLongLived ]
+	^ anAllocationGraphNode isTextualAllocationSite and: [ allocationStack last isLongLived ]
 ]
 
 { #category : 'api' }

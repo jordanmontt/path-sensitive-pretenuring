@@ -9,6 +9,12 @@ Class {
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
+{ #category : 'class initialization' }
+ApplicationMethodPretenuringStrategy class >> fileName [
+
+   ^ 'application'
+]
+
 { #category : 'initialization' }
 ApplicationMethodPretenuringStrategy class >> setUpForApplicationPackages: aListOfPackages [
 

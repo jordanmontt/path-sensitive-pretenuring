@@ -6,6 +6,12 @@ Class {
 	#tag : 'Pretenuring-Graph-Traversal'
 }
 
+{ #category : 'class initialization' }
+PSPPretenuringStrategy class >> fileName [
+
+   ^ 'psp'
+]
+
 { #category : 'api' }
 PSPPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: allocationStack [
 

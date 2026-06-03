@@ -10,6 +10,13 @@ Class {
 }
 
 { #category : 'class initialization' }
+AbstractPretenuringStrategy class >> fileName [
+   "Return a string"
+
+   ^ self subclassResponsibility
+]
+
+{ #category : 'class initialization' }
 AbstractPretenuringStrategy class >> initialize [
 
     | repo |
