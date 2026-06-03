@@ -81,20 +81,11 @@ PSPRunner >> methodProtocol: aString [
 { #category : 'api' }
 PSPRunner >> pretenurePaths [
 
-	| profiler |
-	profiler := FiLiP new
-		            samplingRate: samplingRate;
-		            profileOn: [ benchmarkClass new run ];
-		            yourself.
-
-	experiment := PathSensitvePretenuring new
-		              pretenuringStrategy: pretenuringStrategy;
-		              setUpForProfiler: profiler;
-		              ambiguityThreshold: ambiguityThreshold;
-		              methodProtocol: protocol;
-		              yourself.
+	self profileBenchmark.
 
 	experiment
+		pretenuringStrategy: pretenuringStrategy;
+		ambiguityThreshold: ambiguityThreshold;
 		analyzeAllocations;
 		compilePretenuredMethods
 ]
@@ -102,29 +93,14 @@ PSPRunner >> pretenurePaths [
 { #category : 'api' }
 PSPRunner >> pretenurePathsForAllStrategies [
 
-   | profiler traversalStrategies |
-   profiler := FiLiP new
-                  samplingRate: samplingRate;
-                  profileOn: [ benchmarkClass new run ];
-                  yourself.
-
-   experiment := PathSensitvePretenuring new
-                    setUpForProfiler: profiler;
-                    methodProtocol: protocol;
-                    yourself.
+   | traversalStrategies |
+   self profileBenchmark.
 
    traversalStrategies := { PSPPretenuringStrategy100. PSPPretenuringStrategy85. 
 				PSPPretenuringStrategy70. TextualLocationOfNewPretenuringStrategy }.	
-	
+
    traversalStrategies do: [ :strategyClass |
-		| fileName writeStream |
-		fileName := benchmarkClass fileName , '-' , strategyClass fileName, '.json'.
-		writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
-		experiment
-			pretenuringStrategy: strategyClass new;
-			analyzeAllocations;
-			compilePretenuredMethods;
-			exportPretenuredMethods: writeStream ]
+		self exportPretenuredMethodsForStrategy: strategyClass ]
 ]
 
 { #category : 'api' }
@@ -140,8 +116,8 @@ PSPRunner >> recordBaselineVmMetrics [
     jitMethodsCompilationTime := self currentJitCompilationTime.
     jitBlocksCompilationTime := self currentJitBlockCompilationTime.
 
-    fullGCTime := Smalltalk vm  totalFullGCTime.
-    incrementalGCTime := Smalltalk vm   totalIncrementalGCTime
+    fullGCTime := Smalltalk vm totalFullGCTime.
+    incrementalGCTime := Smalltalk vm totalIncrementalGCTime
 ]
 
 { #category : 'vm measurements' }
@@ -152,8 +128,8 @@ PSPRunner >> recordDeltasVmMetrics [
     jitMethodsCompilationTime := self currentJitCompilationTime - jitMethodsCompilationTime.
     jitBlocksCompilationTime := self currentJitBlockCompilationTime - jitBlocksCompilationTime.
 
-    fullGCTime := Smalltalk vm  totalFullGCTime - fullGCTime.
-    incrementalGCTime := Smalltalk vm   totalIncrementalGCTime - incrementalGCTime
+    fullGCTime := Smalltalk vm totalFullGCTime - fullGCTime.
+    incrementalGCTime := Smalltalk vm totalIncrementalGCTime - incrementalGCTime
 ]
 
 { #category : 'api' }
@@ -217,4 +193,33 @@ PSPRunner >> writeVmMeasurements [
 
 	fileReference writeStreamDo: [ :stream |
 		stream nextPutAll: (NeoJSONWriter toStringPretty: measurements) ].
+]
+
+{ #category : 'private' }
+PSPRunner >> profileBenchmark [
+
+	| profiler |
+	profiler := FiLiP new
+		            samplingRate: samplingRate;
+		            profileOn: [ benchmarkClass new run ];
+		            yourself.
+
+	experiment := PathSensitvePretenuring new
+		              setUpForProfiler: profiler;
+		              methodProtocol: protocol;
+		              yourself
+]
+
+{ #category : 'private' }
+PSPRunner >> exportPretenuredMethodsForStrategy: strategyClass [
+
+	| fileName writeStream |
+	fileName := benchmarkClass fileName , '-' , strategyClass fileName, '.json'.
+	writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
+
+	experiment
+		pretenuringStrategy: strategyClass new;
+		analyzeAllocations;
+		compilePretenuredMethods;
+		exportPretenuredMethods: writeStream
 ]
