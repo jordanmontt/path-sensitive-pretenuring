@@ -16,5 +16,5 @@ PSPPretenuringStrategy >> isAllocationSite: anAllocatorNode fromAllocationPath: 
 { #category : 'instance creation' }
 PSPPretenuringStrategy >> newClassificationAlgorithm [
 
-	^ PSPPretenuringAdviceAlgorithm new
+   ^ PSPPretenuringAdviceAlgorithm new
 ]
