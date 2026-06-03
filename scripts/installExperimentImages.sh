@@ -7,10 +7,13 @@ BASE_IMAGE_FILE="$BASE_DIR/Pharo.image"
 PHARO_CMD="$BASE_DIR/pharo"
 
 declare -A BENCHMARK_CLASSES=(
+    ["cormas"]="VeritasCormas"
     ["dataframe"]="VeritasDataFrame"
+    ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("psp" "psp70" "psp80")
+STRATEGIES=("psp100" "psp70" "psp85" "textual")
+SAMPLING_RATES=("1/1000" "1/100" "1/2" "1")
 
 log() { echo; echo "▸ $*"; echo; }
 
@@ -70,7 +73,8 @@ install_pretenured_methods() {
     local image_path="$1"
     local benchmark="$2"
     local strategy="$3"
-    local json_file="$benchmark-$strategy.json"
+    local safe_rate="${4//\//_}"
+    local json_file="$benchmark-$strategy-$safe_rate.json"
     "$PHARO_CMD" --headless "$image_path" eval --save "| file | file := (FileLocator localDirectory / 'iceberg' / 'jordanmontt' / 'path-sensitive-pretenuring' / 'pretenuredMethods' / '$json_file') asFileReference. PathSensitvePretenuring new deserializeAndInstallCompiledMethodsFrom: file"
     log "Installed pretenured methods ($json_file) for $image_path"
 }
@@ -100,10 +104,13 @@ install_strategy_images() {
         local baseline_image="./$benchmark/$benchmark.image"
 
         for strategy in "${STRATEGIES[@]}"; do
-            local name="$benchmark-$strategy"
-            local image_path="./$name/$name.image"
-            create_image "$baseline_image" "$name"
-            install_pretenured_methods "$image_path" "$benchmark" "$strategy"
+            for sampling_rate in "${SAMPLING_RATES[@]}"; do
+                local safe_rate="${sampling_rate//\//_}"
+                local name="$benchmark-$strategy-$safe_rate"
+                local image_path="./$name/$name.image"
+                create_image "$baseline_image" "$name"
+                install_pretenured_methods "$image_path" "$benchmark" "$strategy" "$sampling_rate"
+            done
         done
     done
 }
