@@ -77,17 +77,17 @@ PathSensitvePretenuring >> constructAllocationGraph [
 { #category : 'api' }
 PathSensitvePretenuring >> deserializeAndInstallCompiledMethodsFrom: aFileReference [
 
-	| compiledMethods uniqueMethods potentiallyAlreadyInstalledMethods |
+	| compiledMethods pretenuredMethods alreadyInstalledMethods |
 	compiledMethods := CompiledMethodToSourceCodeSerializer new deserialize: aFileReference contents.
 
-	uniqueMethods := compiledMethods select: [ :method | method selector includesSubstring: 'pretenured' ].
-	potentiallyAlreadyInstalledMethods := compiledMethods reject: [ :method | 
+	pretenuredMethods := compiledMethods select: [ :method | method selector includesSubstring: 'pretenured' ].
+	alreadyInstalledMethods := compiledMethods reject: [ :method | 
 	    method selector includesSubstring: 'pretenured' ].
 
-	(uniqueMethods , potentiallyAlreadyInstalledMethods) do: [ :aCompiledMethod |
-	    aCompiledMethod methodClass
-           addSelector: aCompiledMethod selector
-           withMethod: aCompiledMethod ]
+	pretenuredMethods do: [ :aCompiledMethod | 
+		CallSiteTransformer new installPretenuredMethod: aCompiledMethod ].
+	alreadyInstalledMethods do: [ :aCompiledMethod |
+		CallSiteTransformer new installMethod: aCompiledMethod ]
 ]
 
 { #category : 'api' }
