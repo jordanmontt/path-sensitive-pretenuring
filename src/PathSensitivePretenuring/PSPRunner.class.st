@@ -20,15 +20,37 @@ Class {
 	#tag : 'Experiment'
 }
 
-{ #category : 'api' }
+{ #category : 'api - accessing' }
 PSPRunner >> ambiguityThreshold: aNumber [
 
 	ambiguityThreshold := aNumber
 ]
 
-{ #category : 'api' }
+{ #category : 'api - accessing' }
 PSPRunner >> benchmarkClass: aClass [
     benchmarkClass := aClass
+]
+
+{ #category : 'private' }
+PSPRunner >> compileAndExportPretenuredMethodsForStrategy: strategyClass [
+
+	| fileName writeStream samplingRateAsString |
+	samplingRateAsString := samplingRate = 1
+		ifTrue: [ '1' ]
+		ifFalse: [ samplingRate asString allButFirst allButLast copyReplaceAll: '/' with: '_' ].
+						"The asString of the fraction sorrounds the fraction with parenthesis ()"
+
+	fileName := String streamContents: [ :stream | 
+		stream << benchmarkClass fileName << '-' << strategyClass fileName << '-'
+				<< samplingRateAsString << '.json' ].
+
+	writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
+
+	experiment
+		pretenuringStrategy: strategyClass new;
+		analyzeAllocations;
+		compilePretenuredMethods;
+		exportPretenuredMethods: writeStream
 ]
 
 { #category : 'accessing - vm measurements' }
@@ -51,32 +73,10 @@ PSPRunner >> currentMethodsJitCompiled [
     ^ Smalltalk vm parameterAt: 75
 ]
 
-{ #category : 'api' }
+{ #category : 'api -running' }
 PSPRunner >> exportPretenuredMethods: aWriteStream [
 
     experiment exportPretenuredMethods: aWriteStream
-]
-
-{ #category : 'private' }
-PSPRunner >> exportPretenuredMethodsForStrategy: strategyClass [
-
-	| fileName writeStream samplingRateAsString |
-	samplingRateAsString := samplingRate = 1
-		ifTrue: [ '1' ]
-		ifFalse: [ samplingRate asString allButFirst allButLast copyReplaceAll: '/' with: '_' ].
-						"The asString of the fraction sorrounds the fraction with parenthesis ()"
-
-	fileName := String streamContents: [ :stream | 
-		stream << benchmarkClass fileName << '-' << strategyClass fileName << '-'
-				<< samplingRateAsString << '.json' ].
-
-	writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
-
-	experiment
-		pretenuringStrategy: strategyClass new;
-		analyzeAllocations;
-		compilePretenuredMethods;
-		exportPretenuredMethods: writeStream
 ]
 
 { #category : 'initialization' }
@@ -88,19 +88,19 @@ PSPRunner >> initialize [
 	samplingRate := 1 / 100 "Same as FiLiP"
 ]
 
-{ #category : 'api' }
+{ #category : 'api -running' }
 PSPRunner >> installPretenuredMethods [
 
     experiment installPretenuredMethods
 ]
 
-{ #category : 'api' }
+{ #category : 'api - accessing' }
 PSPRunner >> methodProtocol: aString [
 
 	protocol := aString
 ]
 
-{ #category : 'api' }
+{ #category : 'api -running' }
 PSPRunner >> pretenurePaths [
 
 	self profileBenchmark.
@@ -112,7 +112,7 @@ PSPRunner >> pretenurePaths [
 		compilePretenuredMethods
 ]
 
-{ #category : 'api' }
+{ #category : 'api -running' }
 PSPRunner >> pretenurePathsForAllStrategies [
 
    | traversalStrategies |
@@ -122,10 +122,10 @@ PSPRunner >> pretenurePathsForAllStrategies [
 				PSPPretenuringStrategy70. TextualLocationOfNewPretenuringStrategy }.	
 
    traversalStrategies do: [ :strategyClass |
-		self exportPretenuredMethodsForStrategy: strategyClass ]
+		self compileAndExportPretenuredMethodsForStrategy: strategyClass ]
 ]
 
-{ #category : 'api' }
+{ #category : 'api - accessing' }
 PSPRunner >> pretenuringStrategy: aStrategy [
     pretenuringStrategy := aStrategy
 ]
@@ -169,7 +169,7 @@ PSPRunner >> recordDeltasVmMetrics [
     incrementalGCTime := Smalltalk vm totalIncrementalGCTime - incrementalGCTime
 ]
 
-{ #category : 'api' }
+{ #category : 'api -running' }
 PSPRunner >> run [
     | initialTime finalTime |
     self recordBaselineVmMetrics.
@@ -185,13 +185,7 @@ PSPRunner >> run [
     ^ ((finalTime - initialTime) / 1000) asFloat
 ]
 
-{ #category : 'api' }
-PSPRunner >> samplingRate [
-
-	^ samplingRate
-]
-
-{ #category : 'api' }
+{ #category : 'api - accessing' }
 PSPRunner >> samplingRate: aNumber [
 
 	samplingRate := aNumber
