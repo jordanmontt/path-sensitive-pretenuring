@@ -62,8 +62,9 @@ PSPRunner >> exportPretenuredMethodsForStrategy: strategyClass [
 
 	| fileName writeStream samplingRateAsString |
 	samplingRateAsString := samplingRate = 1
-		ifTrue: [ samplingRate asString ]
-		ifFalse: [ samplingRate asFloat asString copyReplaceAll: '.' with: '' ].
+		ifTrue: [ '1' ]
+		ifFalse: [ samplingRate asString allButFirst allButLast copyReplaceAll: '/' with: '_' ].
+						"The asString of the fraction sorrounds the fraction with parenthesis ()"
 
 	fileName := String streamContents: [ :stream | 
 		stream << benchmarkClass fileName << '-' << strategyClass fileName << '-'
