@@ -57,6 +57,27 @@ PSPRunner >> exportPretenuredMethods: aWriteStream [
     experiment exportPretenuredMethods: aWriteStream
 ]
 
+{ #category : 'private' }
+PSPRunner >> exportPretenuredMethodsForStrategy: strategyClass [
+
+	| fileName writeStream samplingRateAsString |
+	samplingRateAsString := samplingRate = 1
+		ifTrue: [ samplingRate asString ]
+		ifFalse: [ samplingRate asFloat asString copyReplaceAll: '.' with: '' ].
+
+	fileName := String streamContents: [ :stream | 
+		stream << benchmarkClass fileName << '-' << strategyClass fileName << '-'
+				<< samplingRateAsString << '.json' ].
+
+	writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
+
+	experiment
+		pretenuringStrategy: strategyClass new;
+		analyzeAllocations;
+		compilePretenuredMethods;
+		exportPretenuredMethods: writeStream
+]
+
 { #category : 'initialization' }
 PSPRunner >> initialize [
 
@@ -106,6 +127,21 @@ PSPRunner >> pretenurePathsForAllStrategies [
 { #category : 'api' }
 PSPRunner >> pretenuringStrategy: aStrategy [
     pretenuringStrategy := aStrategy
+]
+
+{ #category : 'private' }
+PSPRunner >> profileBenchmark [
+
+	| profiler |
+	profiler := FiLiP new
+		            samplingRate: samplingRate;
+		            profileOn: [ benchmarkClass new run ];
+		            yourself.
+
+	experiment := PathSensitvePretenuring new
+		              setUpForProfiler: profiler;
+		              methodProtocol: protocol;
+		              yourself
 ]
 
 { #category : 'vm measurements' }
@@ -193,33 +229,4 @@ PSPRunner >> writeVmMeasurements [
 
 	fileReference writeStreamDo: [ :stream |
 		stream nextPutAll: (NeoJSONWriter toStringPretty: measurements) ].
-]
-
-{ #category : 'private' }
-PSPRunner >> profileBenchmark [
-
-	| profiler |
-	profiler := FiLiP new
-		            samplingRate: samplingRate;
-		            profileOn: [ benchmarkClass new run ];
-		            yourself.
-
-	experiment := PathSensitvePretenuring new
-		              setUpForProfiler: profiler;
-		              methodProtocol: protocol;
-		              yourself
-]
-
-{ #category : 'private' }
-PSPRunner >> exportPretenuredMethodsForStrategy: strategyClass [
-
-	| fileName writeStream |
-	fileName := benchmarkClass fileName , '-' , strategyClass fileName, '.json'.
-	writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream.
-
-	experiment
-		pretenuringStrategy: strategyClass new;
-		analyzeAllocations;
-		compilePretenuredMethods;
-		exportPretenuredMethods: writeStream
 ]
