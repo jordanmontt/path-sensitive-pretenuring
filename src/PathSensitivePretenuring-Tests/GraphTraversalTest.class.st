@@ -106,11 +106,11 @@ GraphTraversalTest >> testTraverseLongLivedSenderChains [
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m5 to: Behavior >> #basicNew) }.
 		{ (allocationGraph edgeFrom: AllocationGraphFixtureUtilities class >> #mm to: Behavior >> #basicNew) }}.
 
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy setUpForGraph: allocationGraph).
+	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
 	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains hasSameElements: sendersChains
+	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
 ]
 
 { #category : 'tests' }
@@ -133,7 +133,7 @@ GraphTraversalTest >> testTraverseLongLivedSenderChainsSimpleStrategy [
 	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains hasSameElements: sendersChains
+	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
 ]
 
 { #category : 'tests' }
@@ -147,9 +147,9 @@ GraphTraversalTest >> testTraverseTextualStrategyOnlyGetsLongLivedEdges [
 	
 	expectedSendersChains do: [ :array | array do: #beLongLived].
 
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy setUpForGraph: allocationGraph).
+	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
 	sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains hasSameElements: sendersChains
+	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
 ]
