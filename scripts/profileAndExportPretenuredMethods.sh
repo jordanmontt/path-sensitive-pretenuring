@@ -8,12 +8,11 @@ PHARO_CMD="$BASE_DIR/pharo"
 
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
-    ["honeyGinger"]="VeritasHoneyGinger"
     ["dataframe"]="VeritasDataFrame"
     ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("applicationMethod" "psp" "psp70" "locationOfNew")
+SAMPLING_RATES=("1/1000" "1/100" "1/2" "1")
 
 log() { echo; echo "▸ $*"; echo; }
 
@@ -60,27 +59,14 @@ copy_dataset() {
     log "$file_name copied to $target_dir"
 }
 
-get_strategy_object() {
-    local strategy="$1"
-    local veritas_bench="$2"
-    case "$strategy" in
-        applicationMethod) echo "ApplicationMethodPretenuringStrategy setUpForApplicationPackages: $veritas_bench applicationPackages" ;;
-        psp)       echo "PSPPretenuringStrategy new" ;;
-        psp70)       echo "PSPPretenuringStrategy70 new" ;;
-        locationOfNew)     echo "TextualLocationOfNewPretenuringStrategy new" ;;
-    esac
-}
-
 profile_and_export_pretenured_methods() {
     local image_path="$1"
-    local benchmark="$2"
-    local strategy="$3"
-    local veritas_bench="$4"
-    local json_file="$benchmark-$strategy.json"
-    local strategy_object
-    strategy_object="$(get_strategy_object "$strategy" "$veritas_bench")"
-    "$PHARO_CMD" --headless "$image_path" eval --save "| fileName writeStream | fileName := '$json_file'. writeStream := (FileLocator imageDirectory / fileName) asFileReference writeStream. PSPRunner new strategy: ($strategy_object); benchmarkClass: $veritas_bench; pretenurePaths; exportPretenuredMethods: writeStream"
-    log "Exported pretenured methods ($json_file) for $image_path"
+    local sampling_rate="$2"
+    local veritas_bench="$3"
+
+    "$PHARO_CMD" --headless "$image_path" eval \
+        "PSPRunner new samplingRate: $sampling_rate; benchmarkClass: $veritas_bench; pretenurePathsForAllStrategies"
+    log "Exported pretenured methods for $image_path (rate $sampling_rate)"
 }
 
 move_dataset_from_veritas_repo() {
@@ -115,11 +101,12 @@ install_strategy_images() {
         local veritas_bench="${BENCHMARK_CLASSES[$benchmark]}"
         local baseline_image="./$benchmark/$benchmark.image"
 
-        for strategy in "${STRATEGIES[@]}"; do
-            local name="$benchmark-$strategy"
+        for sampling_rate in "${SAMPLING_RATES[@]}"; do
+            local safe_rate="${sampling_rate//\//_}"  # 1/1000 -> 1_1000
+            local name="$benchmark-$safe_rate"
             local image_path="./$name/$name.image"
             create_image "$baseline_image" "$name"
-            profile_and_export_pretenured_methods "$image_path" "$benchmark" "$strategy" "$veritas_bench"
+            profile_and_export_pretenured_methods "$image_path" "$sampling_rate" "$veritas_bench"
         done
     done
 }
