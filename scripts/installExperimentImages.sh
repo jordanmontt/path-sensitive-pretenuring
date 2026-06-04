@@ -12,7 +12,7 @@ declare -A BENCHMARK_CLASSES=(
     ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("psp100" "psp70" "psp85" "textual")
+STRATEGIES=("psp90" "psp80" "psp70" "textual")
 SAMPLING_RATES=("1/1000" "1/100" "1/2" "1")
 
 log() { echo; echo "▸ $*"; echo; }
