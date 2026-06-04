@@ -9,10 +9,10 @@ PHARO_CMD="$BASE_DIR/pharo"
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
     ["dataframe"]="VeritasDataFrame"
-    ["moose"]="VeritasMoose"
+    # ["moose"]="VeritasMoose"
 )
 
-SAMPLING_RATES=("1/1000" "1/100" "1/2" "1")
+SAMPLING_RATES=("1/1000" "1/100")
 
 log() { echo; echo "▸ $*"; echo; }
 
@@ -64,9 +64,10 @@ profile_and_export_pretenured_methods() {
     local sampling_rate="$2"
     local veritas_bench="$3"
 
+    log "Profiling and compiling the pretenured for $image_path with sampling rate $sampling_rate"
     "$PHARO_CMD" --headless "$image_path" eval \
         "PSPRunner new samplingRate: $sampling_rate; benchmarkClass: $veritas_bench; pretenurePathsForAllStrategies"
-    log "Exported pretenured methods for $image_path (rate $sampling_rate)"
+    log "Exported pretenured methods for $image_path with sampling rate $sampling_rate"
 }
 
 move_dataset_from_veritas_repo() {
@@ -119,3 +120,4 @@ main() {
 }
 
 main "$@"
+
