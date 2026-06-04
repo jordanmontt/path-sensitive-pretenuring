@@ -118,7 +118,7 @@ PSPRunner >> pretenurePathsForAllStrategies [
    | traversalStrategies |
    self profileBenchmark.
 
-   traversalStrategies := { PSPPretenuringStrategy100. PSPPretenuringStrategy85. 
+   traversalStrategies := { PSPPretenuringStrategy90. PSPPretenuringStrategy80. 
 				PSPPretenuringStrategy70. TextualLocationOfNewPretenuringStrategy }.	
 
    traversalStrategies do: [ :strategyClass |
