@@ -1,0 +1,118 @@
+[
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_withIndexDo: elementAndIndexBlock\r   \"Just like do: except that the iteration index supplies the second argument to the block\"\r\r   \"(Array streamContents: [:stream| #(11 22 13) withIndexDo: [ :each :i | stream nextPut: (each * each + i)]]) >>> #(122 486 172)\"\r\r   1 to: self size do: [ :index |\r   elementAndIndexBlock value: (self at: index) value: index ]"
+	},
+	{
+		"methodClass" : "AbstractFileReference",
+		"sourceCode" : "_pretenured_readStreamEncoded: anEncoding\r\r   ^ ZnCharacterReadStream\r        _pretenured_on: self binaryReadStream\r        encoding: anEncoding"
+	},
+	{
+		"methodClass" : "ZnCharacterEncoder class",
+		"sourceCode" : "_pretenured_newForEncoding: string\r   \"Return a new character encoder object for an encoding described by string.\r\tSearch for a subclass that handles it and delegate (subclassResponsibility).\"\r\r   | concreteSubclass |\r   concreteSubclass := self _pretenured_allSubclasses\r                          detect: [ :each |\r                          each handlesEncoding: string ]\r                          ifNone: [ ^ self default ].\r   ^ concreteSubclass newForEncoding: string"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readFromInternal: aFileReference\r   \"Read data frame from a CSV file\"\r\r   | stream reader df |\r   stream := aFileReference _pretenured_readStream.\r   reader := NeoCSVReader on: stream.\r   reader separator: self separator.\r\r   self readColumnNamesWith: reader.\r   self readRowsWith: reader.\r   reader close.\r   df := self _pretenured_createDataFrame.\r   ^ df"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSubclasses\r   \"Answer an orderedCollection of the receiver's and the receiver's descendent's subclasses. \"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | scan scanTop |\r   scan := OrderedCollection withAll: self subclasses.\r   scanTop := 1.\r   [ scanTop > scan size ] whileFalse: [\r         scan addAll: (scan at: scanTop) _pretenured_subclasses.\r         scanTop := scanTop + 1 ].\r   ^ scan"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_initializeRows: anArrayOfArrays\r\r   contents := DataFrameInternal withRows: anArrayOfArrays.\r   self setDefaultRowColumnNames.\r   self _pretenured_calculateDataTypes"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "_pretenured_asZnCharacterEncoder\r   \"Return a ZnCharacterEncoder instance using the receiver as identifier\"\r\r   \" 'UTF-8' asZnCharacterEncoder \"\r\r   ^ ZnCharacterEncoder _pretenured_newForEncoding: self"
+	},
+	{
+		"methodClass" : "ZnEncodedStream",
+		"sourceCode" : "_pretenured_encoding: encoding\r\r   encoder := encoding _pretenured_asZnCharacterEncoder"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_cull: anArg\r   \"Execute the receiver with one or zero arguments depending on the receiver\"\r\r   \"([ 12 ] cull: 13)>>> 12 \"\r\r   \"([:x | x + 12] cull: 3)>>> 15\"\r\r   <reflection:\r   'Message sending and code execution - Runtime and Evaluation'>\r   ^ numArgs = 0\r        ifTrue: [ self value ]\r        ifFalse: [ self value: anArg ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_add: newObject\r   \"Add a new object at the end of the collection, and returns the object itself\"\r\r   \"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r   \"Add returns the object itself\"\r\r   \"(OrderedCollection new add: 42) >>> 42\"\r\r   \"You may want to use yourself to return the collection itself\"\r\r   \"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r   \"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r   ^ self _pretenured_addLast: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "ZnEncodedStream class",
+		"sourceCode" : "_pretenured_on: wrappedStream encoding: encoding\r\r   ^ self new\r        on: wrappedStream;\r        _pretenured_encoding: encoding;\r        yourself"
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays columnNames: anArrayOfColumnNames\r\r   ^ anArrayOfArrays\r        _pretenured_ifNotEmpty: [\r              (self _pretenured_withRows: anArrayOfArrays)\r                 columnNames: anArrayOfColumnNames;\r                 yourself ]\r        ifEmpty: [ self withColumnNames: anArrayOfColumnNames ]"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_createDataFrame\r\r   | df |\r   df := DataFrame _pretenured_withRows: rows columnNames: columnNames.\r\r   self includeRowNames ifTrue: [ df privateRowNames: rowNames ].\r\r   ^ df"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "_pretenured_calculateDataType\r\r   | types |\r   types := Set newTenured.\r   self do: [ :elem | elem ifNotNil: [ types add: elem class ] ].\r\r   types ifNotEmpty: [ :classes |\r         | result |\r         result := classes\r                      inject: classes anyOne\r                      into: [ :commonSuperclass :each |\r                         self\r                            leastCommonSuperclassOf: commonSuperclass\r                            and: each ].\r         \"If we cannot detect the type, we configure it as Object.\"\r\r         ^ (result withAllSuperclasses includes: String)\r              ifTrue: [ Object ]\r              ifFalse: [ result ] ].\r   ^ UndefinedObject"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_doWithIndex: elementAndIndexBlock\r   \"Use the new version with consistent naming\"\r\r   ^ self _pretenured_withIndexDo: elementAndIndexBlock"
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays\r\r   ^ self new _pretenured_initializeRows: anArrayOfArrays"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_subclasses\r   \"Answer a Set containing the receiver's subclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ subclasses\r        ifNil: [ #(  ) ]\r        ifNotNil: [ subclasses _pretenured_copy ]"
+	},
+	{
+		"methodClass" : "FileReference",
+		"sourceCode" : "_pretenured_readStream\r\r   ^ self _pretenured_readStreamEncoded: 'utf8'"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_calculateDataTypes\r\r   self asArrayOfColumns _pretenured_doWithIndex: [ :column :i |\r         self dataTypes\r            at: (self columnNames at: i)\r            put: column _pretenured_calculateDataType ]"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_ifNotEmpty: notEmptyBlock ifEmpty: emptyBlock\r   \"Evaluate emptyBlock if I'm empty, notEmptyBlock otherwise\r\t If the notEmptyBlock has an argument, eval with the receiver as its argument\"\r\r   ^ self isEmpty\r        ifTrue: [ emptyBlock value ]\r        ifFalse: [ notEmptyBlock _pretenured_cull: self ]"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readOnlyRowsWith: aReader\r\r   rows := OrderedCollection new.\r\r   [ aReader atEnd ] whileFalse: [ rows _pretenured_add: aReader next ]"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readFrom: aFileReference\r   \"Read data frame from a CSV file\"\r\r   | df |\r   df := self _pretenured_readFromInternal: aFileReference.\r   shouldInferTypes ifTrue: [\r         DataFrameTypeDetector new\r            columnTypes: columnTypes;\r            detectTypesAndConvert: df ].\r   ^ df"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r   ^ recordClass newTenured: size"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readRowsWith: aReader\r\r   ^ self includeRowNames\r        ifTrue: [ self readRowsAndRowNamesWith: aReader ]\r        ifFalse: [ self _pretenured_readOnlyRowsWith: aReader ]"
+	}
+]

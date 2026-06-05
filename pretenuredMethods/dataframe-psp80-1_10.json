@@ -1,0 +1,190 @@
+[
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_cull: anArg\r   \"Execute the receiver with one or zero arguments depending on the receiver\"\r\r   \"([ 12 ] cull: 13)>>> 12 \"\r\r   \"([:x | x + 12] cull: 3)>>> 15\"\r\r   <reflection:\r   'Message sending and code execution - Runtime and Evaluation'>\r   ^ numArgs = 0\r        ifTrue: [ self value ]\r        ifFalse: [ self value: anArg ]"
+	},
+	{
+		"methodClass" : "FileSystem",
+		"sourceCode" : "_pretenured_open: aResolvable writable: aBoolean\r   \"Resolve aResolvable into an absolute path, then ask the store to open the file at\r\tthat path using the specified access mode.\"\r\r   | path |\r   path := self resolve: aResolvable.\r   ^ store handleClass\r        _pretenured_open: (FileReference fileSystem: self path: path)\r        writable: aBoolean"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "Interval",
+		"sourceCode" : "_pretenured_collect: aBlock\r\r   | nextValue result |\r   result := self species new: self size.\r   nextValue := start.\r   1 to: result size do: [ :i |\r         result at: i put: (aBlock value: nextValue).\r         nextValue := nextValue + step ].\r   ^ result"
+	},
+	{
+		"methodClass" : "ZnCharacterEncoder class",
+		"sourceCode" : "_pretenured_newForEncoding: string\r   \"Return a new character encoder object for an encoding described by string.\r\tSearch for a subclass that handles it and delegate (subclassResponsibility).\"\r\r   | concreteSubclass |\r   concreteSubclass := self _pretenured_allSubclasses\r                          _pretenured_detect: [ :each |\r                          each _pretenured_handlesEncoding: string ]\r                          ifNone: [ ^ self default ].\r   ^ concreteSubclass newForEncoding: string"
+	},
+	{
+		"methodClass" : "FileSystem",
+		"sourceCode" : "_pretenured_binaryReadStreamOn: aResolvable\r   \"Resolve the argument into an absolute path and open a file handle on the file\r\tat that path. Ask the handle to give us a read stream for reading the file.\"\r\r   ^ (self _pretenured_open: aResolvable writable: false)\r        binaryReadStream"
+	},
+	{
+		"methodClass" : "AbstractFileReference",
+		"sourceCode" : "_pretenured_readStreamEncoded: anEncoding\r\r   ^ ZnCharacterReadStream\r        _pretenured_on: self _pretenured_binaryReadStream\r        encoding: anEncoding"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readFromInternal: aFileReference\r   \"Read data frame from a CSV file\"\r\r   | stream reader df |\r   stream := aFileReference _pretenured_readStream.\r   reader := NeoCSVReader on: stream.\r   reader separator: self separator.\r\r   self readColumnNamesWith: reader.\r   self readRowsWith: reader.\r   reader close.\r   df := self _pretenured_createDataFrame.\r   ^ df"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "initialize\r\r   super initialize.\r   contents := Array2D newTenured"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "FileReference",
+		"sourceCode" : "_pretenured_binaryReadStream\r   \"Answer a buffered binary read stream on the receiver\"\r\r   ^ ZnBufferedReadStream on:\r        (filesystem _pretenured_binaryReadStreamOn: self path)"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_writeStream\r\r   ^ WriteStream _pretenured_on: self"
+	},
+	{
+		"methodClass" : "ZnSimplifiedByteEncoder class",
+		"sourceCode" : "_pretenured_handlesEncoding: string\r   \"Return true when my instances handle the encoding described by string\"\r\r   ^ self byteTextConverters includesKey:\r        (self _pretenured_canonicalEncodingIdentifier: string)"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_columnNames: aCollection\r   \"Sets the column names of a DataFrame with contents of the collection aCollection\"\r\r   | type |\r   aCollection size = self numberOfColumns ifFalse: [\r      SizeMismatch signal: 'Wrong number of column names' ].\r\r   aCollection asSet size = aCollection size ifFalse: [\r      Error signal: 'All column names must be distinct' ].\r\r   self columnNames ifNotNil: [\r         self columnNames _pretenured_withIndexDo: [\r               :currentColumnName\r               :i |\r               type := dataTypes at: currentColumnName.\r               dataTypes removeKey: currentColumnName.\r               dataTypes _pretenured_at: (aCollection at: i) put: type ] ].\r\r   columnNames := aCollection asOrderedCollection"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_detect: aBlock ifNone: exceptionBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tAnswer the first element for which aBlock evaluates to true. If none\r\tevaluate to true, then evaluate the argument, exceptionBlock.\"\r\r   \"(#(1 2) detect: #even ifNone: [0]) >>> 2\"\r\r   \"(#(1 3) detect: #even ifNone: [0]) >>> 0\"\r\r   \"('Hello' detect: #isLowercase ifNone: [$X]) >>> $e\"\r\r   \"('LOL' detect: #isLowercase ifNone: [$X]) >>> $X\"\r\r   ^ self\r        _pretenured_detect: aBlock\r        ifFound: [ :element | element ]\r        ifNone: exceptionBlock"
+	},
+	{
+		"methodClass" : "FileSystemHandle class",
+		"sourceCode" : "_pretenured_on: aReference writable: aBoolean\r\r   ^ self newTenured setReference: aReference writable: aBoolean"
+	},
+	{
+		"methodClass" : "ZnEncodedStream",
+		"sourceCode" : "_pretenured_encoding: encoding\r\r   encoder := encoding _pretenured_asZnCharacterEncoder"
+	},
+	{
+		"methodClass" : "ZnCharacterEncoder class",
+		"sourceCode" : "_pretenured_canonicalEncodingIdentifier: string\r\r   ^ (string _pretenured_select: [ :each | each isAlphaNumeric ])\r        asLowercase"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_createDataFrame\r\r   | df |\r   df := DataFrame _pretenured_withRows: rows columnNames: columnNames.\r\r   self includeRowNames ifTrue: [ df privateRowNames: rowNames ].\r\r   ^ df"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "initialize\r\r   super initialize.\r\r   dataTypes := Dictionary new.\r   contents := DataFrameInternal newTenured.\r   self setDefaultRowColumnNames.\r   self calculateDataTypes"
+	},
+	{
+		"methodClass" : "FileSystemHandle class",
+		"sourceCode" : "_pretenured_open: aReference writable: aBoolean\r\r   ^ (self _pretenured_on: aReference writable: aBoolean) open"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_to: stop\r   \"Answer an Interval from the receiver up to the argument, stop,\r\tincrementing by 1.\"\r\r   ^ Interval _pretenured_from: self to: stop by: 1"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_withIndexDo: elementAndIndexBlock\r   \"Just like do: except that the iteration index supplies the second argument to the block\"\r\r   \"(Array streamContents: [:stream| #(11 22 13) withIndexDo: [ :each :i | stream nextPut: (each * each + i)]]) >>> #(122 486 172)\"\r\r   1 to: self size do: [ :index |\r   elementAndIndexBlock value: (self at: index) value: index ]"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_subclasses\r   \"Answer a Set containing the receiver's subclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ subclasses\r        ifNil: [ #(  ) ]\r        ifNotNil: [ subclasses _pretenured_copy ]"
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays\r\r   ^ self newTenured _pretenured_initializeRows: anArrayOfArrays"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_ifNotEmpty: notEmptyBlock ifEmpty: emptyBlock\r   \"Evaluate emptyBlock if I'm empty, notEmptyBlock otherwise\r\t If the notEmptyBlock has an argument, eval with the receiver as its argument\"\r\r   ^ self isEmpty\r        ifTrue: [ emptyBlock value ]\r        ifFalse: [ notEmptyBlock _pretenured_cull: self ]"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrame to the array of columns\"\r\r   \"(#(#(1 2) #(3 4)) asDataFrame asArrayOfColumns) >>> (#(#(1 3) #(2 4)))\"\r\r   \"(#(#(r1c1 r1c2) #(r2c1 r2c2)) asDataFrame asArrayOfColumns) >>> (#(#(r1c1 r2c1) #(r1c2 r2c2)))\"\r\r   ^ contents _pretenured_asArrayOfColumns"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_calculateDataTypes\r\r   self _pretenured_asArrayOfColumns _pretenured_doWithIndex: [\r         :column\r         :i |\r         self dataTypes\r            _pretenured_at: (self columnNames at: i)\r            put: column calculateDataType ]"
+	},
+	{
+		"methodClass" : "Interval class",
+		"sourceCode" : "_pretenured_from: startInteger to: stopInteger by: stepInteger\r   \"Answer an instance of me, starting at startNumber, ending at\r\tstopNumber, and with an interval increment of stepNumber.\"\r\r   ^ self newTenured\r        setFrom: startInteger\r        to: stopInteger\r        by: stepInteger"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_doWithIndex: elementAndIndexBlock\r   \"Use the new version with consistent naming\"\r\r   ^ self _pretenured_withIndexDo: elementAndIndexBlock"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_detect: aBlock ifFound: foundBlock ifNone: exceptionBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tIf some element evaluates aBlock to true, then cull this element into\r\tfoundBlock and answer the result of this evaluation.\r\tIf none evaluate to true, then evaluate exceptionBlock.\"\r\r   \"(#(1 2) detect: #even ifFound: #negated ifNone: [0]) >>> -2\"\r\r   \"(#(1 3) detect: #even ifFound: #negated ifNone: [0]) >>> 0\"\r\r   \"('Hello' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $E\"\r\r   \"('LOL' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $X\"\r\r   self _pretenured_do: [ :each |\r      (aBlock value: each) ifTrue: [ ^ foundBlock cull: each ] ].\r   ^ exceptionBlock value"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrameInternal to the array of columns\"\r\r   ^ (1 to: self numberOfColumns) _pretenured_collect: [ :j |\r           (1 _pretenured_to: self numberOfRows) collect: [ :i |\r              self at: i at: j ] ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_stringStreamContents: block\r   \"Like String streamContents: block\r\tbut reusing the underlying buffer for improved efficiency\"\r\r   stringStream ifNil: [\r      stringStream := (String new: 32) _pretenured_writeStream ].\r   stringStream reset.\r   block value: stringStream.\r   ^ stringStream contents"
+	},
+	{
+		"methodClass" : "ZnEncodedStream class",
+		"sourceCode" : "_pretenured_on: wrappedStream encoding: encoding\r\r   ^ self new\r        on: wrappedStream;\r        _pretenured_encoding: encoding;\r        yourself"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Override the superclass for performance reasons.\"\r\r   firstIndex to: lastIndex do: [ :index |\r   aBlock value: (array at: index) ]"
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays columnNames: anArrayOfColumnNames\r\r   ^ anArrayOfArrays\r        _pretenured_ifNotEmpty: [\r              (self _pretenured_withRows: anArrayOfArrays)\r                 _pretenured_columnNames: anArrayOfColumnNames;\r                 yourself ]\r        ifEmpty: [ self withColumnNames: anArrayOfColumnNames ]"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_initializeRows: anArrayOfArrays\r\r   contents := DataFrameInternal withRows: anArrayOfArrays.\r   self _pretenured_setDefaultRowColumnNames.\r   self _pretenured_calculateDataTypes"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_setDefaultRowColumnNames\r\r   self privateRowNames: (1 _pretenured_to: self numberOfRows).\r   self columnNames: (1 to: self numberOfColumns)"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSubclasses\r   \"Answer an orderedCollection of the receiver's and the receiver's descendent's subclasses. \"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | scan scanTop |\r   scan := OrderedCollection withAll: self subclasses.\r   scanTop := 1.\r   [ scanTop > scan size ] whileFalse: [\r         scan addAll: (scan at: scanTop) _pretenured_subclasses.\r         scanTop := scanTop + 1 ].\r   ^ scan"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_select: aBlock\r   \"Optimized version of Collection>>#select:\"\r\r   \"(#(1 2 3 4) select: [:each | each > 2 ]) >>> #(3 4)\"\r\r   | each |\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              1 to: self size do: [ :index |\r                    (aBlock value: (each := self at: index)) ifTrue: [\r                       stream nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "_pretenured_asZnCharacterEncoder\r   \"Return a ZnCharacterEncoder instance using the receiver as identifier\"\r\r   \" 'UTF-8' asZnCharacterEncoder \"\r\r   ^ ZnCharacterEncoder _pretenured_newForEncoding: self"
+	},
+	{
+		"methodClass" : "FileReference",
+		"sourceCode" : "_pretenured_readStream\r\r   ^ self _pretenured_readStreamEncoded: 'utf8'"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readFrom: aFileReference\r   \"Read data frame from a CSV file\"\r\r   | df |\r   df := self _pretenured_readFromInternal: aFileReference.\r   shouldInferTypes ifTrue: [\r         DataFrameTypeDetector new\r            columnTypes: columnTypes;\r            detectTypesAndConvert: df ].\r   ^ df"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "readUnquotedField\r\r   (self atEnd or: [ self peekSeparator or: [ self peekEndOfLine ] ])\r      ifTrue: [ ^ emptyFieldValue ].\r   ^ self _pretenured_stringStreamContents: [ :stream |\r           [\r           self atEnd or: [\r              self peekSeparator or: [ self peekEndOfLine ] ] ]\r              whileFalse: [ stream nextPut: self nextChar ] ]"
+	}
+]

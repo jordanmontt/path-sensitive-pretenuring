@@ -1,0 +1,14 @@
+[
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyFrom: start to: stop\r   \"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r   | newSize |\r   newSize := stop - start + 1.\r   ^ (self species newTenured: newSize)\r        replaceFrom: 1\r        to: newSize\r        with: self\r        startingAt: start"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r   ^ recordClass newTenured: size"
+	}
+]
