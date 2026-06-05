@@ -9,7 +9,7 @@ PHARO_CMD="$BASE_DIR/pharo"
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
     ["dataframe"]="VeritasDataFrame"
-    # ["moose"]="VeritasMoose"
+    ["moose"]="VeritasMoose"
 )
 
 STRATEGIES=("psp90" "psp80" "psp70" "textual")
