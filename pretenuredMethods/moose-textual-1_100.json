@@ -1,0 +1,142 @@
+[
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_named: aString\r\r   ^ self newTenured\r        name: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key ifAbsent: aBlock\r   \"Answer the value associated with the key or, if key isn't found,\r\tanswer the result of evaluating aBlock.\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ aBlock ]\r         ifNotNil: [ :assoc | assoc ]) value"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "_pretenured_dangling: reference to: serial\r\r   (reminderDict\r       _pretenured_at: serial\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: reference.\r   numberOfDanglingReferences := numberOfDanglingReferences + 1.\r   ^ reference"
+	},
+	{
+		"methodClass" : "FMMultivalueLink class",
+		"sourceCode" : "_pretenured_on: element opposite: oppositeSelector\r\r   ^ self newTenured\r        with: element opposite: oppositeSelector;\r        yourself"
+	},
+	{
+		"methodClass" : "Set class",
+		"sourceCode" : "_pretenured_newFrom: aCollection\r   \"Answer an instance of me containing the same elements as aCollection.\"\r\r   \"(Set newFrom: {1. 2. 3}) >>> #( 1 2 3) asSet\"\r\r   \"({1. 2. 3} as: Set) >>> #( 1 2 3) asSet\"\r\r   | newCollection |\r   newCollection := self newTenured: aCollection size.\r   newCollection addAll: aCollection.\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key ifAbsentPut: aBlock\r   \"Return the value at the given key.\r\tIf the key is not included in the receiver store and return the result\r\tof evaluating aBlock as the new value.\"\r\r   ^ self\r        _pretenured_at: key\r        ifAbsent: [ self at: key put: aBlock value ]"
+	},
+	{
+		"methodClass" : "FMDanglingReference class",
+		"sourceCode" : "_pretenured_with: aFutureAttribute\r\r   ^ self newTenured\r        parentProperty: aFutureAttribute;\r        yourself"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "FMMultivalueLink class",
+		"sourceCode" : "newTenured\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "newTenured\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "FMFuture class",
+		"sourceCode" : "_pretenured_in: anImporter named: aString\r\r   ^ self newTenured\r        in: anImporter named: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "_pretenured_on: anObject slot: aFMRelationSlot\r\r   ^ self newTenured owner: anObject slot: aFMRelationSlot"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "FMFutureProperty",
+		"sourceCode" : "referenceNumber: serial\r\r   self addToValues: (self importer entityAt: serial ifAbsent: [\r             self importer\r                _pretenured_dangling:\r                (FMDanglingReference _pretenured_with: self)\r                to: serial ])"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyWith: newElement\r   \"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r   | newIC |\r   newIC := self species newTenured: self size + 1.\r   newIC\r      replaceFrom: 1\r      to: self size\r      with: self\r      startingAt: 1.\r   newIC at: newIC size put: newElement.\r   ^ newIC"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r   ^ implementingClass\r        ifNil: [ FMRuntimeElement new description: self ]\r        ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "processCompiledMethod: aMethod\r\r   | method |\r   method := aMethod.\r\r   \"If the method is a reflective method we need to ensure it is compiled and use its compiled method.\r\tA refelctive method is for exemple a method created via a metalink and that was never executed.\"\r   (aMethod isKindOf: ReflectiveMethod) ifTrue: [\r         method := aMethod\r                      compileAndInstallCompiledMethod;\r                      compiledMethod ].\r   self assert: method isCompiledMethod.\r\r   method pragmas\r      detect: [ :each |\r            #( #FMProperty:type:opposite: #FMProperty:type:\r               #FMProperty:type:defaultValue: ) includes:\r               each selector ]\r      ifFound: [ :pragma |\r            | prop |\r            prop := FM3Property _pretenured_named:\r                       (pragma argumentAt: 1) asString.\r            typeDict at: prop put: (pragma argumentAt: 2).\r            mmClassDict at: prop put: method methodClass.\r            pragma selector = #FMProperty:type:defaultValue: ifTrue: [\r               prop defaultValue: (pragma argumentAt: 3) ].\r            pragma selector = #FMProperty:type:opposite: ifTrue: [\r               oppositeDict at: prop put: (pragma argumentAt: 3) ].\r            self processInfosFrom: method for: prop.\r\r            elements add: prop ]"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r   entityAttributes := #(  ).\r   cache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "FM3Trait",
+		"sourceCode" : "initialize\r\r   super initialize.\r   users := Set newTenured"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack push:\r      (FMFutureEntity _pretenured_in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "FM3Type",
+		"sourceCode" : "initialize\r\r   super initialize.\r   properties := FMMultivalueLink\r                    _pretenured_on: self\r                    opposite: #mmClass:.\r   traits := Set newTenured"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "as: aSimilarClass\r   \"Create an object of class aSimilarClass that has similar contents to the receiver if the object is not already an instance of this class.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r\r   ^ aSimilarClass _pretenured_newFrom: self"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r   super initialize.\r   keys := Array newTenured: 2.\r   values := Array newTenured: 2.\r   size := 0"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "initialize\r\r   super initialize.\r   isAbstract := false.\r   superclass := self class defaultSuperclass.\r   subclasses := FMMultivalueLink\r                    _pretenured_on: self\r                    opposite: #superclass:"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :element |\r      element ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "processTrait: aTrait ifPragmaAbsent: anErrorBlock\r\r   aTrait metamodelDefinitionPragma\r      ifNil: anErrorBlock\r      ifNotNil: [ :pragma |\r            | fm3Trait |\r            fm3Trait := FM3Trait _pretenured_named:\r                           (pragma argumentAt: 1).\r            superclassDict at: fm3Trait put: (pragma argumentAt: 2).\r            fm3Trait implementingClass: aTrait.\r            self extractPackageFrom: pragma method for: fm3Trait.\r            classDict at: aTrait put: fm3Trait.\r            (self methodsToProcessFrom: aTrait) do: [ :each |\r               self processCompiledMethod: each ].\r            aTrait localSlots\r               select: #isFMRelationSlot\r               thenDo: [ :each | self processSlot: each in: aTrait ].\r            traitsDict at: fm3Trait put: aTrait localGeneratedTraits.\r            elements add: fm3Trait ]"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "copyReplaceAll: oldSubstring with: newSubstring\r   \"Answer a copy of the receiver in which all occurrences of oldSubstring have been replaced by newSubstring\"\r\r   \"('ab cd ab ef ab' copyReplaceAll: 'ab' with: 'zk') >>> 'zk cd zk ef zk'\"\r\r   | idx |\r   self = oldSubstring ifTrue: [ ^ newSubstring copy ].\r   oldSubstring isEmpty ifTrue: [ ^ self copy ].\r   idx := 1.\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              | foundIdx |\r              [\r              (foundIdx := self\r                              findString: oldSubstring\r                              startingAt: idx) isZero ] whileFalse: [\r                    stream\r                       next: foundIdx - idx\r                       putAll: self\r                       startingAt: idx;\r                       nextPutAll: newSubstring.\r                    idx := foundIdx + oldSubstring size ].\r              idx <= self size ifTrue: [\r                 stream\r                    next: self size - idx + 1\r                    putAll: self\r                    startingAt: idx ] ]"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream on: (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "FMMany",
+		"sourceCode" : "initialize: anObject\r\r   self\r      write:\r      (FMSlotMultivalueLink _pretenured_on: anObject slot: self)\r      to: anObject"
+	}
+]

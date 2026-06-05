@@ -1,0 +1,150 @@
+[
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_reversed\r   \"Answer a copy of the receiver with element order reversed.  \"\r\r   \"#(2 3 4 'fred') asOrderedCollection reversed >>> #('fred' 4 3 2) asOrderedCollection\"\r\r   | newCol |\r   newCol := self speciesForTransform newTenured: self size.\r   self reverseDo: [ :elem | newCol addLast: elem ].\r   ^ newCol"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "FamixJavaInvocation",
+		"sourceCode" : "_pretenured_candidates: anObject\r\r   <generated>\r   candidates value: anObject"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "FamixJavaIndexedFileAnchor",
+		"sourceCode" : "_pretenured_fileName: aFileName\r\r   fileName := aFileName _pretenured_copyReplaceAll: '\\' with: '/'"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "_pretenured_copyReplaceAll: oldSubstring with: newSubstring\r   \"Answer a copy of the receiver in which all occurrences of oldSubstring have been replaced by newSubstring\"\r\r   \"('ab cd ab ef ab' copyReplaceAll: 'ab' with: 'zk') >>> 'zk cd zk ef zk'\"\r\r   | idx |\r   self = oldSubstring ifTrue: [ ^ newSubstring copy ].\r   oldSubstring isEmpty ifTrue: [ ^ self copy ].\r   idx := 1.\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              | foundIdx |\r              [\r              (foundIdx := self\r                              findString: oldSubstring\r                              startingAt: idx) isZero ] whileFalse: [\r                    stream\r                       next: foundIdx - idx\r                       putAll: self\r                       startingAt: idx;\r                       nextPutAll: newSubstring.\r                    idx := foundIdx + oldSubstring size ].\r              idx <= self size ifTrue: [\r                 stream\r                    next: self size - idx + 1\r                    putAll: self\r                    startingAt: idx ] ]"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_asLink\r   \"Answer a string that represents the receiver.\"\r\r   ^ ValueLink value: self"
+	},
+	{
+		"methodClass" : "FamixJavaMethod",
+		"sourceCode" : "_pretenured_declaredExceptions: anObject\r\r   <generated>\r   declaredExceptions value: anObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addAllLast: aCollection\r   \"Add each element of aCollection at the end of the receiver.\r\tAnswer aCollection.\"\r\r   aCollection do: [ :each | self _pretenured_addLast: each ].\r   ^ aCollection"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "Stack",
+		"sourceCode" : "_pretenured_push: anObject\r   \"Adds a new object of any kind on top of the stack.\"\r\r   self _pretenured_addFirst: anObject.\r   ^ anObject"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_do: aBlock\r\r   tally = 0 ifTrue: [ ^ self ].\r   1 to: array size do: [ :index |\r         | each |\r         (each := array at: index) ifNotNil: [\r            aBlock value: each enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "LinkedList",
+		"sourceCode" : "_pretenured_addFirst: aLinkOrObject\r   \"Add aLink to the beginning of the receiver's list. Answer aLink.\"\r\r   | aLink |\r   aLink := aLinkOrObject _pretenured_asLink.\r   self isEmpty ifTrue: [ lastLink := aLink ].\r   aLink nextLink: firstLink.\r   firstLink := aLink.\r   ^ aLink"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink",
+		"sourceCode" : "_pretenured_removeAll\r   \"The collection is reversed to make a copy, to avoid trying to remove while iterating,\r\tand to remove items from last to first, which is faster.\"\r\r   self _pretenured_reversed do: [ :anElement |\r      self remove: anElement ]"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "_pretenured_beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack _pretenured_push:\r      (FMFutureEntity in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink",
+		"sourceCode" : "value: aCollection\r\r   ^ self\r        _pretenured_removeAll;\r        addAll: aCollection"
+	},
+	{
+		"methodClass" : "FMFuture class",
+		"sourceCode" : "_pretenured_in: anImporter named: aString\r\r   ^ self newTenured\r        in: anImporter named: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "ValueLink class",
+		"sourceCode" : "value: aValue\r\r   ^ self newTenured value: aValue"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r   super initialize.\r   keys := Array newTenured: 2.\r   values := Array newTenured: 2.\r   size := 0"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "addAllLast: aCollection\r   \"Add each element of aCollection at the end of the receiver.\r\tAnswer aCollection.\"\r\r   aCollection _pretenured_do: [ :each | self addLast: each ].\r   ^ aCollection"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "named: aString\r\r   ^ self newTenured\r        name: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink",
+		"sourceCode" : "uncheckUnsafeAdd: element\r   \"Calls the implementation in OrderedCollection.\"\r\r   super _pretenured_addLast: element"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r   ^ implementingClass\r        ifNil: [ FMRuntimeElement new description: self ]\r        ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "new\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "assign: element to: serial\r\r   | todo |\r   serialDict _pretenured_at: serial put: element.\r   todo := reminderDict removeKey: serial ifAbsent: [ ^ self ].\r   todo do: [ :each |\r         each resolve: element.\r         numberOfDanglingReferences := numberOfDanglingReferences - 1.\r         self assert: numberOfDanglingReferences >= 0 ]"
+	},
+	{
+		"methodClass" : "FM3Property",
+		"sourceCode" : "setOn: element rawValue: array\r   \"This is the internal logic to set the value inside the object.\r\tBy default build and call a mutator for the implementing selector\"\r\r   element\r      _pretenured_perform: self implementingSelector asMutator\r      with: array"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r   entityAttributes := #(  ).\r   cache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream on: (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "FamixJavaMethod",
+		"sourceCode" : "thrownExceptions: anObject\r\r   <generated>\r   thrownExceptions value: anObject"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack push:\r      (FMFutureEntity _pretenured_in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "FMImporterFilter",
+		"sourceCode" : "beginEntity: name\r\r   (filter includes: name)\r      ifTrue: [\r            shouldSkip := false.\r            importer _pretenured_beginEntity: name ]\r      ifFalse: [ shouldSkip := true ]"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+	}
+]

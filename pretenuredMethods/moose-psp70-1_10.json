@@ -1,0 +1,842 @@
+[
+	{
+		"methodClass" : "FamixTMethodMetrics classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "AbsolutePath class",
+		"sourceCode" : "_pretenured_removeRedundantSegments: segments\r   \"Remove redundant elements ('.' and '') from the supplied segments.\r\tThe parent of the root directory is itself.\"\r\r   | newSegments |\r   newSegments := segments asOrderedCollection _pretenured_copy.\r   [ newSegments isNotEmpty and: [ newSegments first = '..' ] ]\r      whileTrue: [ newSegments removeFirst ].\r   ^ newSegments select: [ :segment |\r        segment notEmpty and: [ segment ~= '.' ] ]"
+	},
+	{
+		"methodClass" : "ValueLink class",
+		"sourceCode" : "value: aValue\r\r   ^ self newTenured value: aValue"
+	},
+	{
+		"methodClass" : "FMModel",
+		"sourceCode" : "_pretenured_addAll: elementCollection\r\r   elementCollection _pretenured_do: [ :each |\r      self _pretenured_add: each ]"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "_pretenured_beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack _pretenured_push:\r      (FMFutureEntity in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "FamixTWithAnnotationTypes classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_flatCollect: aBlock\r   \"Evaluate aBlock for each of the receiver's elements and answer the\r\tlist of all resulting values flatten one level. Assumes that aBlock returns some kind\r\tof collection for each element. Equivalent to the lisp's mapcan\"\r\r   \"( #((3 4) (1 2)) flatCollect: [:each | each ] ) >>> #(3 4 1 2)\"\r\r   \"( #(3 4 1 2) flatCollect: [:each | { each. each*10 } ] ) >>> #(3 30 4 40 1 10 2 20)\"\r\r   ^ self _pretenured_flatCollect: aBlock as: self species"
+	},
+	{
+		"methodClass" : "IteratorDecoratorFactory class",
+		"sourceCode" : "_pretenured_selectIteratorFor: aValuable\r\r   ^ SelectIterator newTenured\r        block: aValuable;\r        yourself"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_withAllSuperclassesDo: aBlock\r   \"Evaluate the argument, aBlock, for each of the receiver's superclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   aBlock value: self.\r   self superclass ifNotNil: [ :class |\r      class _pretenured_withAllSuperclassesDo: aBlock ]"
+	},
+	{
+		"methodClass" : "OrderedCollection class",
+		"sourceCode" : "_pretenured_new: size streamContents: aBlock\r\r   ^ self _pretenured_withAll:\r        (super _pretenured_new: size streamContents: aBlock)"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_withAllSuperclasses\r   \"Answer an OrderedCollection of the receiver and the receiver's superclasses.\r\tThe first element is the receiver, followed by its superclass;\r\tthe last element is Object.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ self _pretenured_allSuperclasses\r        addFirst: self;\r        yourself"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_subclasses\r   \"Answer a Set containing the receiver's subclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ subclasses\r        ifNil: [ #(  ) ]\r        ifNotNil: [ subclasses _pretenured_copy ]"
+	},
+	{
+		"methodClass" : "FamixJavaAccess class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_isMetamodelEntity\r\r   ^ self class _pretenured_isMetamodelEntity"
+	},
+	{
+		"methodClass" : "SourceFileArray",
+		"sourceCode" : "_pretenured_sourceCodeAt: sourcePointer\r   \"Retrieves the source code for the pointer received as argument\"\r\r   ^ self\r        _pretenured_readStreamAt: sourcePointer\r        ifPresent: [ :stream |\r        (ChunkReadStream _pretenured_on: stream) next ]\r        ifAbsent: [ nil ]"
+	},
+	{
+		"methodClass" : "FamixTUnknownVariable classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_copyReplaceFrom: start to: stop with: replacementCollection\r   \"Answer a copy of the receiver satisfying the following conditions: If\r\tstop is less than start, then this is an insertion; stop should be exactly\r\tstart-1, start = 1 means insert before the first character, start = size+1\r\tmeans append after last character. Otherwise, this is a replacement; start\r\tand stop have to be within the receiver's bounds.\"\r\r   | newSequenceableCollection newSize endReplacement |\r   newSize := self size - (stop - start + 1)\r              + replacementCollection size.\r   endReplacement := start - 1 + replacementCollection size.\r   newSequenceableCollection := self species newTenured: newSize.\r   start > 1 ifTrue: [\r         newSequenceableCollection\r            replaceFrom: 1\r            to: start - 1\r            with: self\r            startingAt: 1 ].\r   start <= endReplacement ifTrue: [\r         newSequenceableCollection\r            replaceFrom: start\r            to: endReplacement\r            with: replacementCollection\r            startingAt: 1 ].\r   endReplacement < newSize ifTrue: [\r         newSequenceableCollection\r            replaceFrom: endReplacement + 1\r            to: newSize\r            with: self\r            startingAt: stop + 1 ].\r   ^ newSequenceableCollection"
+	},
+	{
+		"methodClass" : "Stack",
+		"sourceCode" : "_pretenured_push: anObject\r   \"Adds a new object of any kind on top of the stack.\"\r\r   self _pretenured_addFirst: anObject.\r   ^ anObject"
+	},
+	{
+		"methodClass" : "TaSequence",
+		"sourceCode" : "_pretenured_allTraits\r\r   ^ members _pretenured_flatCollect: #allTraits"
+	},
+	{
+		"methodClass" : "FMMetaModel",
+		"sourceCode" : "initialize\r\r   super initialize.\r   self _pretenured_updateCache"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder class",
+		"sourceCode" : "_pretenured_metamodelFromPackages: aCollectionOfPackages\r\r   ^ self new\r        queue:\r           (aCollectionOfPackages _pretenured_flatCollectAsSet: [ :p |\r                     p _pretenured_definedClasses asSet\r                        _pretenured_select: #isMetamodelEntity ]);\r        implementingPackages: aCollectionOfPackages;\r        _pretenured_run;\r        _pretenured_asMetamodel"
+	},
+	{
+		"methodClass" : "CompiledMethod",
+		"sourceCode" : "_pretenured_pragmaAt: aKey\r   \"Answer the first pragma with selector aKey, or nil if none.\"\r\r   <reflection: 'Class structural inspection - Pragma'>\r   ^ self _pretenured_pragmas\r        detect: [ :pragma | pragma selector == aKey ]\r        ifNone: nil"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_protected: aBlock\r\r   ^ monitor critical: [ aBlock value ]"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_localGeneratedTraits\r\r   ^ self _pretenured_traits _pretenured_select: #isMetamodelEntity"
+	},
+	{
+		"methodClass" : "AdditionalMethodState",
+		"sourceCode" : "_pretenured_pragmas\r   \"Return the Pragma objects. Properties are stored as Associations\"\r\r   ^ Array\r        _pretenured_new: self basicSize\r        streamContents: [ :pragmaStream |\r              1 to: self basicSize do: [ :i |\r                    | propertyOrPragma \"<Association|Pragma>\" |\r                    (propertyOrPragma := self basicAt: i)\r                       isAssociation ifFalse: [\r                       pragmaStream nextPut: propertyOrPragma ] ] ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream _pretenured_contents ]"
+	},
+	{
+		"methodClass" : "FMMetamodelValidator",
+		"sourceCode" : "_pretenured_validateLinksAreBijectifs\r   \"Check that opposite link is bijective, i.e. there are not 2 values that references the same opposite.\"\r\r   self metaModelBuilder elements iterator | #isFM3Property selectIt\r   | #hasOpposite selectIt | #opposite _pretenured_groupedByIt\r   | #value collectIt | [ :props |\r      self\r         assert: props size = 1\r         description:\r         'Link to opposite links should be a bijective operation... Please check your model because here you have a property with multiple opposites!' ]\r      doIt | [ :props |\r      self\r         assert: props anyOne hasOpposite\r         description:\r         'Some opposite links are not definied in your model.. Please check your model because here you have a property that is the opposite of another one but that is not referencing it back!' ]\r      doIt > NullAddableObject"
+	},
+	{
+		"methodClass" : "Package",
+		"sourceCode" : "_pretenured_packageManifestOrNil\r\r   ^ self _pretenured_definedClasses\r        detect: [ :each | each isManifest ]\r        ifNone: [ nil ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_run\r\r   queue _pretenured_do: [ :cls | self _pretenured_processClass: cls ].\r   self _pretenured_resolveObjectReferences.\r   self validator _pretenured_for: self"
+	},
+	{
+		"methodClass" : "FamixTEnumValue classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "FamixJavaTCanBeSynchronized classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_copyEmpty\r   \"Answer a copy of the receiver that contains no elements.\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_processClass: aClass\r\r   ^ self\r        _pretenured_processClass: aClass\r        ifPragmaAbsent: [\r        self error: 'Fame Undeclared class ' , aClass name ]"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "_pretenured_do: aBlock\r\r   tally = 0 ifTrue: [ ^ self ].\r   1 to: array size do: [ :index |\r         | each |\r         (each := array at: index) ifNotNil: [\r            aBlock value: each enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "Dictionary class",
+		"sourceCode" : "_pretenured_newFrom: aDictionaryOrCollectionOfAssociations\r   \"Answer an instance of me containing the same associations as the argument.\r\tIf the same key appears twice, the last one enumerated will win\"\r\r   \"(Dictionary newFrom: {1->#a. 2->#b. 3->#c}) >>> ({1->#a. 2->#b. 3->#c} asDictionary)\"\r\r   | newDictionary |\r   newDictionary := self newTenured:\r                       aDictionaryOrCollectionOfAssociations size.\r   aDictionaryOrCollectionOfAssociations associationsDo: [ :x |\r      newDictionary add: x ].\r   ^ newDictionary"
+	},
+	{
+		"methodClass" : "SystemResolver",
+		"sourceCode" : "_pretenured_image\r\r   <origin>\r   ^ self _pretenured_resolveString: Smalltalk _pretenured_imagePath"
+	},
+	{
+		"methodClass" : "Path class",
+		"sourceCode" : "_pretenured_withAll: aCollection\r   \"Answer an instance of the receiver representing the supplied collection of strings.\r\tThis should only be sent to one of the concrete subclasses, e.g. AbsolutePath and RelativePath\"\r\r   | inst parsedCollection |\r   parsedCollection := OrderedCollection new:\r                          (aCollection size max: 10).\r   aCollection _pretenured_do: [ :each |\r      parsedCollection addAll:\r         (self delimiter _pretenured_split: each) ].\r   parsedCollection := self _pretenured_removeRedundantSegments:\r                          parsedCollection.\r   inst := self new: parsedCollection size.\r   parsedCollection withIndexDo: [ :segment :index |\r      inst at: index put: segment ].\r   ^ inst"
+	},
+	{
+		"methodClass" : "Symbol",
+		"sourceCode" : "value: anObject\r\r   ^ anObject _pretenured_perform: self"
+	},
+	{
+		"methodClass" : "Symbol",
+		"sourceCode" : "_pretenured_groupedByIt\r\r   ^ IteratorDecoratorFactory _pretenured_groupedByIteratorFor: self"
+	},
+	{
+		"methodClass" : "FamixTInvocable classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "ZnUTFEncoder",
+		"sourceCode" : "_pretenured_decodeBytes: bytes\r   \"Overridden to prevent the automagic switch from ByteString to WideString\r\tand the slow #becomeForward: in there. See also #decodeBytesIntoWideString:\"\r\r   | byteStream |\r   byteStream := bytes readStream.\r   ^ String _pretenured_streamContents: [ :stream |\r           [ byteStream atEnd ] whileFalse: [\r                 | codePoint |\r                 codePoint := self nextCodePointFromStream: byteStream.\r                 (codePoint > 255 and: [\r                     stream originalContents isWideString not ])\r                    ifTrue: [\r                          | wideString position |\r                          position := stream position.\r                          wideString := WideString from:\r                                           stream originalContents.\r                          stream\r                             on: wideString;\r                             setFrom: position + 1 to: position ].\r                 stream nextPut: (Character value: codePoint) ] ]"
+	},
+	{
+		"methodClass" : "Announcer",
+		"sourceCode" : "initialize\r\r   super initialize.\r   registry := SubscriptionRegistry newTenured.\r   suspendedCount := 0"
+	},
+	{
+		"methodClass" : "FMMetaModel",
+		"sourceCode" : "_pretenured_updateCache\r\r   nameDict := (FM3Constant _pretenured_constants collect: [ :const |\r                   const name asString -> const ]) asDictionary.\r   typeDict := (FM3Constant constants _pretenured_collect: [ :const |\r                   const class -> const ]) asDictionary.\r   self elements do: [ :each | self updateCacheWith: each ]"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_select: aBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument. Collect into a new collection like the receiver, only those elements for which aBlock evaluates to true. Answer the new collection.\"\r\r   \"(#(1 2 3 4 5) select: #even) >>> #(2 4)\"\r\r   \"({1@2. 6@3. 2@ -1.} select: [:e| e x > e y]) >>> {(6@3). (2@ -1)}\"\r\r   \"('heLlo wOrLd' select: #isUppercase) >>> 'LOL'\"\r\r   \"((1 to: 10) select: #isPrime) >>> #(2 3 5 7)\"\r\r   \"(#() select: [true]) >>> #()\"\r\r   | newCollection |\r   newCollection := self _pretenured_copyEmpty.\r   self _pretenured_do: [ :each |\r      (aBlock value: each) ifTrue: [ newCollection add: each ] ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "WriteStream",
+		"sourceCode" : "_pretenured_contents\r\r   readLimit := readLimit max: position.\r   ^ collection _pretenured_copyFrom: 1 to: position"
+	},
+	{
+		"methodClass" : "SmalltalkImage",
+		"sourceCode" : "_pretenured_imagePath\r   \"Answer the full path name for the current image.\"\r\r   \"SmalltalkImage current imagePath\"\r\r   ^ self primImagePath asByteArray _pretenured_utf8Decoded"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_processCompiledMethod: aMethod\r\r   | method |\r   method := aMethod.\r\r   \"If the method is a reflective method we need to ensure it is compiled and use its compiled method.\r\tA refelctive method is for exemple a method created via a metalink and that was never executed.\"\r   (aMethod isKindOf: ReflectiveMethod) ifTrue: [\r         method := aMethod\r                      compileAndInstallCompiledMethod;\r                      compiledMethod ].\r   self assert: method isCompiledMethod.\r\r   method _pretenured_pragmas\r      detect: [ :each |\r            #( #FMProperty:type:opposite: #FMProperty:type:\r               #FMProperty:type:defaultValue: ) includes:\r               each selector ]\r      ifFound: [ :pragma |\r            | prop |\r            prop := FM3Property named: (pragma argumentAt: 1) asString.\r            typeDict at: prop put: (pragma argumentAt: 2).\r            mmClassDict at: prop put: method methodClass.\r            pragma selector = #FMProperty:type:defaultValue: ifTrue: [\r               prop defaultValue: (pragma argumentAt: 3) ].\r            pragma selector = #FMProperty:type:opposite: ifTrue: [\r               oppositeDict at: prop put: (pragma argumentAt: 3) ].\r            self processInfosFrom: method for: prop.\r\r            elements add: prop ]"
+	},
+	{
+		"methodClass" : "SourceFileArray",
+		"sourceCode" : "_pretenured_readStreamAt: sourcePointer ifPresent: presentBlock ifAbsent: absentBlock\r\r   | index position |\r   sourcePointer ifNil: [ ^ absentBlock value ].\r\r   index := self fileIndexFromSourcePointer: sourcePointer.\r   index = 0 ifTrue: [ ^ absentBlock value ]. \"no source pointer for this element\"\r\r   position := self filePositionFromSourcePointer: sourcePointer.\r   position = 0 ifTrue: [ ^ absentBlock value ].\r\r   ^ self\r        _pretenured_readStreamAtFileIndex: index\r        atPosition: position\r        ifPresent: presentBlock\r        ifAbsent: absentBlock"
+	},
+	{
+		"methodClass" : "MooseModel class",
+		"sourceCode" : "_pretenured_packagesToProcessToCreateMetamodel\r\r   | packages |\r   packages := Set with: self package.\r   packages addAll:\r      (self allSubmetamodelsPackagesNames collect: #asPackage).\r   packages addAll:\r      (self _pretenured_defaultPackagesToProcessWith: packages).\r   ^ packages"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_streamContents: blockWithArg\r   \"Build an instance of the receiver by writing elements to a stream.\r\tMore specifically: blockWithArg will be given a WriteStream on an instance of the receiver.\r\tInside blockWithArg you write elements to the stream to build up the collection.\r\tAt the end, the contents of the stream up to that point will be returned.\r\tNote that the underlying collection grows as needed.\"\r\r   \"(Array streamContents: [ :out | out nextPut: 1; nextPutAll: #(2 3 4); nextPut: 5 ]) >>> #(1 2 3 4 5)\"\r\r   ^ self _pretenured_new: 100 streamContents: blockWithArg"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_collect: aBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tCollect the resulting values into a collection like the receiver. Answer\r\tthe new collection.\"\r\r   \"(#(1 2 3) collect: [:each | each  + 10]) >>> #(11 12 13) \"\r\r   | newCollection |\r   newCollection := self species newTenured: self size.\r   1 to: self size do: [ :index |\r      newCollection at: index put: (aBlock value: (self at: index)) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_comment\r\r   ^ self commentSourcePointer\r        ifNil: [ '' ]\r        ifNotNil: [ :ptr | SourceFiles _pretenured_sourceCodeAt: ptr ]"
+	},
+	{
+		"methodClass" : "FMMetamodelValidator",
+		"sourceCode" : "_pretenured_validate\r\r   self\r      _pretenured_validateLinksAreBijectifs;\r      validatePropertiesHaveOpposites;\r      _pretenured_validateContainersAreNotMultivalued"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allGeneratedTraits\r\r   ^ self _pretenured_allTraits _pretenured_select: #isMetamodelEntity"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_flatCollect: aBlock\r   \"Evaluate aBlock for each of the receiver's elements and answer the\r\tlist of all resulting values flatten one level. Assumes that aBlock returns some kind\r\tof collection for each element. optimized version for Sequencable Collection and subclasses\r\timplementing #writeStream\"\r\r   \"(#( (2 -3) (4 -5) #(-6)) flatCollect: [ :e | e abs  ]) >>> #(2 3 4 5 6)\"\r\r   \"(#( (2 -3) #((4 -5)) #(-6)) flatCollect: [ :e | e abs  ]) >>> #(2 3 #(4 5) 6)\"\r\r   self isEmpty ifTrue: [ ^ self copy ].\r   ^ self species _pretenured_new: 0 streamContents: [ :stream |\r        self do: [ :each | stream nextPutAll: (aBlock value: each) ] ]"
+	},
+	{
+		"methodClass" : "FamixTWithSourceLanguages classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_asArray\r   \"Convert an OrderedCollection into an Array.\"\r\r   \"#(a b c) asOrderedCollection asArray >>> #(a b c)\"\r\r   \"OrderedCollection new class >>> OrderedCollection\"\r\r   \"OrderedCollection new asArray class >>> Array\"\r\r   \"(OrderedCollection new add: 42; add: 43; yourself) asArray >>> #(42 43)\"\r\r   ^ (Array newTenured: self size)\r        replaceFrom: 1\r        to: self size\r        with: array\r        startingAt: firstIndex"
+	},
+	{
+		"methodClass" : "DecoratorStream class",
+		"sourceCode" : "_pretenured_on: aStream\r\r   ^ self basicNewTenured\r        on: aStream;\r        yourself"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_select: aBlock\r   \"Optimized version of Collection>>#select:\"\r\r   \"(#(1 2 3 4) select: [:each | each > 2 ]) >>> #(3 4)\"\r\r   | each |\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              1 to: self size do: [ :index |\r                    (aBlock value: (each := self at: index)) ifTrue: [\r                       stream nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "SystemResolver",
+		"sourceCode" : "_pretenured_imageDirectory\r\r   <origin>\r   ^ self _pretenured_image parent"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "initialize\r   \"Used for queuing classes before running.\"\r\r   super initialize.\r\r   queue := OrderedCollection new.\r   \"Used to store resulting FM3 elements.\"\r   elements := OrderedCollection new.\r   \"Several dictionaries ... see #resolveObjectReference\"\r   classDict := Dictionary new.\r   superclassDict := IdentityDictionary new.\r   packDict := IdentityDictionary new.\r   typeDict := IdentityDictionary new.\r   oppositeDict := IdentityDictionary new.\r   mmClassDict := IdentityDictionary new.\r   traitsDict := IdentityDictionary new.\r\r   \"Must use the cannonical primitives here!\"\r   \"Please do not add these primitives to elements!\"\r   metaDict := (FM3Constant _pretenured_constants\r                   _pretenured_collect: [ :const |\r                   const name asString -> const ]) asDictionary"
+	},
+	{
+		"methodClass" : "FMAbstractMetamodelValidator class",
+		"sourceCode" : "_pretenured_for: aPragmaProcessor\r\r   self new\r      metaModelBuilder: aPragmaProcessor;\r      _pretenured_validate"
+	},
+	{
+		"methodClass" : "FamixTCanBeFinal classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_ensurePackage: name\r\r   self assert: (name isSymbol or: [ name isString ]).\r   ^ self _pretenured_packages\r        _pretenured_detect: [ :package |\r        package name = name _pretenured_asString ]\r        ifNone: [\r              (FM3Package named: name _pretenured_asString)\r                 in: [ :pack | elements add: pack ];\r                 yourself ]"
+	},
+	{
+		"methodClass" : "FamixJavaTBounded classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_copyFrom: start to: stop\r   \"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r   | newSize |\r   newSize := stop - start + 1.\r   ^ (self species newTenured: newSize)\r        replaceFrom: 1\r        to: newSize\r        with: self\r        startingAt: start"
+	},
+	{
+		"methodClass" : "FamixJavaSourcedEntity class",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "IteratorDecoratorFactory class",
+		"sourceCode" : "_pretenured_groupedByIteratorFor: aValuable\r\r   ^ GroupedByIterator newTenured\r        block: aValuable;\r        yourself"
+	},
+	{
+		"methodClass" : "FileSystemResolver",
+		"sourceCode" : "_pretenured_canResolve: aSymbol\r\r   ^ self _pretenured_supportedOrigins includes: aSymbol"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_processTrait: aTrait ifPragmaAbsent: anErrorBlock\r\r   aTrait _pretenured_metamodelDefinitionPragma\r      _pretenured_ifNil: anErrorBlock\r      ifNotNil: [ :pragma |\r            | fm3Trait |\r            fm3Trait := FM3Trait named: (pragma argumentAt: 1).\r            superclassDict at: fm3Trait put: (pragma argumentAt: 2).\r            fm3Trait implementingClass: aTrait.\r            self\r               _pretenured_extractPackageFrom: pragma method\r               for: fm3Trait.\r            classDict at: aTrait put: fm3Trait.\r            (self _pretenured_methodsToProcessFrom: aTrait)\r               _pretenured_do: [ :each |\r               self _pretenured_processCompiledMethod: each ].\r            aTrait _pretenured_localSlots\r               select: #isFMRelationSlot\r               thenDo: [ :each | self processSlot: each in: aTrait ].\r            traitsDict\r               at: fm3Trait\r               put: aTrait _pretenured_localGeneratedTraits.\r            elements add: fm3Trait ]"
+	},
+	{
+		"methodClass" : "FileSystemResolver",
+		"sourceCode" : "_pretenured_supportedOrigins\r\r   ^ (Pragma\r         _pretenured_allNamed: #origin\r         from: self class\r         to: FileSystemResolver) collect: [ :each |\r        each methodSelector ]"
+	},
+	{
+		"methodClass" : "FMMetaModel",
+		"sourceCode" : "_pretenured_classes\r\r   ^ self elements _pretenured_select: [ :each | each isFM3Class ]"
+	},
+	{
+		"methodClass" : "Symbol",
+		"sourceCode" : "_pretenured_016r2C: otherSymbolOrString\r   \"Concatenate the receiver with otherSymbolOrString and return the result.\r\tOverwritten to always return Symbol results,\r\twhether the argument is a Symbol or a String\"\r\r   ^ (super _pretenured_016r2C: otherSymbolOrString) asSymbol"
+	},
+	{
+		"methodClass" : "FamixTClassMetrics classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Override the superclass for performance reasons.\"\r\r   firstIndex to: lastIndex do: [ :index |\r   aBlock value: (array at: index) ]"
+	},
+	{
+		"methodClass" : "Path class",
+		"sourceCode" : "_pretenured_from: aString delimiter: aDelimiterCharacter\r   \"Answer a path composed of several elements delimited by aCharacter\"\r\r   | pathClass |\r   aString isEmpty ifTrue: [ ^ self root ].\r\r   pathClass := ((self\r                     isAbsolutePath: aString\r                     delimiter: aDelimiterCharacter) or: [\r                    self isAbsoluteWindowsPath: aString ])\r                   ifTrue: [\r                         (aString size >= 2 and: [\r                             aString second = aDelimiterCharacter ])\r                            ifTrue: [ UNCNetworkPath ]\r                            ifFalse: [ AbsolutePath ] ]\r                   ifFalse: [ RelativePath ].\r\r   ^ pathClass _pretenured_withAll:\r        (aDelimiterCharacter _pretenured_split: aString)"
+	},
+	{
+		"methodClass" : "FamixTAnnotationInstanceAttribute classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "ClassDescription",
+		"sourceCode" : "_pretenured_slots\r\r   <reflection: 'Class structural inspection - Slot inspection'>\r   ^ self classLayout _pretenured_visibleSlots"
+	},
+	{
+		"methodClass" : "Package",
+		"sourceCode" : "_pretenured_definedClasses\r\r   ^ self tags _pretenured_flatCollect: [ :tag | tag classes ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_collect: aBlock\r   \"Evaluate aBlock with each of my elements as the argument. Collect the\r\tresulting values into a collection that is like me. Answer the new\r\tcollection. Override superclass in order to use addLast:, not at:put:.\"\r\r   \"(#(1 2 3) asOrderedCollection collect: [ :v | v * 10 ]) asArray >>> #(10 20 30)\"\r\r   \"(#(1 2 3) asOrderedCollection collect: [ :v | 10 ]) asArray >>> #(10 10 10)\"\r\r   | newCollection |\r   newCollection := self speciesForTransform newTenured: self size.\r   firstIndex to: lastIndex do: [ :index |\r   newCollection addLast: (aBlock value: (array at: index)) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_selectIt\r\r   ^ IteratorDecoratorFactory _pretenured_selectIteratorFor: self"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "FM3Constant class",
+		"sourceCode" : "_pretenured_constants\r\r   ^ self _pretenured_constantClasses collect: #instance"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_split: aSequenceableCollection do: aBlock\r   \"optimized version for single delimiters:\r\tExample:\r\t\t$/ split: '/foo/bar' indicesDo: [ :item | ]\"\r\r   self\r      _pretenured_split: aSequenceableCollection\r      indicesDo: [ :start :end |\r            aBlock value:\r               (aSequenceableCollection\r                   _pretenured_copyFrom: start\r                   to: end) ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_packages\r\r   ^ elements _pretenured_select: #isFM3Package"
+	},
+	{
+		"methodClass" : "FamixJavaSourcedEntity class",
+		"sourceCode" : "_pretenured_traits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_traits"
+	},
+	{
+		"methodClass" : "TaCompositionElement",
+		"sourceCode" : "_pretenured_allTraits\r\r   ^ { innerClass } _pretenured_016r2C:\r        innerClass traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_ensure: aBlock\r   \"Evaluate a termination block after evaluating the receiver, regardless of\r\t whether the receiver's evaluation completes.  N.B.  This method is *not*\r\t implemented as a primitive.  Primitive 198 always fails.  The VM uses prim\r\t 198 in a context's method as the mark for an ensure:/ifCurtailed: activation.\"\r\r   <primitive: 198>\r   | handler complete returnValue |\r   handler := aBlock.\r   \"The handler should be in the first temporary to find it easily and support more complex unwind methods\"\r   returnValue := self valueNoContextSwitch.\r   complete ifNil: [\r         complete := true.\r         aBlock value ].\r   ^ returnValue"
+	},
+	{
+		"methodClass" : "ByteArray",
+		"sourceCode" : "_pretenured_utf8Decoded\r   \"Produce a String decoding the receiver using UTF-8,\r\tthe recommended encoding for Strings, unless you know what you are doing.\"\r\r   \"#[76 101 115 32 195 169 108 195 168 118 101 115 32 102 114 97 110 195 167 97 105 115] utf8Decoded\"\r\r   ^ self _pretenured_decodeWith: ZnCharacterEncoder utf8"
+	},
+	{
+		"methodClass" : "Pragma class",
+		"sourceCode" : "_pretenured_allNamed: aSymbol in: aClass\r   \"Answer a collection of all pragmas found in methods of aClass whose selector is aSymbol.\"\r\r   ^ Array _pretenured_streamContents: [ :stream |\r           aClass pragmasDo: [ :pragma |\r              pragma selector = aSymbol ifTrue: [\r                 stream nextPut: pragma ] ] ]"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "InteractiveResolver",
+		"sourceCode" : "_pretenured_unknownOrigin: origin\r\r   | reference |\r   ^ (next ifNotNil: [ next _pretenured_resolve: origin ]) ifNil: [\r           reference := ResolutionRequest for: origin.\r           reference ifNotNil: [ cache at: origin put: reference ] ]"
+	},
+	{
+		"methodClass" : "FamixJavaSourcedEntity class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "ByteArray",
+		"sourceCode" : "_pretenured_decodeWith: encoding\r   \"Produce a String that decodes the receiver, using a specified encoding.\r\tEncoding is either a ZnCharacterEncoder instance or an identifier for one.\"\r\r   \"#[76 101 115 32 195 169 108 195 168 118 101 115 32 102 114 97 110 195 167 97 105 115] decodeWith: #utf8\"\r\r   ^ encoding asZnCharacterEncoder _pretenured_decodeBytes: self"
+	},
+	{
+		"methodClass" : "FMFuture class",
+		"sourceCode" : "_pretenured_in: anImporter named: aString\r\r   ^ self newTenured\r        in: anImporter named: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_groupedBy: aBlock\r   \"Answer a dictionary whose keys are the result of evaluating aBlock for all my elements, and the value for each key is the selection of my elements that evaluated to that key. Uses species.\"\r\r   \"(#(1 2 3 4 5) groupedBy: [ :v | v odd ]) asString\r\t\t>>> 'an OrderedDictionary(true->#(1 3 5) false->#(2 4))'\"\r\r   | groups |\r   groups := OrderedDictionary new.\r   self do: [ :each |\r         (groups\r             at: (aBlock value: each)\r             ifAbsentPut: [ OrderedCollection newTenured ]) add: each ].\r   self species ~~ OrderedCollection ifTrue: [\r         groups associationsDo: [ :association |\r            association value:\r               (self species withAll: association value) ] ].\r   ^ groups"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_select: selectBlock\r   \"Optimized version of Collection>>#select: \"\r\r   | newCollection element |\r   newCollection := self _pretenured_copyEmpty.\r\r   firstIndex to: lastIndex do: [ :index |\r         (selectBlock value: (element := array at: index)) ifTrue: [\r            newCollection addNoSort: element ] ].\r\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "FamixTType classTrait",
+		"sourceCode" : "_pretenured_traits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_traits"
+	},
+	{
+		"methodClass" : "FM3Constant class",
+		"sourceCode" : "_pretenured_constantClasses\r\r   ^ self _pretenured_allSubclasses reject: #isAbstract"
+	},
+	{
+		"methodClass" : "FamixJavaImplementation class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_016r5C: aCollection\r   \"Return all the elements in self that are not in aCollection.\r\tAlias of difference:\"\r\r   \"#(10 20 30) \\ (0 to: 15) >>> #(20 30)\"\r\r   \"'abc' \\ 'cbe' >>> 'a'.\"\r\r   ^ self _pretenured_difference: aCollection"
+	},
+	{
+		"methodClass" : "MooseModel class",
+		"sourceCode" : "_pretenured_resetMetamodel\r\r   metamodel := FMMetaModelBuilder _pretenured_metamodelFromPackages:\r                   self _pretenured_packagesToProcessToCreateMetamodel.\r\r   \"MooseEntity has a cache for some infos. When we regenerate a MM we need to flush this cache.\"\r   metamodel _pretenured_classes _pretenured_do: [ :fm3Class |\r      fm3Class implementingClass _pretenured_resetMooseEntityCache ].\r\r   self allInstancesDo: [ :model | model updateMetamodelTo: metamodel ].\r\r   ^ metamodel"
+	},
+	{
+		"methodClass" : "PointerLayout",
+		"sourceCode" : "_pretenured_slots\r\r   ^ slotScope _pretenured_slots"
+	},
+	{
+		"methodClass" : "LinkedList",
+		"sourceCode" : "_pretenured_addFirst: aLinkOrObject\r   \"Add aLink to the beginning of the receiver's list. Answer aLink.\"\r\r   | aLink |\r   aLink := aLinkOrObject _pretenured_asLink.\r   self isEmpty ifTrue: [ lastLink := aLink ].\r   aLink nextLink: firstLink.\r   firstLink := aLink.\r   ^ aLink"
+	},
+	{
+		"methodClass" : "FamixJavaConcretization class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "FileSystemResolver",
+		"sourceCode" : "_pretenured_resolve: aSymbol\r\r   ^ (self _pretenured_canResolve: aSymbol)\r        ifTrue: [ self _pretenured_perform: aSymbol ]\r        ifFalse: [ self unknownOrigin: aSymbol ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Refer to the comment in Collection|do:.\"\r\r   1 to: self size do: [ :index | aBlock value: (self at: index) ]"
+	},
+	{
+		"methodClass" : "FamixTWithAccesses classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_associationsDo: aBlock\r   \"Evaluate aBlock for each of the receiver's elements (key/value\r\tassociations). See keysDo: or valuesDo: if you only need to evaluate\r\tone or the other. Also see keysAndValuesDo: for a similar\r\tselector where the block accepts a two agruments.\r\r\t```\r\td := Dictionary withAll: #(4 5 9 6 76).\r\ta := OrderedCollection new.\r\td associationsDo: [ :assoc | a add: assoc value. a add: assoc key ].\r\ta. \"\"an OrderedCollection(76 5 9 3 4 1 6 4 5 2)\"\"\r\t```\r\t\"\r\r   tally = 0 ifTrue: [ ^ self ].\r   array _pretenured_do: [ :each |\r      each ifNotNil: [ aBlock value: each ] ]"
+	},
+	{
+		"methodClass" : "FamixTAnnotationType classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Metaclass",
+		"sourceCode" : "_pretenured_isMetamodelEntity\r\r   ^ self _pretenured_metamodelDefinitionPragma isNotNil"
+	},
+	{
+		"methodClass" : "FamixTWithAnnotationInstances classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_methods\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self methodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "MooseModel class",
+		"sourceCode" : "_pretenured_defaultPackagesToProcessWith: aCollectionOfPackages\r   \"We add to the creation of a metamodel all the metamodel entities of packages declaring to be part of the metamodels by default. \r\t\r\tIf a user of Famix wishes to add entities to all metamodels, they should add a methode #shouldBeIncludedByDefaultInMetamodelsWith: to their package manifest to return true.\"\r\r   ^ self packageOrganizer packages _pretenured_select: [ :package |\r           package _pretenured_packageManifestOrNil\r              ifNil: [ false ]\r              ifNotNil: [ :manifest |\r                    manifest\r                       shouldBeIncludedByDefaultInMetamodelsWith:\r                       aCollectionOfPackages ] ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_methodsToProcessFrom: aClass\r   \"We need to process the methods from the class and the extensions methods comming from the packages containing the entites. We should reject extension methods comming from other packages.\"\r\r   ^ aClass _pretenured_localMethods _pretenured_select: [ :method |\r           method isExtension not or: [\r              self implementingPackages includes: method package ] ]"
+	},
+	{
+		"methodClass" : "FamixTWithMethods classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_ensureClass: var\r\r   var isBehavior ifTrue: [ ^ classDict at: var ].\r   var isSymbol ifTrue: [\r         ^ classDict\r              at: (self class environment at: var)\r              ifAbsent: [ metaDict at: var _pretenured_asString ] ].\r   var isString ifTrue: [ ^ metaDict at: var ].\r   self error: 'No class of this name found.'"
+	},
+	{
+		"methodClass" : "FamixJavaInheritance class",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_flatCollect: aBlock as: aCollectionClass\r   \"Evaluate aBlock for each of the receiver's elements and answer the\r\tlist of all resulting values flatten one level. Assumes that aBlock returns some kind\r\tof collection for each element. Equivalent to the lisp's mapcan\"\r\r   \"(#(1 2 3) flatCollect: [:each | { each. each+1 } ] as: Set) >>> #(1 2 3 4) asSet\"\r\r   \"(#(65 66 67) flatCollect: [:each | { each asCharacter. each asCharacter asLowercase } ] as: String) >>> 'AaBbCc'\"\r\r   | col |\r   col := OrderedCollection newTenured: self size.\r   self _pretenured_do: [ :each | col addAll: (aBlock value: each) ].\r   ^ aCollectionClass _pretenured_withAll: col"
+	},
+	{
+		"methodClass" : "FamixTAccessible classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_detect: aBlock ifFound: foundBlock ifNone: exceptionBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tIf some element evaluates aBlock to true, then cull this element into\r\tfoundBlock and answer the result of this evaluation.\r\tIf none evaluate to true, then evaluate exceptionBlock.\"\r\r   \"(#(1 2) detect: #even ifFound: #negated ifNone: [0]) >>> -2\"\r\r   \"(#(1 3) detect: #even ifFound: #negated ifNone: [0]) >>> 0\"\r\r   \"('Hello' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $E\"\r\r   \"('LOL' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $X\"\r\r   self _pretenured_do: [ :each |\r      (aBlock value: each) ifTrue: [ ^ foundBlock cull: each ] ].\r   ^ exceptionBlock value"
+	},
+	{
+		"methodClass" : "FMModel",
+		"sourceCode" : "_pretenured_add: element\r\r   elements add: element.\r   self _pretenured_postAdd: element"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "_pretenured_grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+	},
+	{
+		"methodClass" : "TaSequence",
+		"sourceCode" : "_pretenured_traits\r\r   ^ members _pretenured_flatCollect: #traits"
+	},
+	{
+		"methodClass" : "FMMetaModel",
+		"sourceCode" : "_pretenured_postAdd: element\r\r   element metamodel: self.\r   self _pretenured_updateCacheWith: element"
+	},
+	{
+		"methodClass" : "FileSystem",
+		"sourceCode" : "_pretenured_pathFromString: aString\r\r   ^ store _pretenured_pathFromString: aString"
+	},
+	{
+		"methodClass" : "InteractiveResolver",
+		"sourceCode" : "_pretenured_resolve: origin\r\r   ^ cache\r        at: origin\r        ifAbsent: [ self _pretenured_unknownOrigin: origin ]"
+	},
+	{
+		"methodClass" : "FamixTWithInheritances classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_subscriptionsHandling: anAnnouncement\r\r   ^ Array _pretenured_streamContents: [ :s |\r           subscriptions do: [ :each |\r              (each handlesAnnouncement: anAnnouncement) ifTrue: [\r                 s nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_difference: aCollection\r   \"Answer the difference of two sequences preserving order and collection type.\"\r\r   ^ self _pretenured_reject: [ :each | aCollection includes: each ]"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_cull: anArg\r   \"Execute the receiver with one or zero arguments depending on the receiver\"\r\r   \"([ 12 ] cull: 13)>>> 12 \"\r\r   \"([:x | x + 12] cull: 3)>>> 15\"\r\r   <reflection:\r   'Message sending and code execution - Runtime and Evaluation'>\r   ^ numArgs = 0\r        ifTrue: [ self value ]\r        ifFalse: [ self value: anArg ]"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_split: aSequenceableCollection\r   \"Split the argument using the receiver as a separator.\"\r\r   \"optimized version for single delimiters\"\r\r   \"($/ split: '/foo/bar')>>>#('' 'foo' 'bar') asOrderedCollection\"\r\r   \"([:c| c isSeparator] split: 'aa bb cc dd')>>> #('aa' 'bb' 'cc' 'dd') asOrderedCollection\"\r\r   | result |\r   result := OrderedCollection newTenured:\r                aSequenceableCollection size // 2.\r   self\r      _pretenured_split: aSequenceableCollection\r      do: [ :item | result add: item ].\r   ^ result"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_resolveObjectReferences\r   \"establish class-package and property-package links\"\r\r   packDict _pretenured_keysAndValuesDo: [ :fm3Element :value |\r      fm3Element package: (self _pretenured_ensurePackage: value) ].\r\r   \"establish property-class associations\"\r   mmClassDict keysAndValuesDo: [ :prop :value |\r      prop mmClass: (self ensureClass: value) ].\r\r   \"map classes by full name\"\r   self classes _pretenured_do: [ :meta |\r      metaDict\r         at: meta _pretenured_fullName _pretenured_asString\r         put: meta ].\r\r   \"establish class-superclass associations\"\r   superclassDict keysAndValuesDo: [ :meta :value |\r      meta isFM3Class ifTrue: [\r         meta superclass: (self ensureClass: value) ] ].\r\r   \"establish property-type-opposite relations\"\r   typeDict keysAndValuesDo: [ :prop :value |\r      prop type: (self ensureClass: value) ].\r\r   \"establish class-traits relations\"\r   traitsDict _pretenured_keysAndValuesDo: [ :class :traits |\r         class addTraits:\r            (traits _pretenured_collect: [ :t | classDict at: t ]) ].\r   traitsDict keysAndValuesDo: [ :class :traits |\r      traits do: [ :t | (classDict at: t) addUser: class ] ].\r\r   \" Fill in oppositelinks\"\r   oppositeDict keysAndValuesDo: [ :prop :oppName |\r      prop opposite: (prop type propertyNamed: oppName) ]"
+	},
+	{
+		"methodClass" : "FamixJavaSourceAnchor class",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "FileSystemStore",
+		"sourceCode" : "_pretenured_pathFromString: aString\r   \"Use the unix convention by default, since many filesystems are based on it.\"\r\r   ^ Path _pretenured_from: aString delimiter: self delimiter"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_values\r   \"Answer a Collection containing the receiver's values.\"\r\r   ^ Array\r        _pretenured_new: self size\r        streamContents: [ :out |\r        self valuesDo: [ :value | out nextPut: value ] ]"
+	},
+	{
+		"methodClass" : "FileSystemResolver",
+		"sourceCode" : "_pretenured_resolveString: aString\r\r   | fs |\r   fs := FileSystem disk.\r   ^ FileReference\r        _pretenured_fileSystem: fs\r        path: (fs _pretenured_pathFromString: aString)"
+	},
+	{
+		"methodClass" : "FamixTAssociation classTrait",
+		"sourceCode" : "_pretenured_traits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_traits"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_asMetamodel\r\r   ^ FMMetaModel new\r        _pretenured_addAll: elements;\r        yourself"
+	},
+	{
+		"methodClass" : "ClassDescription",
+		"sourceCode" : "_pretenured_localSlots\r\r   <reflection: 'Class structural inspection - Slot inspection'>\r   ^ self _pretenured_slots _pretenured_select: [ :aSlot |\r        aSlot isDefinedByOwningClass ]"
+	},
+	{
+		"methodClass" : "FM3Element",
+		"sourceCode" : "_pretenured_fullName\r\r   <FMProperty: #fullName type: #String>\r   <derived>\r   self name ifNil: [ ^ nil ].\r\r   ^ self owner\r        ifNil: [ self name ]\r        ifNotNil: [ :owner | \"Parenthesis are here to concatenate strings before symbols\"\r              owner _pretenured_fullName ifNotNil: [ :fullName |\r                 fullName _pretenured_016r2C:\r                    ('.' _pretenured_016r2C: self name) ] ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_extractPackageFrom: method for: aFM3Element\r\r   ^ (method _pretenured_pragmaAt: #package:) ifNotNil: [ :p |\r        packDict at: aFM3Element put: (p argumentAt: 1) ]"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_detect: aBlock ifNone: exceptionBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tAnswer the first element for which aBlock evaluates to true. If none\r\tevaluate to true, then evaluate the argument, exceptionBlock.\"\r\r   \"(#(1 2) detect: #even ifNone: [0]) >>> 2\"\r\r   \"(#(1 3) detect: #even ifNone: [0]) >>> 0\"\r\r   \"('Hello' detect: #isLowercase ifNone: [$X]) >>> $e\"\r\r   \"('LOL' detect: #isLowercase ifNone: [$X]) >>> $X\"\r\r   ^ self\r        _pretenured_detect: aBlock\r        ifFound: [ :element | element ]\r        ifNone: exceptionBlock"
+	},
+	{
+		"methodClass" : "Semaphore",
+		"sourceCode" : "_pretenured_critical: mutuallyExcludedBlock\r   \"Evaluate mutuallyExcludedBlock only if the receiver is not currently in\r\tthe process of running the critical: message. If the receiver is, evaluate\r\tmutuallyExcludedBlock after the other critical: message is finished.\"\r\r   \"We need to catch eventual interruptions very carefully.\r\tThe naive approach of just doing, e.g.,:\r\t\t\tself wait.\r\t\t\taBlock ensure: [self signal].\r\twill fail if the active process gets terminated while in the wait.\r\tHowever, the equally naive:\r\t\t\t[self wait.\r\t\t\taBlock value] ensure: [self signal].\r\twill fail too, since the active process may get interrupted while\r\tentering the ensured block and leave the semaphore signaled twice.\r\tTo avoid both problems we make use of the fact that interrupts only\r\toccur on sends (or backward jumps) and use an assignment (bytecode)\r\tright before we go into the wait primitive (which is not a real send and\r\ttherefore not interruptable either).\"\r\r   | blockValue caught |\r   caught := false.\r   [\r      caught := true.\r      self wait.\r      blockValue := mutuallyExcludedBlock value ] ensure: [\r      caught ifTrue: [ self signal ] ].\r   ^ blockValue"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_reject: rejectBlock\r   \"Optimized version of Collection>>#reject:\"\r\r   | newCollection element |\r   newCollection := self _pretenured_copyEmpty.\r\r   firstIndex to: lastIndex do: [ :index |\r         (rejectBlock value: (element := array at: index)) ifFalse: [\r            newCollection addNoSort: element ] ].\r\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "FMMetaModel",
+		"sourceCode" : "_pretenured_updateCacheWith: element\r\r   element _pretenured_fullName ifNotNil: [ :fullName |\r      nameDict at: fullName put: element ].\r   (element isFM3Class or: [ element isFM3Trait ]) ifTrue: [\r         element implementingClass ifNotNil: [ :class |\r            typeDict at: class put: element ] ]"
+	},
+	{
+		"methodClass" : "Symbol",
+		"sourceCode" : "_pretenured_asString\r   \"Refer to the comment in String|asString.\"\r\r   | newString |\r   newString := self species newTenured: self size.\r   newString\r      replaceFrom: 1\r      to: newString size\r      with: self\r      startingAt: 1.\r   ^ newString"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "_pretenured_processClass: aClass ifPragmaAbsent: anErrorBlock\r\r   aClass isTrait\r      ifTrue: [\r      self\r         _pretenured_processTrait: aClass\r         ifPragmaAbsent: anErrorBlock ]\r      ifFalse: [\r            aClass _pretenured_metamodelDefinitionPragma\r               _pretenured_ifNil: anErrorBlock\r               ifNotNil: [ :pragma |\r                     | fm3Class |\r                     fm3Class := FM3Class named:\r                                    (pragma argumentAt: 1).\r                     aClass hasComment ifTrue: [\r                        fm3Class comment: aClass _pretenured_comment ].\r                     superclassDict\r                        at: fm3Class\r                        put: (pragma argumentAt: 2).\r                     fm3Class implementingClass: aClass.\r                     (pragma method _pretenured_pragmaAt: #abstract)\r                        ifNotNil: [ fm3Class isAbstract: true ].\r                     self\r                        _pretenured_extractPackageFrom: pragma method\r                        for: fm3Class.\r                     classDict at: aClass put: fm3Class.\r                     (self _pretenured_methodsToProcessFrom: aClass)\r                        _pretenured_do: [ :each |\r                        self _pretenured_processCompiledMethod: each ].\r                     aClass _pretenured_localSlots\r                        select: #isFMRelationSlot\r                        thenDo: [ :each |\r                        self processSlot: each in: aClass ].\r                     traitsDict\r                        at: fm3Class\r                        put: aClass _pretenured_localGeneratedTraits.\r                     elements add: fm3Class ] ]"
+	},
+	{
+		"methodClass" : "AbstractLayout",
+		"sourceCode" : "_pretenured_visibleSlots\r\r   ^ self _pretenured_slots _pretenured_select: [ :slot |\r        slot isVisible ]"
+	},
+	{
+		"methodClass" : "ProtoObject",
+		"sourceCode" : "_pretenured_ifNil: nilBlock ifNotNil: ifNotNilBlock\r   \"If the receiver is not nil, pass it as argument to the ifNotNilBlock block. else execute the nilBlock block\"\r\r   \"Might be compiled inline for speed, see ASTMessageNode>>#isInlineIfNil\"\r\r   \"(nil ifNil: [42] ifNotNil: [:o | o +3 ] ) >>> 42\"\r\r   \"(3  ifNil: [42] ifNotNil: [:o | o +3 ]) >>> 6\"\r\r   ^ ifNotNilBlock _pretenured_cull: self"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_016r2C: otherCollection\r   \"Concatenate two Strings or Collections.\"\r\r   \"#(2 4 6 8) , #(who do we appreciate) >>> #(2 4 6 8 who do we appreciate)\"\r\r   \"((2989 storeStringBase: 16) copyFrom: 4 to: 6) , ' boy!' >>> 'BAD boy!'\"\r\r   ^ self\r        _pretenured_copyReplaceFrom: self size + 1\r        to: self size\r        with: otherCollection"
+	},
+	{
+		"methodClass" : "Pragma class",
+		"sourceCode" : "_pretenured_allNamed: aSymbol from: aSubClass to: aSuperClass\r   \"Answer a collection of all pragmas found in methods of all classes between aSubClass and aSuperClass (inclusive) whose keyword is aSymbol.\"\r\r   ^ Array _pretenured_streamContents: [ :stream |\r           aSubClass _pretenured_withAllSuperclassesDo: [ :class |\r                 class pragmasDo: [ :pragma |\r                    pragma selector = aSymbol ifTrue: [\r                       stream nextPut: pragma ] ].\r                 aSuperClass = class ifTrue: [\r                    ^ stream _pretenured_contents ] ] ]"
+	},
+	{
+		"methodClass" : "FileReference class",
+		"sourceCode" : "_pretenured_fileSystem: aFilesystem path: aPath\r\r   ^ self newTenured setFileSystem: aFilesystem path: aPath"
+	},
+	{
+		"methodClass" : "LayoutClassScope",
+		"sourceCode" : "_pretenured_slots\r\r   | result |\r   result := OrderedCollection newTenured.\r   self do: [ :slot | result add: slot ].\r   ^ result _pretenured_asArray"
+	},
+	{
+		"methodClass" : "MooseObject class",
+		"sourceCode" : "_pretenured_resetMooseEntityCache\r   \"Some implmentations notes:\r\r\tThe #isOfType: method of Moose can be called billions of times in a short amount of time by Moose query and needs to be the fastest possible. Since it rely on the #superclassesAndFamixTraits cache, we need to optimize it in the best of our capacity.\r\tOptimizations:\r\t- We avoid lazy initialization to avoid the extra #ifNil: message send\r\t- We use IdentitySet to have the fastest #includes: possible\r\t- We collect superclasses only up to MooseEntity subclasses to avoid slowing the Set with Object, ProtoObject, ...\r\t- We now have a separate cache for traits and superclasses + traits so that we avoid an extra dictionary access (in the past it was a Dictionary\"\r\r   | traits classes |\r   super resetMooseEntityCache.\r   traits := super _pretenured_usedStatefulTraits as: IdentitySet.\r   classes := (self _pretenured_withAllSuperclasses\r                  _pretenured_016r5C:\r                  MooseEntity _pretenured_withAllSuperclasses) as:\r                 IdentitySet.\r   superclassesAndFamixTraits := classes\r                                    addAll: traits;\r                                    yourself.\r   usedStatefulTrait := traits"
+	},
+	{
+		"methodClass" : "FMMetamodelValidator",
+		"sourceCode" : "_pretenured_validateContainersAreNotMultivalued\r   \"It is not possible to have <multivalue> and <container> on the same method. A container represents a aggregation UML link that is incompatible with the multivalue kind of the link.\"\r\r   | iterator |\r   iterator := self metaModelBuilder elements iterator\r               |\r               [ :element | element isFM3Property ]\r                  _pretenured_selectIt\r               | [ :property | property isContainer ] selectIt\r               | [ :property | property isMultivalued ] selectIt.\r\r   self\r      assert: iterator atEnd\r      description:\r      'It is not possible to have <multivalue> and <container> on the same method. A container represents a aggregation UML link that is incompatible with the multivalue kind of the link.'"
+	},
+	{
+		"methodClass" : "Metaclass",
+		"sourceCode" : "_pretenured_metamodelDefinitionPragma\r   \"We take into account only pragmas that are in my methods and not methods from my traits.\"\r\r   ^ ((Pragma _pretenured_allNamed: #FMClass:super: in: self)\r         _pretenured_select: [ :pragma | pragma method origin = self ])\r        ifEmpty: [ nil ]\r        ifNotEmpty: [ :pragmas |\r              pragmas size = 1 ifFalse: [\r                    self error:\r                       'It should not be possible to have two pragmas to define a FM3 class.' ].\r              pragmas anyOne ]"
+	},
+	{
+		"methodClass" : "FamixJavaImport class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_deliver: anAnnouncement\r\r   | interestedSubscriptions |\r   \"using a copy, so subscribers can unsubscribe from announcer \"\r   subscriptions ifEmpty: [ ^ self ].\r   self protected: [\r         interestedSubscriptions := self\r                                       _pretenured_subscriptionsHandling:\r                                       anAnnouncement ].\r   interestedSubscriptions ifEmpty: [ ^ self ].\r\r   anAnnouncement prepareForDelivery.\r   self deliver: anAnnouncement to: interestedSubscriptions"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_metamodelDefinitionPragma\r\r   ^ self class _pretenured_metamodelDefinitionPragma"
+	},
+	{
+		"methodClass" : "SourceFileArray",
+		"sourceCode" : "_pretenured_readStreamAtFileIndex: index atPosition: position ifPresent: presentBlock ifAbsent: absentBlock\r\r   | queue stream rofa result file |\r   \"This method is really ugly.\r\tIt uses different readers over the same file that is beeing writing.\r\tThis can lead to buffer problems.\r\tThis should be rethougth to a better way.\r\r\tMaybe an unification of all the accesses using the same buffer could be nice.\"\r   queue := readOnlyQueue.\r   rofa := queue nextOrNil ifNil: [ self createReadOnlyFiles ].\r\r   rofa ifNil: [ ^ absentBlock value ].\r\r   stream := rofa at: index.\r   stream ifNil: [ ^ absentBlock value ].\r\r   file := files at: index.\r\r   position > file size ifTrue: [\r         self finishedReading: rofa from: queue.\r         ^ absentBlock value ].\r\r   \"If the file has been flushed, I am discarding the readonly stream's buffer.\r\tThis is to avoid a problem where the readOnly buffer is missing data that was in\r\tthe writer buffer.\"\r   file ensureWrittenPosition: position.\r\r   \"I am discarding the buffer of the readonly stream, because if not is out-of-sync.\"\r   stream discardBuffer.\r\r   stream position: position.\r   result := presentBlock value: stream.\r\r   self finishedReading: rofa from: queue.\r\r   ^ result"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_split: aSequenceableCollection indicesDo: aBlock\r   \"Perform an action specified as aBlock (with a start and end argument) to each of the indices of the receiver element that have been identified by splitting the receiver using the splitter argument. optimized version for single delimiters.\"\r\r   \"(String streamContents: [:s | Character space split: 'Pharo is cool'  indicesDo: [ :start :end | s << 's:' << start asString << ' ' << 'e:' << end asString << ' ' ]]) >>> 's:1 e:5 s:7 e:8 s:10 e:13 '\"\r\r   | position oldPosition |\r   position := 1.\r   oldPosition := position.\r\r   position := aSequenceableCollection\r                  indexOf: self\r                  startingAt: position.\r   [ position > 0 ] whileTrue: [\r         aBlock value: oldPosition value: position - 1.\r         position := position + 1.\r         oldPosition := position.\r         position := aSequenceableCollection\r                        indexOf: self\r                        startingAt: position ].\r\r   aBlock value: oldPosition value: aSequenceableCollection size"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_withAll: aCollection\r   \"Create a new collection containing all the elements from aCollection.\"\r\r   ^ (self newTenured: aCollection size)\r        addAll: aCollection;\r        yourself"
+	},
+	{
+		"methodClass" : "FamixJavaInvocation class",
+		"sourceCode" : "_pretenured_allTraits\r\r   <reflection: 'Class structural inspection - Traits'>\r   ^ self traitComposition _pretenured_allTraits"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_flatCollectAsSet: aBlock\r   \"Evaluate aBlock for each of the receiver's elements and answer the\r\tlist of all resulting values flatten one level. Assumes that aBlock returns some kind\r\tof collection for each element. Equivalent to the lisp's mapcan\"\r\r   \"( #(1 2 3) flatCollectAsSet: [:each | { each. each+1 } ] ) >>> #(1 2 3 4) asSet\"\r\r   ^ self _pretenured_flatCollect: aBlock as: Set"
+	},
+	{
+		"methodClass" : "MooseModel class",
+		"sourceCode" : "_pretenured_metamodel\r\r   ^ metamodel ifNil: [ self _pretenured_resetMetamodel ]"
+	},
+	{
+		"methodClass" : "FamixTParametricAssociation classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "FamixTTypedEntity classTrait",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   <reflection:\r   'Class structural inspection - Selectors and methods inspection'>\r   ^ self localMethodDict _pretenured_values"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_localMethods\r   \"returns the methods of classes excluding the ones of the traits that the class uses\"\r\r   ^ self _pretenured_methods"
+	},
+	{
+		"methodClass" : "CompiledMethod",
+		"sourceCode" : "_pretenured_pragmas\r\r   <reflection: 'Class structural inspection - Pragma'>\r   | selectorOrProperties |\r   ^ (selectorOrProperties := self penultimateLiteral)\r        isMethodProperties\r        ifTrue: [ selectorOrProperties _pretenured_pragmas ]\r        ifFalse: [ #(  ) ]"
+	},
+	{
+		"methodClass" : "OrderedDictionary",
+		"sourceCode" : "_pretenured_at: aKey ifAbsentPut: aBlock\r\r   ^ self at: aKey ifAbsent: [ self at: aKey put: aBlock value ]"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSubclasses\r   \"Answer an orderedCollection of the receiver's and the receiver's descendent's subclasses. \"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | scan scanTop |\r   scan := OrderedCollection _pretenured_withAll:\r              self _pretenured_subclasses.\r   scanTop := 1.\r   [ scanTop > scan size ] whileFalse: [\r         scan addAll: (scan at: scanTop) subclasses.\r         scanTop := scanTop + 1 ].\r   ^ scan"
+	},
+	{
+		"methodClass" : "MooseModel",
+		"sourceCode" : "initialize\r\r   super initialize.\r   name := self class undefinedName.\r   self metamodel: self class _pretenured_metamodel"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_usedStatefulTraits\r\r   ^ self _pretenured_withAllSuperclasses\r        _pretenured_flatCollect: [ :class |\r        class _pretenured_allGeneratedTraits ]\r        as: Set"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSuperclasses\r   \"Answer an OrderedCollection of the receiver's and the receiver's\r\tancestor's superclasses. The first element is the receiver's immediate\r\tsuperclass, followed by its superclass; the last element is Object.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | temp |\r   ^ self superclass == nil\r        ifTrue: [ OrderedCollection newTenured ]\r        ifFalse: [\r              temp := self superclass _pretenured_allSuperclasses.\r              temp addFirst: self superclass.\r              temp ]"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_keysAndValuesDo: aBlock\r   \"\r\tEvaluate aBlock for each of the receiver's keys and values. The block must accept two\r\tinputs, the first being the key and the second being the value. See keysDo: or valuesDo:\r\tif you only need to evaluate one or the other. Also see associationsDo: for a similar\r\tselector where the block accepts a single agrument.\r\r\t```\r\td := Dictionary withAll: #(4 5 9 6 76).\r\ta := OrderedCollection new.\r\td keysAndValuesDo: [ :k :v | a add: v. a add: k ]. a \"\"(76 5 9 3 4 1 6 4 5 2)\"\"\r\t```\r\t\"\r\r   ^ self _pretenured_associationsDo: [ :assoc |\r        aBlock value: assoc key value: assoc value ]"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_asLink\r   \"Answer a string that represents the receiver.\"\r\r   ^ ValueLink value: self"
+	},
+	{
+		"methodClass" : "FMFutureProperty",
+		"sourceCode" : "initialize\r\r   super initialize.\r   values := OrderedCollection newTenured"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "new\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyWith: newElement\r   \"Answer a copy of the receiver that is 1 bigger than the receiver and has\r\tnewElement at the last element.\"\r\r   | newIC |\r   newIC := self species newTenured: self size + 1.\r   newIC\r      replaceFrom: 1\r      to: self size\r      with: self\r      startingAt: 1.\r   newIC at: newIC size put: newElement.\r   ^ newIC"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r   ^ implementingClass\r        ifNil: [ FMRuntimeElement new description: self ]\r        ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "AbstractBinaryFileStream class",
+		"sourceCode" : "handle: aCollection file: aFile forWrite: aTrue\r\r   ^ self basicNewTenured\r        handle: aCollection file: aFile forWrite: aTrue;\r        yourself"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r   entityAttributes := #(  ).\r   cache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "FM3Trait",
+		"sourceCode" : "initialize\r\r   super initialize.\r   users := Set newTenured"
+	},
+	{
+		"methodClass" : "FMMultivalueLink class",
+		"sourceCode" : "new\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "named: aString\r\r   ^ self newTenured\r        name: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "Semaphore",
+		"sourceCode" : "critical: mutuallyExcludedBlock\r   \"Evaluate mutuallyExcludedBlock only if the receiver is not currently in\r\tthe process of running the critical: message. If the receiver is, evaluate\r\tmutuallyExcludedBlock after the other critical: message is finished.\"\r\r   \"We need to catch eventual interruptions very carefully.\r\tThe naive approach of just doing, e.g.,:\r\t\t\tself wait.\r\t\t\taBlock ensure: [self signal].\r\twill fail if the active process gets terminated while in the wait.\r\tHowever, the equally naive:\r\t\t\t[self wait.\r\t\t\taBlock value] ensure: [self signal].\r\twill fail too, since the active process may get interrupted while\r\tentering the ensured block and leave the semaphore signaled twice.\r\tTo avoid both problems we make use of the fact that interrupts only\r\toccur on sends (or backward jumps) and use an assignment (bytecode)\r\tright before we go into the wait primitive (which is not a real send and\r\ttherefore not interruptable either).\"\r\r   | blockValue caught |\r   caught := false.\r   [\r      caught := true.\r      self wait.\r      blockValue := mutuallyExcludedBlock value ] _pretenured_ensure: [\r      caught ifTrue: [ self signal ] ].\r   ^ blockValue"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack push:\r      (FMFutureEntity _pretenured_in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "FMImporterFilter",
+		"sourceCode" : "beginEntity: name\r\r   (filter includes: name)\r      ifTrue: [\r            shouldSkip := false.\r            importer _pretenured_beginEntity: name ]\r      ifFalse: [ shouldSkip := true ]"
+	},
+	{
+		"methodClass" : "FM3Type",
+		"sourceCode" : "initialize\r\r   super initialize.\r   properties := FMMultivalueLink on: self opposite: #mmClass:.\r   traits := Set newTenured"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "as: aSimilarClass\r   \"Create an object of class aSimilarClass that has similar contents to the receiver if the object is not already an instance of this class.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r\r   ^ aSimilarClass _pretenured_newFrom: self"
+	},
+	{
+		"methodClass" : "Set class",
+		"sourceCode" : "newFrom: aCollection\r   \"Answer an instance of me containing the same elements as aCollection.\"\r\r   \"(Set newFrom: {1. 2. 3}) >>> #( 1 2 3) asSet\"\r\r   \"({1. 2. 3} as: Set) >>> #( 1 2 3) asSet\"\r\r   | newCollection |\r   newCollection := self newTenured: aCollection size.\r   newCollection addAll: aCollection.\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "dangling: reference to: serial\r\r   (reminderDict\r       at: serial\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: reference.\r   numberOfDanglingReferences := numberOfDanglingReferences + 1.\r   ^ reference"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r   super initialize.\r   keys := Array newTenured: 2.\r   values := Array newTenured: 2.\r   size := 0"
+	},
+	{
+		"methodClass" : "Set",
+		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :element |\r      element ifNotNil: [ self noCheckAdd: element enclosedElement ] ]"
+	},
+	{
+		"methodClass" : "ChunkReadStream",
+		"sourceCode" : "basicNextChunk\r   \"Answer the contents of the receiver, up to the next terminator character. Doubled terminators indicate an embedded terminator character.\"\r\r   | out ch |\r   out := (String new: 1000) writeStream.\r   self skipSeparators.\r   [ (ch := decoratedStream next) isNil ] whileFalse: [\r         ch == self terminatorMark ifTrue: [\r               decoratedStream peek == self terminatorMark\r                  ifTrue: [\r                  decoratedStream next \"skip doubled terminator\" ]\r                  ifFalse: [\r                  ^ out _pretenured_contents \"terminator is not doubled; we're done!\" ] ].\r         out nextPut: ch ].\r   ^ out contents"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "privateMooseStorageAt: key\r   \"I exist only for performance reasons. I avoid to create a #ifAbsent: block. In moose we call this so much that the creation cost of the block and its garbage collection is too high :(\"\r\r   \"Cannot be easly inline due to array usage\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ self at: key put: OrderedCollection newTenured ]\r         ifNotNil: [ :assoc | assoc ]) value"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "detect: aBlock ifFound: foundBlock ifNone: exceptionBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tIf some element evaluates aBlock to true, then cull this element into\r\tfoundBlock and answer the result of this evaluation.\r\tIf none evaluate to true, then evaluate exceptionBlock.\"\r\r   \"(#(1 2) detect: #even ifFound: #negated ifNone: [0]) >>> -2\"\r\r   \"(#(1 3) detect: #even ifFound: #negated ifNone: [0]) >>> 0\"\r\r   \"('Hello' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $E\"\r\r   \"('LOL' detect: #isLowercase ifFound: #uppercase ifNone: [$X]) >>> $X\"\r\r   self do: [ :each |\r      (aBlock value: each) ifTrue: [ ^ foundBlock cull: each ] ].\r   ^ exceptionBlock value"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "copyReplaceAll: oldSubstring with: newSubstring\r   \"Answer a copy of the receiver in which all occurrences of oldSubstring have been replaced by newSubstring\"\r\r   \"('ab cd ab ef ab' copyReplaceAll: 'ab' with: 'zk') >>> 'zk cd zk ef zk'\"\r\r   | idx |\r   self = oldSubstring ifTrue: [ ^ newSubstring copy ].\r   oldSubstring isEmpty ifTrue: [ ^ self copy ].\r   idx := 1.\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              | foundIdx |\r              [\r              (foundIdx := self\r                              findString: oldSubstring\r                              startingAt: idx) isZero ] whileFalse: [\r                    stream\r                       next: foundIdx - idx\r                       putAll: self\r                       startingAt: idx;\r                       nextPutAll: newSubstring.\r                    idx := foundIdx + oldSubstring size ].\r              idx <= self size ifTrue: [\r                 stream\r                    next: self size - idx + 1\r                    putAll: self\r                    startingAt: idx ] ]"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "MooseGroupStorage",
+		"sourceCode" : "initialize: capacity\r\r   byType := IdentityDictionary new: 24.\r   species := OrderedCollection.\r   elements := self species newTenured: capacity"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "fullCheck\r   \"Keep array at least 1/4 free for decent hash behavior\"\r\r   array size - tally < (array size // 4 max: 1) ifTrue: [\r      self _pretenured_grow ]"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+	},
+	{
+		"methodClass" : "FMMSEParser",
+		"sourceCode" : "initialize\r\r   super initialize.\r   numberParser := NumberParser newTenured"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream on: (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key ifAbsent: aBlock\r   \"Answer the value associated with the key or, if key isn't found,\r\tanswer the result of evaluating aBlock.\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ aBlock ]\r         ifNotNil: [ :assoc | assoc ]) value"
+	},
+	{
+		"methodClass" : "FMDanglingReference class",
+		"sourceCode" : "with: aFutureAttribute\r\r   ^ self newTenured\r        parentProperty: aFutureAttribute;\r        yourself"
+	}
+]

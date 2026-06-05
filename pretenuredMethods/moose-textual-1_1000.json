@@ -1,0 +1,86 @@
+[
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "newTenured\r\r   ^ self newTenured: 4"
+	},
+	{
+		"methodClass" : "FMSlotMultivalueLink class",
+		"sourceCode" : "_pretenured_on: anObject slot: aFMRelationSlot\r\r   ^ self newTenured owner: anObject slot: aFMRelationSlot"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "FM3Element class",
+		"sourceCode" : "_pretenured_named: aString\r\r   ^ self newTenured\r        name: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "FMFuture class",
+		"sourceCode" : "_pretenured_in: anImporter named: aString\r\r   ^ self newTenured\r        in: anImporter named: aString;\r        yourself"
+	},
+	{
+		"methodClass" : "FMDanglingReference class",
+		"sourceCode" : "_pretenured_with: aFutureAttribute\r\r   ^ self newTenured\r        parentProperty: aFutureAttribute;\r        yourself"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r   super initialize.\r   keys := Array newTenured: 2.\r   values := Array newTenured: 2.\r   size := 0"
+	},
+	{
+		"methodClass" : "FMFutureProperty",
+		"sourceCode" : "referenceNumber: serial\r\r   self addToValues: (self importer entityAt: serial ifAbsent: [\r             self importer\r                dangling: (FMDanglingReference _pretenured_with: self)\r                to: serial ])"
+	},
+	{
+		"methodClass" : "FMMany",
+		"sourceCode" : "initialize: anObject\r\r   self\r      write:\r      (FMSlotMultivalueLink _pretenured_on: anObject slot: self)\r      to: anObject"
+	},
+	{
+		"methodClass" : "FM3Class",
+		"sourceCode" : "createInstance\r\r   ^ implementingClass\r        ifNil: [ FMRuntimeElement new description: self ]\r        ifNotNil: [ implementingClass newTenured ]"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "MooseObject",
+		"sourceCode" : "resetPrivateState\r\r   entityAttributes := #(  ).\r   cache := SmallDictionary newTenured"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream on: (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "dangling: reference to: serial\r\r   (reminderDict\r       at: serial\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: reference.\r   numberOfDanglingReferences := numberOfDanglingReferences + 1.\r   ^ reference"
+	},
+	{
+		"methodClass" : "FMImporter",
+		"sourceCode" : "beginEntity: name\r\r   | translatedName |\r   translatedName := self translationUnit translate: name.\r   stack push:\r      (FMFutureEntity _pretenured_in: self named: translatedName)"
+	},
+	{
+		"methodClass" : "String",
+		"sourceCode" : "copyReplaceAll: oldSubstring with: newSubstring\r   \"Answer a copy of the receiver in which all occurrences of oldSubstring have been replaced by newSubstring\"\r\r   \"('ab cd ab ef ab' copyReplaceAll: 'ab' with: 'zk') >>> 'zk cd zk ef zk'\"\r\r   | idx |\r   self = oldSubstring ifTrue: [ ^ newSubstring copy ].\r   oldSubstring isEmpty ifTrue: [ ^ self copy ].\r   idx := 1.\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              | foundIdx |\r              [\r              (foundIdx := self\r                              findString: oldSubstring\r                              startingAt: idx) isZero ] whileFalse: [\r                    stream\r                       next: foundIdx - idx\r                       putAll: self\r                       startingAt: idx;\r                       nextPutAll: newSubstring.\r                    idx := foundIdx + oldSubstring size ].\r              idx <= self size ifTrue: [\r                 stream\r                    next: self size - idx + 1\r                    putAll: self\r                    startingAt: idx ] ]"
+	},
+	{
+		"methodClass" : "FMMetaModelBuilder",
+		"sourceCode" : "processCompiledMethod: aMethod\r\r   | method |\r   method := aMethod.\r\r   \"If the method is a reflective method we need to ensure it is compiled and use its compiled method.\r\tA refelctive method is for exemple a method created via a metalink and that was never executed.\"\r   (aMethod isKindOf: ReflectiveMethod) ifTrue: [\r         method := aMethod\r                      compileAndInstallCompiledMethod;\r                      compiledMethod ].\r   self assert: method isCompiledMethod.\r\r   method pragmas\r      detect: [ :each |\r            #( #FMProperty:type:opposite: #FMProperty:type:\r               #FMProperty:type:defaultValue: ) includes:\r               each selector ]\r      ifFound: [ :pragma |\r            | prop |\r            prop := FM3Property _pretenured_named:\r                       (pragma argumentAt: 1) asString.\r            typeDict at: prop put: (pragma argumentAt: 2).\r            mmClassDict at: prop put: method methodClass.\r            pragma selector = #FMProperty:type:defaultValue: ifTrue: [\r               prop defaultValue: (pragma argumentAt: 3) ].\r            pragma selector = #FMProperty:type:opposite: ifTrue: [\r               oppositeDict at: prop put: (pragma argumentAt: 3) ].\r            self processInfosFrom: method for: prop.\r\r            elements add: prop ]"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+	}
+]
