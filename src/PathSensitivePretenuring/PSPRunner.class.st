@@ -38,7 +38,7 @@ PSPRunner >> compileAndExportPretenuredMethodsForStrategy: strategyClass [
 	samplingRateAsString := samplingRate = 1
 		ifTrue: [ '1' ]
 		ifFalse: [ samplingRate asString allButFirst allButLast copyReplaceAll: '/' with: '_' ].
-						"The asString of the fraction sorrounds the fraction with parenthesis ()"
+						"The asString of the fraction surrounds the fraction with parenthesis ()"
 
 	fileName := String streamContents: [ :stream | 
 		stream << benchmarkClass fileName << '-' << strategyClass fileName << '-'
