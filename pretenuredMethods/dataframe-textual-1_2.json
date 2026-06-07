@@ -1,0 +1,198 @@
+[
+	{
+		"methodClass" : "OrderedCollection class",
+		"sourceCode" : "_pretenured_newFromArray: anArray\r   \"Fast implementation. Just use a copy of the argument as a storage.\r\tNo need to copy the elements one by one.\"\r\r   ^ self basicNew setContents: anArray _pretenured_asNewArray"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_readHeader\r   \"Read a record, presumably a header and return the header field names.\r\tThis should normally be called only at the beginning and only once.\r\tThis sets the fieldCount (but fieldAccessors overrides fieldCount).\"\r\r   | names |\r   names := Array _pretenured_streamContents: [ :out |\r                  [ self readAtEndOrEndOfLine ] whileFalse: [\r                        out nextPut: self _pretenured_readField.\r                        (self readSeparator and: [\r                            self atEnd or: [ self peekEndOfLine ] ])\r                           ifTrue: [ out nextPut: emptyFieldValue ] ] ].\r   self fieldCount: names size.\r   ^ names"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "Array2D class",
+		"sourceCode" : "_pretenured_rows: rowNumber columns: columnNumber\r   \"Create a Matrix of rowNUmber rows and columnNumber columns.\"\r\r   ^ self\r        rows: rowNumber\r        columns: columnNumber\r        contents: (Array newTenured: rowNumber * columnNumber)"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readRowsWith: aReader\r\r   ^ self includeRowNames\r        ifTrue: [ self readRowsAndRowNamesWith: aReader ]\r        ifFalse: [ self _pretenured_readOnlyRowsWith: aReader ]"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "initialize\r\r   super initialize.\r   contents := Array2D newTenured"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_writeStream\r\r   ^ WriteStream _pretenured_on: self"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "_pretenured_asOrderedCollection\r\r   ^ OrderedCollection _pretenured_newFromArray: self"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_as: aSimilarClass\r   \"Create an object of class aSimilarClass that has similar contents to the receiver if the object is not already an instance of this class.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r\r   ^ aSimilarClass _pretenured_newFrom: self"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_columnNames: aCollection\r   \"Sets the column names of a DataFrame with contents of the collection aCollection\"\r\r   | type |\r   aCollection size = self numberOfColumns ifFalse: [\r      SizeMismatch signal: 'Wrong number of column names' ].\r\r   aCollection _pretenured_asSet size = aCollection size ifFalse: [\r      Error signal: 'All column names must be distinct' ].\r\r   self columnNames ifNotNil: [\r         self columnNames _pretenured_withIndexDo: [\r               :currentColumnName\r               :i |\r               type := dataTypes at: currentColumnName.\r               dataTypes removeKey: currentColumnName.\r               dataTypes _pretenured_at: (aCollection at: i) put: type ] ].\r\r   columnNames := aCollection _pretenured_asOrderedCollection"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "_pretenured_asNewArray\r\r   ^ self clone"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "_pretenured_initialize: aPoint\r\r   contents := Array2D _pretenured_rows: aPoint x columns: aPoint y"
+	},
+	{
+		"methodClass" : "DataFrameInternal class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays\r\r   | numberOfRows numberOfColumns dfInternal |\r   numberOfRows := anArrayOfArrays size.\r   numberOfColumns := 0.\r   1 to: numberOfRows do: [ :index |\r         numberOfColumns := numberOfColumns max:\r                               (anArrayOfArrays at: index) size ].\r   dfInternal := self newTenured: numberOfRows @ numberOfColumns.\r\r   1 to: numberOfRows do: [ :i |\r         1 to: numberOfColumns do: [ :j |\r               dfInternal\r                  at: i\r                  at: j\r                  put:\r                  ((anArrayOfArrays at: i) asArray at: j ifAbsent: nil) ] ].\r\r   ^ dfInternal"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_to: stop\r   \"Answer an Interval from the receiver up to the argument, stop,\r\tincrementing by 1.\"\r\r   ^ Interval _pretenured_from: self to: stop by: 1"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_withAll: aCollection\r   \"Create a new collection containing all the elements from aCollection.\"\r\r   ^ (self newTenured: aCollection size)\r        addAll: aCollection;\r        yourself"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_readField\r\r   | field |\r   field := self peekQuote\r               ifTrue: [ self readQuotedField ]\r               ifFalse: [ self _pretenured_readUnquotedField ].\r   (field ~= emptyFieldValue and: [ emptyFieldInput notNil ]) ifTrue: [\r      (emptyFieldInput value: field) ifTrue: [ ^ emptyFieldValue ] ].\r   ^ field"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "initialize\r\r   super initialize.\r\r   dataTypes := Dictionary new.\r   contents := DataFrameInternal newTenured.\r   self _pretenured_setDefaultRowColumnNames.\r   self calculateDataTypes"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "_pretenured_calculateDataType\r\r   | types |\r   types := Set newTenured.\r   self do: [ :elem | elem ifNotNil: [ types add: elem class ] ].\r\r   types ifNotEmpty: [ :classes |\r         | result |\r         result := classes\r                      inject: classes anyOne\r                      into: [ :commonSuperclass :each |\r                         self\r                            leastCommonSuperclassOf: commonSuperclass\r                            and: each ].\r         \"If we cannot detect the type, we configure it as Object.\"\r\r         ^ (result withAllSuperclasses includes: String)\r              ifTrue: [ Object ]\r              ifFalse: [ result ] ].\r   ^ UndefinedObject"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_withIndexDo: elementAndIndexBlock\r   \"Just like do: except that the iteration index supplies the second argument to the block\"\r\r   \"(Array streamContents: [:stream| #(11 22 13) withIndexDo: [ :each :i | stream nextPut: (each * each + i)]]) >>> #(122 486 172)\"\r\r   1 to: self size do: [ :index |\r   elementAndIndexBlock value: (self at: index) value: index ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_streamContents: blockWithArg\r   \"Build an instance of the receiver by writing elements to a stream.\r\tMore specifically: blockWithArg will be given a WriteStream on an instance of the receiver.\r\tInside blockWithArg you write elements to the stream to build up the collection.\r\tAt the end, the contents of the stream up to that point will be returned.\r\tNote that the underlying collection grows as needed.\"\r\r   \"(Array streamContents: [ :out | out nextPut: 1; nextPutAll: #(2 3 4); nextPut: 5 ]) >>> #(1 2 3 4 5)\"\r\r   ^ self _pretenured_new: 100 streamContents: blockWithArg"
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays\r\r   ^ self newTenured _pretenured_initializeRows: anArrayOfArrays"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_asSet\r   \"Answer a Set whose elements are the unique elements of the receiver.\"\r\r   \"{1. 2} asSet =    {2. 1} asSet >>> true\"\r\r   \"{1. 2} asSet = {1. 2. 2} asSet >>> true\"\r\r   \"{1. 2} asSet = {1. 2. 3} asSet >>> false\"\r\r   \"{} asSet = Set new >>> true\"\r\r   ^ Set _pretenured_withAll: self"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrame to the array of columns\"\r\r   \"(#(#(1 2) #(3 4)) asDataFrame asArrayOfColumns) >>> (#(#(1 3) #(2 4)))\"\r\r   \"(#(#(r1c1 r1c2) #(r2c1 r2c2)) asDataFrame asArrayOfColumns) >>> (#(#(r1c1 r2c1) #(r1c2 r2c2)))\"\r\r   ^ contents _pretenured_asArrayOfColumns"
+	},
+	{
+		"methodClass" : "Interval class",
+		"sourceCode" : "_pretenured_from: startInteger to: stopInteger by: stepInteger\r   \"Answer an instance of me, starting at startNumber, ending at\r\tstopNumber, and with an interval increment of stepNumber.\"\r\r   ^ self newTenured\r        setFrom: startInteger\r        to: stopInteger\r        by: stepInteger"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_calculateDataTypes\r\r   self _pretenured_asArrayOfColumns _pretenured_doWithIndex: [\r         :column\r         :i |\r         self dataTypes\r            _pretenured_at: (self columnNames at: i)\r            put: column _pretenured_calculateDataType ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_readUnquotedField\r\r   (self atEnd or: [ self peekSeparator or: [ self peekEndOfLine ] ])\r      ifTrue: [ ^ emptyFieldValue ].\r   ^ self _pretenured_stringStreamContents: [ :stream |\r           [\r           self atEnd or: [\r              self peekSeparator or: [ self peekEndOfLine ] ] ]\r              whileFalse: [ stream nextPut: self nextChar ] ]"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_doWithIndex: elementAndIndexBlock\r   \"Use the new version with consistent naming\"\r\r   ^ self _pretenured_withIndexDo: elementAndIndexBlock"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_asOrderedCollection\r   \"Answer an OrderedCollection whose elements are the elements of the\r\treceiver. The order in which elements are added depends on the order\r\tin which the receiver enumerates its elements. In the case of unordered\r\tcollections, the ordering is not necessarily the same for multiple\r\trequests for the conversion.\"\r\r   \"(10 to: 25 by: 5) asOrderedCollection >>> #(10 15 20 25) asOrderedCollection\"\r\r   \"'foo' asOrderedCollection = #($f $o $o) asOrderedCollection >>> true\"\r\r   \"'foo' asOrderedCollection = #($o $o $f) asOrderedCollection >>> false\"\r\r   ^ self _pretenured_as: OrderedCollection"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrameInternal to the array of columns\"\r\r   ^ (1 _pretenured_to: self numberOfColumns) collect: [ :j |\r           (1 _pretenured_to: self numberOfRows) collect: [ :i |\r              self at: i at: j ] ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "_pretenured_stringStreamContents: block\r   \"Like String streamContents: block\r\tbut reusing the underlying buffer for improved efficiency\"\r\r   stringStream ifNil: [\r      stringStream := (String new: 32) _pretenured_writeStream ].\r   stringStream reset.\r   block value: stringStream.\r   ^ stringStream contents"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readColumnNamesWith: aReader\r   \"Set the receiver's column names if they were not manually set\"\r\r   columnNames ifNil: [ columnNames := aReader _pretenured_readHeader ].\r\r   self includeRowNames ifTrue: [\r      columnNames := columnNames copyWithoutFirst ]"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_privateRowNames: anArray\r   \"I am a private method skipping the assertions when my internal mecanisms know they can skip them.\"\r\r   rowNames := anArray _pretenured_asOrderedCollection"
+	},
+	{
+		"methodClass" : "OrderedCollection class",
+		"sourceCode" : "_pretenured_newFrom: aCollection\r   \"Answer an instance of me containing the same elements as aCollection.\"\r\r   | newCollection |\r   newCollection := self newTenured: aCollection size.\r   newCollection addAll: aCollection.\r   ^ newCollection\r\r   \"\tOrderedCollection newFrom: {1. 2. 3}\r\t{1. 2. 3} as: OrderedCollection\r\t{4. 2. 7} as: SortedCollection\r\""
+	},
+	{
+		"methodClass" : "DataFrame class",
+		"sourceCode" : "_pretenured_withRows: anArrayOfArrays columnNames: anArrayOfColumnNames\r\r   ^ anArrayOfArrays\r        ifNotEmpty: [\r              (self _pretenured_withRows: anArrayOfArrays)\r                 _pretenured_columnNames: anArrayOfColumnNames;\r                 yourself ]\r        ifEmpty: [ self withColumnNames: anArrayOfColumnNames ]"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readOnlyRowsWith: aReader\r\r   rows := OrderedCollection newTenured.\r\r   [ aReader atEnd ] whileFalse: [ rows _pretenured_add: aReader next ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_add: newObject\r   \"Add a new object at the end of the collection, and returns the object itself\"\r\r   \"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r   \"Add returns the object itself\"\r\r   \"(OrderedCollection new add: 42) >>> 42\"\r\r   \"You may want to use yourself to return the collection itself\"\r\r   \"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r   \"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r   ^ self _pretenured_addLast: newObject"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_initializeRows: anArrayOfArrays\r\r   contents := DataFrameInternal _pretenured_withRows: anArrayOfArrays.\r   self _pretenured_setDefaultRowColumnNames.\r   self _pretenured_calculateDataTypes"
+	},
+	{
+		"methodClass" : "DataFrameInternal class",
+		"sourceCode" : "newTenured: aPoint\r\r   ^ self newTenured _pretenured_initialize: aPoint"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_setDefaultRowColumnNames\r\r   self _pretenured_privateRowNames:\r      (1 _pretenured_to: self numberOfRows).\r   self _pretenured_columnNames:\r      (1 _pretenured_to: self numberOfColumns)"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r   ^ recordClass newTenured: size"
+	},
+	{
+		"methodClass" : "Interval",
+		"sourceCode" : "collect: aBlock\r\r   | nextValue result |\r   result := self species newTenured: self size.\r   nextValue := start.\r   1 to: result size do: [ :i |\r         result at: i put: (aBlock value: nextValue).\r         nextValue := nextValue + step ].\r   ^ result"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readFromInternal: aFileReference\r   \"Read data frame from a CSV file\"\r\r   | stream reader df |\r   stream := aFileReference readStream.\r   reader := NeoCSVReader on: stream.\r   reader separator: self separator.\r\r   self _pretenured_readColumnNamesWith: reader.\r   self _pretenured_readRowsWith: reader.\r   reader close.\r   df := self createDataFrame.\r   ^ df"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "cull: anArg\r   \"Execute the receiver with one or zero arguments depending on the receiver\"\r\r   \"([ 12 ] cull: 13)>>> 12 \"\r\r   \"([:x | x + 12] cull: 3)>>> 15\"\r\r   <reflection:\r   'Message sending and code execution - Runtime and Evaluation'>\r   ^ numArgs = 0\r        ifTrue: [ self value ]\r        ifFalse: [ self value: anArg ]"
+	}
+]

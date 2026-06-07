@@ -1,0 +1,62 @@
+[
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_add: newObject\r   \"Add a new object at the end of the collection, and returns the object itself\"\r\r   \"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r   \"Add returns the object itself\"\r\r   \"(OrderedCollection new add: 42) >>> 42\"\r\r   \"You may want to use yourself to return the collection itself\"\r\r   \"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r   \"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r   ^ self _pretenured_addLast: newObject"
+	},
+	{
+		"methodClass" : "DataFrame",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrame to the array of columns\"\r\r   \"(#(#(1 2) #(3 4)) asDataFrame asArrayOfColumns) >>> (#(#(1 3) #(2 4)))\"\r\r   \"(#(#(r1c1 r1c2) #(r2c1 r2c2)) asDataFrame asArrayOfColumns) >>> (#(#(r1c1 r2c1) #(r1c2 r2c2)))\"\r\r   ^ contents _pretenured_asArrayOfColumns"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrameInternal to the array of columns\"\r\r   ^ (1 _pretenured_to: self numberOfColumns) _pretenured_collect: [\r           :j |\r           (1 _pretenured_to: self numberOfRows) _pretenured_collect: [\r              :i | self at: i at: j ] ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_to: stop\r   \"Answer an Interval from the receiver up to the argument, stop,\r\tincrementing by 1.\"\r\r   ^ Interval _pretenured_from: self to: stop by: 1"
+	},
+	{
+		"methodClass" : "Interval class",
+		"sourceCode" : "_pretenured_from: startInteger to: stopInteger by: stepInteger\r   \"Answer an instance of me, starting at startNumber, ending at\r\tstopNumber, and with an interval increment of stepNumber.\"\r\r   ^ self newTenured\r        setFrom: startInteger\r        to: stopInteger\r        by: stepInteger"
+	},
+	{
+		"methodClass" : "Interval",
+		"sourceCode" : "_pretenured_collect: aBlock\r\r   | nextValue result |\r   result := self species newTenured: self size.\r   nextValue := start.\r   1 to: result size do: [ :i |\r         result at: i put: (aBlock value: nextValue).\r         nextValue := nextValue + step ].\r   ^ result"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_copyFrom: start to: stop\r   \"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r   | newSize |\r   newSize := stop - start + 1.\r   ^ (self species newTenured: newSize)\r        replaceFrom: 1\r        to: newSize\r        with: self\r        startingAt: start"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "_pretenured_readOnlyRowsWith: aReader\r\r   rows := OrderedCollection new.\r\r   [ aReader atEnd ] whileFalse: [ rows _pretenured_add: aReader next ]"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r   ^ recordClass newTenured: size"
+	},
+	{
+		"methodClass" : "DataFrameTypeDetector",
+		"sourceCode" : "detectTypesAndConvert: aDataFrame\r\r   aDataFrame _pretenured_asArrayOfColumns\r      with: aDataFrame columnNames\r      do: [ :column :columnName |\r            | thisColumnType |\r            \"Get the user given column type for this column name and if it wasn't\r\t\t\t given then use the default type detection\"\r            thisColumnType := columnTypes\r                                 at: columnName\r                                 ifAbsent: [\r                                 [ :array |\r                                 self detectColumnTypeAndConvert:\r                                    array ] ].\r            \"We allow users to submit either a string which is one of the standard\r\t\t\t types that we know how to convert or a block which is for custom type\r\t\t\t conversion. Test if it's a block here and if not assume that we can\r\t\t\t look it up in the type mapping and assign one of the standard type\r\t\t\t converting blocks.\"\r            thisColumnType isBlock ifFalse: [\r               thisColumnType := typeMapping at: thisColumnType ].\r            \"Assign the column with the converted type by passing the original\r\t\t\t column to the block for type conversion\"\r            aDataFrame\r               column: columnName\r               put: (thisColumnType value: column) ].\r   aDataFrame rowNames:\r      (self detectColumnTypeAndConvert: aDataFrame rowNames)"
+	},
+	{
+		"methodClass" : "WriteStream",
+		"sourceCode" : "contents\r\r   readLimit := readLimit max: position.\r   ^ collection _pretenured_copyFrom: 1 to: position"
+	},
+	{
+		"methodClass" : "DataFrameCsvReader",
+		"sourceCode" : "readRowsWith: aReader\r\r   ^ self includeRowNames\r        ifTrue: [ self readRowsAndRowNamesWith: aReader ]\r        ifFalse: [ self _pretenured_readOnlyRowsWith: aReader ]"
+	}
+]
