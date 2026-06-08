@@ -15,7 +15,15 @@ TextualLocationOfNewPretenuringStrategy class >> fileName [
 { #category : 'api' }
 TextualLocationOfNewPretenuringStrategy >> isAllocationSite: anAllocationGraphNode fromAllocationPath: allocationStack [
 
-	^ anAllocationGraphNode isTextualAllocationSite and: [ allocationStack last isLongLived ]
+	| called condition |
+	condition := false.
+	called := allocationStack last targetNode method.
+	called isCompiledMethod ifTrue: [ | selector | 
+		selector := called selector.
+		((selector = #new:) | (selector = #new)) ifTrue: [ condition := true ] ].
+
+	 condition := condition | anAllocationGraphNode isTextualAllocationSite.
+	^ condition and: [ allocationStack last isLongLived ]
 ]
 
 { #category : 'api' }
