@@ -15,10 +15,10 @@ LocationOfNewStrategyTest >> setUp [
 	super setUp.
 	profiler := FiLiP new
 		            samplingRate: 1;
-		            profileOn: [ AllocationGraphFixtureCaller tata ];
+		            profileOn: [ MockedAllocatorClass tata ];
 		            yourself.
 	samples := profiler objectAllocations select: [ :ephemeron |
-		           { AllocationGraphFixtureCaller. AllocationGraphFixture } includes: ephemeron allocatedObjectClass ].
+		           { MockedAllocatorClass. MockedAllocatedClass } includes: ephemeron allocatedObjectClass ].
 	allocationGraph := AllocationGraph new
 		                   setUpForSamples: samples;
 		                   yourself
@@ -29,11 +29,11 @@ LocationOfNewStrategyTest >> testTextualLocationStrategy [
 
 	| sendersChains expectedSendersChains |
 	allocationGraph edges do: #beLongLived.
-	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (AllocationGraphFixtureCaller class >> #tata)).
+	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (MockedAllocatorClass class >> #tata)).
 
 	expectedSendersChains := {
 		{ (allocationGraph edgeFrom: Behavior >> #new to: Behavior >> #basicNew) .
-	 	  (allocationGraph edgeFrom: AllocationGraphFixture class >> #fifi to: Behavior >> #new) } }.
+	 	  (allocationGraph edgeFrom: MockedAllocatedClass class >> #fifi to: Behavior >> #new) } }.
 	
 	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
 	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
