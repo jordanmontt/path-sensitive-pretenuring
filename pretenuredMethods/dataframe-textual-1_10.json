@@ -1,1 +1,54 @@
-[ ]
+[
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_to: stop\r   \"Answer an Interval from the receiver up to the argument, stop,\r\tincrementing by 1.\"\r\r   ^ Interval _pretenured_from: self to: stop by: 1"
+	},
+	{
+		"methodClass" : "FinalizationRegistryEntry class",
+		"sourceCode" : "_pretenured_key: key value: value container: aContainer\r\r   ^ self newTenured\r        key: key;\r        value: value;\r        container: aContainer;\r        yourself"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "DataFrameInternal",
+		"sourceCode" : "_pretenured_asArrayOfColumns\r   \"Converts DataFrameInternal to the array of columns\"\r\r   ^ (1 to: self numberOfColumns) collect: [ :j |\r           (1 _pretenured_to: self numberOfRows) collect: [ :i |\r              self at: i at: j ] ]"
+	},
+	{
+		"methodClass" : "Interval class",
+		"sourceCode" : "_pretenured_from: startInteger to: stopInteger by: stepInteger\r   \"Answer an instance of me, starting at startNumber, ending at\r\tstopNumber, and with an interval increment of stepNumber.\"\r\r   ^ self newTenured\r        setFrom: startInteger\r        to: stopInteger\r        by: stepInteger"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "writeStream\r\r   ^ WriteStream _pretenured_on: self"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
+	},
+	{
+		"methodClass" : "NeoCSVReader",
+		"sourceCode" : "recordClassNew: size\r\r   ^ recordClass newTenured: size"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "Interval",
+		"sourceCode" : "collect: aBlock\r\r   | nextValue result |\r   result := self species newTenured: self size.\r   nextValue := start.\r   1 to: result size do: [ :i |\r         result at: i put: (aBlock value: nextValue).\r         nextValue := nextValue + step ].\r   ^ result"
+	},
+	{
+		"methodClass" : "FinalizationRegistry",
+		"sourceCode" : "add: anObject finalizer: finalizer\r\r   self protected: [\r         | newEntry link |\r         newEntry := FinalizationRegistryEntry\r                        _pretenured_key: anObject\r                        value: finalizer\r                        container: self.\r         link := ephemeronList add: newEntry.\r         newEntry link: link ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	}
+]

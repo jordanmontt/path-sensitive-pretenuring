@@ -20,10 +20,6 @@
 		"sourceCode" : "_pretenured_addEntityToCollection: anEntity\r   \"adds anEntity to the collection called theXXXs (where XXX is equal to the class name)\"\r\r   | collection |\r   collection := self entitiesOfClass: anEntity class.\r   collection _pretenured_add: anEntity"
 	},
 	{
-		"methodClass" : "CMSpaceModel",
-		"sourceCode" : "_pretenured_createCells\r\r   1 to: self gridSize do: [ :i |\r         (cormasModel _pretenured_newEntity:\r             self cormasModel cellClass) spaceModel: self ]"
-	},
-	{
 		"methodClass" : "OrderedCollection",
 		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
 	},
@@ -32,8 +28,12 @@
 		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
 	},
 	{
+		"methodClass" : "CMSpaceModel",
+		"sourceCode" : "_pretenured_createCells\r\r   1 to: self gridSize do: [ :i |\r         (cormasModel _pretenured_newEntity:\r             self cormasModel cellClass) spaceModel: self ]"
+	},
+	{
 		"methodClass" : "CMAbstractModel",
-		"sourceCode" : "_pretenured_newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNewTenured\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self _pretenured_addEntityToCollection: anEntity.\r   ^ anEntity"
+		"sourceCode" : "_pretenured_newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNew\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self _pretenured_addEntityToCollection: anEntity.\r   ^ anEntity"
 	},
 	{
 		"methodClass" : "CMSpaceNeighbourhood",
@@ -48,28 +48,28 @@
 		"sourceCode" : "initialize\r\r   super initialize.\r   biomass := 0.\r   counter := 0"
 	},
 	{
-		"methodClass" : "Object",
-		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
-	},
-	{
 		"methodClass" : "CMSpace4Neighbourhood",
 		"sourceCode" : "initializeOrderedNeighbourhood: k\r   \"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r   | v i |\r   v := Array newTenured: 4.\r   (i := self northCell: k) > 0 ifTrue: [\r      v at: 1 put: (self elementaryEntitiesAt: i) ].\r   (i := self westCell: k) > 0 ifTrue: [\r      v at: 2 put: (self elementaryEntitiesAt: i) ].\r   (i := self southCell: k) > 0 ifTrue: [\r      v at: 3 put: (self elementaryEntitiesAt: i) ].\r   (i := self eastCell: k) > 0 ifTrue: [\r      v at: 4 put: (self elementaryEntitiesAt: i) ].\r   ^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
 	},
 	{
 		"methodClass" : "Dictionary",
 		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
 	},
 	{
-		"methodClass" : "CMSpaceNeighbourhood class",
-		"sourceCode" : "forNeighbours: aNumberOrSymbol spaceModel: aCMSpaceModel\r   \" Answer a new instance of the receiver accordingly to the number of neighbours specified in aSymborOrNumberNeighbours \"\r\r   ^ self concreteSubclasses\r        detect: [ :nbSubclass |\r        nbSubclass isStartConditionFor: aNumberOrSymbol ]\r        ifFound: [ :nbSubclass |\r           nbSubclass new _pretenured_initializeOn: aCMSpaceModel ]\r        ifNone: [ self error: 'Should not happen' ]"
-	},
-	{
 		"methodClass" : "CMSpatialEntity",
 		"sourceCode" : "addOccupant: anObject\r\r   (self theOccupants\r       at: anObject class name\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: anObject"
 	},
 	{
+		"methodClass" : "CMSpaceNeighbourhood class",
+		"sourceCode" : "forNeighbours: aNumberOrSymbol spaceModel: aCMSpaceModel\r   \" Answer a new instance of the receiver accordingly to the number of neighbours specified in aSymborOrNumberNeighbours \"\r\r   ^ self concreteSubclasses\r        detect: [ :nbSubclass |\r        nbSubclass isStartConditionFor: aNumberOrSymbol ]\r        ifFound: [ :nbSubclass |\r           nbSubclass new _pretenured_initializeOn: aCMSpaceModel ]\r        ifNone: [ self error: 'Should not happen' ]"
+	},
+	{
 		"methodClass" : "CMAbstractModel",
-		"sourceCode" : "newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNew\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
+		"sourceCode" : "newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNewTenured\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
 	},
 	{
 		"methodClass" : "Array",

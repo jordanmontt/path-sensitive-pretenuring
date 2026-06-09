@@ -1,23 +1,43 @@
 [
 	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_add: newObject\r   \"Add a new object at the end of the collection, and returns the object itself\"\r\r   \"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r   \"Add returns the object itself\"\r\r   \"(OrderedCollection new add: 42) >>> 42\"\r\r   \"You may want to use yourself to return the collection itself\"\r\r   \"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r   \"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r   ^ self _pretenured_addLast: newObject"
+	},
+	{
 		"methodClass" : "Association class",
 		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
 	},
 	{
 		"methodClass" : "Collection class",
 		"sourceCode" : "_pretenured_newFromArray: anArray\r   \"Fast initialization with the items of a given array.\r\tThis initializes elements faster that the generic withAll: or newFrom: methods.\r\r\tThe main selling point is that dynamic arrays, like {1. 2. 3}, are really fast in Pharo.\r\tSo other collections can be easily and efficiently initialized with `{1. 2. 3} asFoo` syntax.\r\r\tImportant: Subclasses of Collection that redefine withAll: or newFrom: should also redefine this method\r\teither by having a proper implementation (specific to Arrays) or by calling the redefined versions of withAll:/newFrom:.\"\r\r   \"{ 1. 2. 3 } asSet >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1. 2. 3 } asOrderedCollection >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1->2. 3->4 } asDictionary >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   \"({ 1. 2. 3 } as: Set) >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1. 2. 3 } as: OrderedCollection) >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1->2. 3->4 } as: Dictionary) >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   | newCollection size |\r   size := anArray size.\r   newCollection := self newTenured: size.\r   \" This should be fast:\r\t1. Integer>>to:do: is inlined in the bytecode (no block).\r\t2. The Array>>at: callsite should be monomorph to a primitive method.\r\t\"\r\r   1 to: size do: [ :i | newCollection add: (anArray at: i) ].\r   ^ newCollection"
 	},
 	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "recursiveNeighbourhood: radius\r   \"Purpose: returns a collection of receiver-like spatial entities within a given radius of the receiver.\rThe receiver itself is included in the collection, which is ordered from the center (self) to the perimeter of the radius.\rArgument: radius = <Integer>\rReturn value: <OrderedCollection>\rExample: self recursiveNeighbourhood: 0 (== OrderedCollection with: self)\rExample: self recursiveNeighbourhood: 1 (== self neighbourhoodAndSelf)\"\r\r   | allCells layers |\r   allCells := OrderedCollection newTenured.\r   layers := self allLayersTo: radius.\r   layers do: [ :layer | allCells addAll: layer ].\r   ^ allCells"
+	},
+	{
 		"methodClass" : "CMSpace4Neighbourhood",
 		"sourceCode" : "initializeOrderedNeighbourhood: k\r   \"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r   | v i |\r   v := Array newTenured: 4.\r   (i := self northCell: k) > 0 ifTrue: [\r      v at: 1 put: (self elementaryEntitiesAt: i) ].\r   (i := self westCell: k) > 0 ifTrue: [\r      v at: 2 put: (self elementaryEntitiesAt: i) ].\r   (i := self southCell: k) > 0 ifTrue: [\r      v at: 3 put: (self elementaryEntitiesAt: i) ].\r   (i := self eastCell: k) > 0 ifTrue: [\r      v at: 4 put: (self elementaryEntitiesAt: i) ].\r   ^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
 	},
 	{
-		"methodClass" : "Array",
-		"sourceCode" : "as: aSimilarClass\r   \"Specific classes can redefine newFromArray: by a faster implementation if they want.\r\r\tNote: see Collection class>>newFromArray: for the rationale.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r   ^ aSimilarClass _pretenured_newFromArray: self"
-	},
-	{
 		"methodClass" : "Object",
 		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNewTenured\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
 	},
 	{
 		"methodClass" : "CMSpatialEntity",
@@ -26,6 +46,14 @@
 	{
 		"methodClass" : "PSPRunner",
 		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "allLayersTo: radius\r   \"returns a collection (collResult) of layers :\r\t\t- index of collResult is the distance to this layer, \r\t\t- each sub collection is a layer of cells.\rradius = integer >= 0.\rex: collResult =\t\r\t\t[1 ->#(self)\r\t\t2 ->#(self neighbourhood)\r\t\t3 -> #(layer 2)\r\t\t4 -> #(layer 3)  ...]\"\r\r   | layer1 layer2 collResult |\r   collResult := OrderedCollection new: radius.\r   layer1 := Array with: self.\r   collResult add: layer1.\r   radius = 0 ifTrue: [ ^ collResult ].\r   layer2 := self neighbourhood.\r   collResult _pretenured_add: layer2.\r   [ collResult size < (radius + 1) ] whileTrue: [\r         collResult add:\r            (self layer3FromLayer2: layer2 andLayer1: layer1) first.\r         layer2 := collResult last.\r         layer1 := collResult at: collResult size - 1 ].\r   ^ collResult"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "as: aSimilarClass\r   \"Specific classes can redefine newFromArray: by a faster implementation if they want.\r\r\tNote: see Collection class>>newFromArray: for the rationale.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r   ^ aSimilarClass _pretenured_newFromArray: self"
 	},
 	{
 		"methodClass" : "CMSpatialEntity",

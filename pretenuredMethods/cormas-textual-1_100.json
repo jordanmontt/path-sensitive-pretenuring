@@ -16,12 +16,12 @@
 		"sourceCode" : "initialize\r   \" Private - Set the receiver's internal state. Initally a spatial entity is not dead \"\r\r   super initialize.\r\r   destroyed := false.\r   neighbourhoodWithNils := OrderedCollection newTenured: 8.\r   aggregates := OrderedCollection new"
 	},
 	{
-		"methodClass" : "CMAbstractModel",
-		"sourceCode" : "newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNew\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
-	},
-	{
 		"methodClass" : "CMSpace4Neighbourhood",
 		"sourceCode" : "initializeOrderedNeighbourhood: k\r   \"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r   | v i |\r   v := Array newTenured: 4.\r   (i := self northCell: k) > 0 ifTrue: [\r      v at: 1 put: (self elementaryEntitiesAt: i) ].\r   (i := self westCell: k) > 0 ifTrue: [\r      v at: 2 put: (self elementaryEntitiesAt: i) ].\r   (i := self southCell: k) > 0 ifTrue: [\r      v at: 3 put: (self elementaryEntitiesAt: i) ].\r   (i := self eastCell: k) > 0 ifTrue: [\r      v at: 4 put: (self elementaryEntitiesAt: i) ].\r   ^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
 	},
 	{
 		"methodClass" : "Dictionary",
@@ -32,8 +32,12 @@
 		"sourceCode" : "addOccupant: anObject\r\r   (self theOccupants\r       at: anObject class name\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: anObject"
 	},
 	{
-		"methodClass" : "Object",
-		"sourceCode" : "-> anObject\r   \"Answer an Association between self and anObject\"\r\r   \"The following example creates an association whose key is number 1 and value string 'one'.\"\r\r   \"(1 -> 'one') key >>> 1\"\r\r   \"(1 -> 'one') value >>> 'one'\"\r\r   \"Note that key and value can be ANY object.\"\r\r   ^ Association _pretenured_key: self value: anObject"
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNewTenured\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
 	},
 	{
 		"methodClass" : "Array",
