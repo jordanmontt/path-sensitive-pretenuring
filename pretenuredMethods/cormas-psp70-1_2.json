@@ -1,0 +1,158 @@
+[
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_concreteSubclasses\r\r   ^ self _pretenured_allSubclasses _pretenured_select: [ :cls |\r        cls subclasses isEmpty ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_select: aBlock\r   \"Optimized version of Collection>>#select:\"\r\r   \"(#(1 2 3 4) select: [:each | each > 2 ]) >>> #(3 4)\"\r\r   | each |\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              1 to: self size do: [ :index |\r                    (aBlock value: (each := self at: index)) ifTrue: [\r                       stream nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_newFromArray: anArray\r   \"Fast initialization with the items of a given array.\r\tThis initializes elements faster that the generic withAll: or newFrom: methods.\r\r\tThe main selling point is that dynamic arrays, like {1. 2. 3}, are really fast in Pharo.\r\tSo other collections can be easily and efficiently initialized with `{1. 2. 3} asFoo` syntax.\r\r\tImportant: Subclasses of Collection that redefine withAll: or newFrom: should also redefine this method\r\teither by having a proper implementation (specific to Arrays) or by calling the redefined versions of withAll:/newFrom:.\"\r\r   \"{ 1. 2. 3 } asSet >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1. 2. 3 } asOrderedCollection >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1->2. 3->4 } asDictionary >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   \"({ 1. 2. 3 } as: Set) >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1. 2. 3 } as: OrderedCollection) >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1->2. 3->4 } as: Dictionary) >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   | newCollection size |\r   size := anArray size.\r   newCollection := self newTenured: size.\r   \" This should be fast:\r\t1. Integer>>to:do: is inlined in the bytecode (no block).\r\t2. The Array>>at: callsite should be monomorph to a primitive method.\r\t\"\r\r   1 to: size do: [ :i | newCollection add: (anArray at: i) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "_pretenured_activeProbes\r\r   ^ probes _pretenured_select: [ :probe | probe isActive ]"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_withAll: aCollection\r   \"Create a new collection containing all the elements from aCollection.\"\r\r   ^ (self newTenured: aCollection size)\r        addAll: aCollection;\r        yourself"
+	},
+	{
+		"methodClass" : "ECECVegetationUnit",
+		"sourceCode" : "initialize\r\r   super initialize.\r   biomass := 0.\r   counter := 0"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSubclasses\r   \"Answer an orderedCollection of the receiver's and the receiver's descendent's subclasses. \"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | scan scanTop |\r   scan := OrderedCollection _pretenured_withAll:\r              self _pretenured_subclasses.\r   scanTop := 1.\r   [ scanTop > scan size ] whileFalse: [\r         scan _pretenured_addAll: (scan at: scanTop) subclasses.\r         scanTop := scanTop + 1 ].\r   ^ scan"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_select: selectBlock\r   \"Optimized version of Collection>>#select: \"\r\r   | newCollection element |\r   newCollection := self _pretenured_copyEmpty.\r\r   firstIndex to: lastIndex do: [ :index |\r         (selectBlock value: (element := array at: index)) ifTrue: [\r            newCollection addNoSort: element ] ].\r\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "CMSpaceModel",
+		"sourceCode" : "_pretenured_createCells\r\r   1 to: self gridSize do: [ :i |\r         (cormasModel _pretenured_newEntity:\r             self cormasModel cellClass) spaceModel: self ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_add: newObject\r   \"Add a new object at the end of the collection, and returns the object itself\"\r\r   \"((OrderedCollection new add: 42; yourself) add: 43; yourself) asArray >>> #(42 43)\"\r\r   \"Add returns the object itself\"\r\r   \"(OrderedCollection new add: 42) >>> 42\"\r\r   \"You may want to use yourself to return the collection itself\"\r\r   \"(OrderedCollection new add: 42; yourself) class >>> OrderedCollection\"\r\r   \"(OrderedCollection new add: 42; yourself) size >>> 1\"\r\r   ^ self _pretenured_addLast: newObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_collect: aBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tCollect the resulting values into a collection like the receiver. Answer\r\tthe new collection.\"\r\r   \"(#(1 2 3) collect: [:each | each  + 10]) >>> #(11 12 13) \"\r\r   | newCollection |\r   newCollection := self species newTenured: self size.\r   1 to: self size do: [ :index |\r      newCollection at: index put: (aBlock value: (self at: index)) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "CMSpaceNeighbourhood",
+		"sourceCode" : "_pretenured_initializeOn: aSpaceModel\r   \" Private - Create a new instance of grid. Initialize aSpaceModel neighbourhood values based on the receiver \"\r\r   aSpaceModel gridCellShape: self gridCellShapeType.\r   self spaceModel: aSpaceModel.\r\r   spaceModel _pretenured_createCells.\r   self initializeNeighbourhood"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addAllLast: aCollection\r   \"Add each element of aCollection at the end of the receiver.\r\tAnswer aCollection.\"\r\r   aCollection _pretenured_do: [ :each |\r      self _pretenured_addLast: each ].\r   ^ aCollection"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "initialize\r   \" Private - Set the receiver's internal state. Initally a spatial entity is not dead \"\r\r   super initialize.\r\r   destroyed := false.\r   neighbourhoodWithNils := OrderedCollection newTenured: 8.\r   aggregates := OrderedCollection new"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_copyEmpty\r   \"Answer a copy of the receiver that contains no elements.\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "CMSpaceNeighbourhood class",
+		"sourceCode" : "_pretenured_forNeighbours: aNumberOrSymbol spaceModel: aCMSpaceModel\r   \" Answer a new instance of the receiver accordingly to the number of neighbours specified in aSymborOrNumberNeighbours \"\r\r   ^ self _pretenured_concreteSubclasses\r        detect: [ :nbSubclass |\r        nbSubclass isStartConditionFor: aNumberOrSymbol ]\r        ifFound: [ :nbSubclass |\r        nbSubclass new initializeOn: aCMSpaceModel ]\r        ifNone: [ self error: 'Should not happen' ]"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "_pretenured_recordData\r\r   data add: (self _pretenured_activeProbes collect: [ :probe |\r          probe name -> probe value ]) asDictionary"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "_pretenured_newEntity: aClass\r   \"Creates a new instance of aClass and collects it, immediately, at the level of theXXXs collection.\"\r\r   | anEntity |\r   anEntity := aClass basicNewTenured\r                  cormasModel: self;\r                  randomNumberGenerator: randomNumberGenerator;\r                  initialize;\r                  yourself.\r\r   self addEntityToCollection: anEntity.\r   ^ anEntity"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Refer to the comment in Collection|do:.\"\r\r   1 to: self size do: [ :index | aBlock value: (self at: index) ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addAll: aCollection\r   \"Add each element of aCollection at my end. Answer aCollection.\"\r\r   \"(OrderedCollection new addAll: #(41 42); yourself) asArray >>> #(41 42)\"\r\r   ^ self _pretenured_addAllLast: aCollection"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_subclasses\r   \"Answer a Set containing the receiver's subclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ subclasses\r        ifNil: [ #(  ) ]\r        ifNotNil: [ subclasses _pretenured_copy ]"
+	},
+	{
+		"methodClass" : "CMSpaceNeighbourhood class",
+		"sourceCode" : "forNeighbours: aNumberOrSymbol spaceModel: aCMSpaceModel\r   \" Answer a new instance of the receiver accordingly to the number of neighbours specified in aSymborOrNumberNeighbours \"\r\r   ^ self concreteSubclasses\r        detect: [ :nbSubclass |\r        nbSubclass isStartConditionFor: aNumberOrSymbol ]\r        ifFound: [ :nbSubclass |\r           nbSubclass new _pretenured_initializeOn: aCMSpaceModel ]\r        ifNone: [ self error: 'Should not happen' ]"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "entitiesOfClass: aClass\r   \"Returns a collection of all the instances of aClass\"\r\r   ^ entities at: aClass ifAbsentPut: [ OrderedCollection newTenured ]"
+	},
+	{
+		"methodClass" : "CMSpace4Neighbourhood",
+		"sourceCode" : "initializeOrderedNeighbourhood: k\r   \"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r   | v i |\r   v := Array newTenured: 4.\r   (i := self northCell: k) > 0 ifTrue: [\r      v at: 1 put: (self elementaryEntitiesAt: i) ].\r   (i := self westCell: k) > 0 ifTrue: [\r      v at: 2 put: (self elementaryEntitiesAt: i) ].\r   (i := self southCell: k) > 0 ifTrue: [\r      v at: 3 put: (self elementaryEntitiesAt: i) ].\r   (i := self eastCell: k) > 0 ifTrue: [\r      v at: 4 put: (self elementaryEntitiesAt: i) ].\r   ^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "initializeSimulation\r   \"Purpose: initialize one simulation by performing #activeInitSelector.\rReset the currentTimeStep and the data. Set the randomSeed\"\r\r   currentTimeStep := 0.\r   data := OrderedCollection new.\r\r   \"\tself initializeModel.\"\r   cormasModel initEntities.\r\r   self setInitialParameters.\r\r   cormasModel perform: activeInitSelector.\r   self _pretenured_recordData.\r\r   shouldReleaseRandomSeedAfterInitialization ifTrue: [\r      cormasModel randomSeed: cormasModel chooseRandomSeedAtRandom ]"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "initialize\r   \" Private - Set the receiver's internal state. Initally a spatial entity is not dead \"\r\r   super initialize.\r\r   destroyed := false.\r   neighbourhoodWithNils := OrderedCollection new: 8.\r   aggregates := OrderedCollection newTenured"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "addEntityToCollection: anEntity\r   \"adds anEntity to the collection called theXXXs (where XXX is equal to the class name)\"\r\r   | collection |\r   collection := self entitiesOfClass: anEntity class.\r   collection _pretenured_add: anEntity"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "addOccupant: anObject\r\r   (self theOccupants\r       at: anObject class name\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: anObject"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "theOccupants\r\r   ^ theOccupants ifNil: [ theOccupants := Dictionary newTenured ]"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "as: aSimilarClass\r   \"Specific classes can redefine newFromArray: by a faster implementation if they want.\r\r\tNote: see Collection class>>newFromArray: for the rationale.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r   ^ aSimilarClass _pretenured_newFromArray: self"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "recordData\r\r   data add: (self activeProbes _pretenured_collect: [ :probe |\r          probe name -> probe value ]) asDictionary"
+	},
+	{
+		"methodClass" : "CMSpaceModel",
+		"sourceCode" : "numberOfNeighbours: anIntegerOrSymbol\r   \" Create the grid.\r\tSet the receiver's neighbourhood configuration to contain anIntegerOrSymbol neighbours \"\r\r   self neighbourhoodConfiguration: (CMSpaceNeighbourhood\r          _pretenured_forNeighbours: anIntegerOrSymbol\r          spaceModel: self)"
+	}
+]

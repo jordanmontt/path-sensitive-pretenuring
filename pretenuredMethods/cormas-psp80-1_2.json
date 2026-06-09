@@ -1,0 +1,58 @@
+[
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "_pretenured_recordData\r\r   data add: (self _pretenured_activeProbes collect: [ :probe |\r          probe name -> probe value ]) asDictionary"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_select: aBlock\r   \"Optimized version of Collection>>#select:\"\r\r   \"(#(1 2 3 4) select: [:each | each > 2 ]) >>> #(3 4)\"\r\r   | each |\r   ^ self species\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              1 to: self size do: [ :index |\r                    (aBlock value: (each := self at: index)) ifTrue: [\r                       stream nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies new: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream contents ]"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "_pretenured_activeProbes\r\r   ^ probes _pretenured_select: [ :probe | probe isActive ]"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_newFromArray: anArray\r   \"Fast initialization with the items of a given array.\r\tThis initializes elements faster that the generic withAll: or newFrom: methods.\r\r\tThe main selling point is that dynamic arrays, like {1. 2. 3}, are really fast in Pharo.\r\tSo other collections can be easily and efficiently initialized with `{1. 2. 3} asFoo` syntax.\r\r\tImportant: Subclasses of Collection that redefine withAll: or newFrom: should also redefine this method\r\teither by having a proper implementation (specific to Arrays) or by calling the redefined versions of withAll:/newFrom:.\"\r\r   \"{ 1. 2. 3 } asSet >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1. 2. 3 } asOrderedCollection >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"{ 1->2. 3->4 } asDictionary >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   \"({ 1. 2. 3 } as: Set) >>> (Set new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1. 2. 3 } as: OrderedCollection) >>> (OrderedCollection new add: 1; add:2; add:3; yourself)\"\r\r   \"({ 1->2. 3->4 } as: Dictionary) >>> (Dictionary new at: 1 put: 2; at: 3 put:4; yourself)\"\r\r   | newCollection size |\r   size := anArray size.\r   newCollection := self newTenured: size.\r   \" This should be fast:\r\t1. Integer>>to:do: is inlined in the bytecode (no block).\r\t2. The Array>>at: callsite should be monomorph to a primitive method.\r\t\"\r\r   1 to: size do: [ :i | newCollection add: (anArray at: i) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "theOccupants\r\r   ^ theOccupants ifNil: [ theOccupants := Dictionary newTenured ]"
+	},
+	{
+		"methodClass" : "CMAbstractModel",
+		"sourceCode" : "entitiesOfClass: aClass\r   \"Returns a collection of all the instances of aClass\"\r\r   ^ entities at: aClass ifAbsentPut: [ OrderedCollection newTenured ]"
+	},
+	{
+		"methodClass" : "CMSpace4Neighbourhood",
+		"sourceCode" : "initializeOrderedNeighbourhood: k\r   \"Set the neighbourhood of the cell with id = k.\rNeighbours are ordered anticlockwise, starting from the North cell\"\r\r   | v i |\r   v := Array newTenured: 4.\r   (i := self northCell: k) > 0 ifTrue: [\r      v at: 1 put: (self elementaryEntitiesAt: i) ].\r   (i := self westCell: k) > 0 ifTrue: [\r      v at: 2 put: (self elementaryEntitiesAt: i) ].\r   (i := self southCell: k) > 0 ifTrue: [\r      v at: 3 put: (self elementaryEntitiesAt: i) ].\r   (i := self eastCell: k) > 0 ifTrue: [\r      v at: 4 put: (self elementaryEntitiesAt: i) ].\r   ^ (self elementaryEntitiesAt: k) neighbourhoodWithNils: v"
+	},
+	{
+		"methodClass" : "Array",
+		"sourceCode" : "as: aSimilarClass\r   \"Specific classes can redefine newFromArray: by a faster implementation if they want.\r\r\tNote: see Collection class>>newFromArray: for the rationale.\"\r\r   aSimilarClass == self class ifTrue: [ ^ self ].\r   ^ aSimilarClass _pretenured_newFromArray: self"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "addOccupant: anObject\r\r   (self theOccupants\r       at: anObject class name\r       ifAbsentPut: [ OrderedCollection newTenured ]) add: anObject"
+	},
+	{
+		"methodClass" : "CMSimulation",
+		"sourceCode" : "initializeSimulation\r   \"Purpose: initialize one simulation by performing #activeInitSelector.\rReset the currentTimeStep and the data. Set the randomSeed\"\r\r   currentTimeStep := 0.\r   data := OrderedCollection new.\r\r   \"\tself initializeModel.\"\r   cormasModel initEntities.\r\r   self setInitialParameters.\r\r   cormasModel perform: activeInitSelector.\r   self _pretenured_recordData.\r\r   shouldReleaseRandomSeedAfterInitialization ifTrue: [\r      cormasModel randomSeed: cormasModel chooseRandomSeedAtRandom ]"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "CMSpatialEntity",
+		"sourceCode" : "initialize\r   \" Private - Set the receiver's internal state. Initally a spatial entity is not dead \"\r\r   super initialize.\r\r   destroyed := false.\r   neighbourhoodWithNils := OrderedCollection new: 8.\r   aggregates := OrderedCollection newTenured"
+	}
+]
