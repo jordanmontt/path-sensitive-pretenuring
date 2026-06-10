@@ -7,12 +7,11 @@ BASE_IMAGE_FILE="$BASE_DIR/Pharo.image"
 PHARO_CMD="$BASE_DIR/pharo"
 
 declare -A BENCHMARK_CLASSES=(
-    ["cormas"]="VeritasCormas"
-    ["dataframe"]="VeritasDataFrame"
-    # ["moose"]="VeritasMoose"
+    ["bloc"]="VeritasBloc"
+    ["honeyGinger"]="VeritasHoneyGinger"
 )
 
-SAMPLING_RATES=("1/1000" "1/100")
+SAMPLING_RATES=("1/1000" "1/100" "1/10" "1/2" "1")
 
 log() { echo; echo "▸ $*"; echo; }
 

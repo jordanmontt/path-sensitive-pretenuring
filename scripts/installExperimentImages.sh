@@ -9,11 +9,11 @@ PHARO_CMD="$BASE_DIR/pharo"
 declare -A BENCHMARK_CLASSES=(
     ["cormas"]="VeritasCormas"
     ["dataframe"]="VeritasDataFrame"
-    ["moose"]="VeritasMoose"
+    # ["moose"]="VeritasMoose"
 )
 
-STRATEGIES=("psp90" "psp80" "psp70" "textual")
-SAMPLING_RATES=("1/1000" "1/100" "1/10")
+STRATEGIES=("textual")
+SAMPLING_RATES=("1/1000" "1/100" "1/10" "1/2" "1")
 
 log() { echo; echo "▸ $*"; echo; }
 
