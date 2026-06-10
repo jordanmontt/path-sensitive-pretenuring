@@ -1,0 +1,174 @@
+[
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_x: aNumber y: anotherNumber\r\r   ^ self newTenured setX: aNumber y: anotherNumber"
+	},
+	{
+		"methodClass" : "FTMatrix",
+		"sourceCode" : "_pretenured_xx: anObject\r   \"This method was automatically generated\"\r\r   ^ handle _pretenured_platformLongAt: OFFSET_XX put: anObject"
+	},
+	{
+		"methodClass" : "FTMatrix",
+		"sourceCode" : "_pretenured_yy: anObject\r   \"This method was automatically generated\"\r\r   ^ handle _pretenured_platformLongAt: OFFSET_YY put: anObject"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary new.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint _pretenured_zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Collection class",
+		"sourceCode" : "_pretenured_withAll: aCollection\r   \"Create a new collection containing all the elements from aCollection.\"\r\r   ^ (self newTenured: aCollection size)\r        addAll: aCollection;\r        yourself"
+	},
+	{
+		"methodClass" : "Behavior",
+		"sourceCode" : "_pretenured_allSubclasses\r   \"Answer an orderedCollection of the receiver's and the receiver's descendent's subclasses. \"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   | scan scanTop |\r   scan := OrderedCollection _pretenured_withAll:\r              self _pretenured_subclasses.\r   scanTop := 1.\r   [ scanTop > scan size ] whileFalse: [\r         scan _pretenured_addAll: (scan at: scanTop) subclasses.\r         scanTop := scanTop + 1 ].\r   ^ scan"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "_pretenured_h: hue s: saturation v: brightness alpha: alpha\r   \"Create a color with the given hue, saturation, brightness, and alpha. Hue is given as the angle in degrees of the color on the color circle where red is zero degrees. Saturation and brightness are numbers in [0.0..1.0] where larger values are more saturated or brighter colors. For example, (Color h: 0 s: 1 v: 1 alpha: 1) is pure red.\"\r\r   \"(Color h: 0 s: 1 v: 1 alpha: 1) >>> Color red \"\r\r   ^ self basicNewTenured\r        initializeHue: hue\r        saturation: saturation\r        brightness: brightness\r        alpha: alpha;\r        yourself"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_growAtLast\r   \"Add new empty slots to the end of array, while keeping the empty slots at the front.\"\r\r   \"OrderedCollection new capacity >>> 10\"\r\r   \"(OrderedCollection new growAtLast; capacity) >>> 20\"\r\r   | newArray |\r   newArray := self class arrayType newTenured:\r                  (array size * 2 max: 1).\r   newArray\r      replaceFrom: firstIndex\r      to: lastIndex\r      with: array\r      startingAt: firstIndex.\r   array := newArray"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_adaptToPoint: rcvr andSend: selector\r   \"If I am involved in arithmetic with a Point, convert me to a Point.\"\r\r   ^ rcvr _pretenured_perform: selector with: self @ self"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_zero\r\r   ^ self _pretenured_x: 0.0 y: 0.0"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_makeRoomAtLast\r   \"Make some empty slots at the end of the array. If we have more than 50% free space, then just move the elements, so that the last 50% of the slots are free, otherwise add new free slots to the end by growing. Precondition: lastIndex = array size\"\r\r   | tally newFirstIndex newLastIndex |\r   tally := self size.\r   tally * 2 >= lastIndex ifTrue: [ ^ self _pretenured_growAtLast ].\r   tally = 0 ifTrue: [ ^ self resetTo: 1 ].\r   newLastIndex := lastIndex // 2.\r   newFirstIndex := newLastIndex - lastIndex + firstIndex.\r   array\r      replaceFrom: newFirstIndex\r      to: newLastIndex\r      with: array\r      startingAt: firstIndex.\r   array from: newLastIndex + 1 to: lastIndex put: nil.\r   firstIndex := newFirstIndex.\r   lastIndex := newLastIndex"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2A: arg\r   \"Answer a Point that is the product of the receiver and arg.\"\r\r   \"((2@2) * (100@200)) >>> (200@400)\"\r\r   \"((2@2) * 200) >>> (400@400)\"\r\r   arg isPoint ifTrue: [ ^ x * arg x @ (y * arg y) ].\r   ^ arg _pretenured_adaptToPoint: self andSend: #*"
+	},
+	{
+		"methodClass" : "FT2Face",
+		"sourceCode" : "_pretenured_primTransformGlyphSlotOutline: anIntegerArray\r\r   | faceRec outline matrix |\r   faceRec := FTFaceRec fromHandle: handle.\r   matrix := FTMatrix new.\r\r   matrix _pretenured_xx: (anIntegerArray at: 1).\r   matrix _pretenured_xy: (anIntegerArray at: 2).\r   matrix _pretenured_yx: (anIntegerArray at: 3).\r   matrix _pretenured_yy: (anIntegerArray at: 4).\r\r   \"I need to obtain the real address of the struct inside the struct\"\r   outline := FTOutline _pretenured_fromHandle:\r                 faceRec glyph outline getHandle asExternalAddress.\r\r   self ffiOutline: outline transformByMatrix: matrix"
+	},
+	{
+		"methodClass" : "FFIStructure class",
+		"sourceCode" : "_pretenured_fromHandle: aHandle\r   \"Offsets are calculated when specs are compiled, but sometimes there is a possibility that\r\t user access them before actually using the compiled spec, so I need to be sure they are\r\t initialized before anything. This is why I send #compiledSpec here.\"\r\r   self compiledSpec.\r   ^ (super _pretenured_fromHandle: aHandle) initialize"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addAllLast: aCollection\r   \"Add each element of aCollection at the end of the receiver.\r\tAnswer aCollection.\"\r\r   aCollection _pretenured_do: [ :each |\r      self _pretenured_addLast: each ].\r   ^ aCollection"
+	},
+	{
+		"methodClass" : "FFIArchitecture class",
+		"sourceCode" : "_pretenured_forCurrentArchitecture\r\r   ^ (self _pretenured_allSubclasses detect: #isActive) uniqueInstance"
+	},
+	{
+		"methodClass" : "FTMatrix",
+		"sourceCode" : "_pretenured_xy: anObject\r   \"This method was automatically generated\"\r\r   ^ handle _pretenured_platformLongAt: OFFSET_XY put: anObject"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addLast: newObject\r   \"Add newObject to the end of the receiver. Answer newObject.\"\r\r   lastIndex = array size ifTrue: [ self _pretenured_makeRoomAtLast ].\r   lastIndex := lastIndex + 1.\r   ^ array at: lastIndex put: newObject"
+	},
+	{
+		"methodClass" : "Form class",
+		"sourceCode" : "_pretenured_extent: extentPoint depth: bitsPerPixel\r   \"Answer an instance of me with blank bitmap of the given dimensions and depth.\"\r\r   ^ self basicNewTenured setExtent: extentPoint depth: bitsPerPixel"
+	},
+	{
+		"methodClass" : "FTMatrix",
+		"sourceCode" : "_pretenured_yx: anObject\r   \"This method was automatically generated\"\r\r   ^ handle _pretenured_platformLongAt: OFFSET_YX put: anObject"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Refer to the comment in Collection|do:.\"\r\r   1 to: self size do: [ :index | aBlock value: (self at: index) ]"
+	},
+	{
+		"methodClass" : "ByteArray",
+		"sourceCode" : "_pretenured_platformLongAt: byteOffset put: value\r\r   self\r      integerAt: byteOffset\r      put: value\r      size:\r      FFIArchitecture _pretenured_forCurrentArchitecture longTypeSize\r      signed: true"
+	},
+	{
+		"methodClass" : "Class",
+		"sourceCode" : "_pretenured_subclasses\r   \"Answer a Set containing the receiver's subclasses.\"\r\r   <reflection:\r   'Class structural inspection - Iterating and querying hierarchy'>\r   ^ subclasses\r        ifNil: [ #(  ) ]\r        ifNotNil: [ subclasses _pretenured_copy ]"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_addAll: aCollection\r   \"Add each element of aCollection at my end. Answer aCollection.\"\r\r   \"(OrderedCollection new addAll: #(41 42); yourself) asArray >>> #(41 42)\"\r\r   ^ self _pretenured_addAllLast: aCollection"
+	},
+	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "_pretenured_fromHandle: aHandle\r\r   ^ self basicNewTenured setHandle: aHandle"
+	},
+	{
+		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
+		"sourceCode" : "filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                _pretenured_extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset:\r         ((baseOffset x / 3) rounded @ baseOffset y\r             _pretenured_016r2A: scale);\r      advance: (baseAdvance / 3) rounded * scale;\r      linearAdvance: (baseLinearAdvance _pretenured_016r2A: scale).\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "characterWidthCache\r\r   ^ characterWidthCache ifNil: [\r        characterWidthCache := IdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "Color",
+		"sourceCode" : "adjustBrightness: brightness\r   \"Adjust the relative brightness of this color. (lowest value is 0.005 so that hue information is not lost)\"\r\r   ^ self class\r        _pretenured_h: self hue\r        s: self saturation\r        v: (self brightness + brightness min: 1.0 max: 0.005)\r        alpha: self alpha"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
+	},
+	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "new\r\r   ^ self fromHandle: (ByteArray newTenured: self byteSize)"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyReplaceFrom: start to: stop with: replacementCollection\r   \"Answer a copy of the receiver satisfying the following conditions: If\r\tstop is less than start, then this is an insertion; stop should be exactly\r\tstart-1, start = 1 means insert before the first character, start = size+1\r\tmeans append after last character. Otherwise, this is a replacement; start\r\tand stop have to be within the receiver's bounds.\"\r\r   | newSequenceableCollection newSize endReplacement |\r   newSize := self size - (stop - start + 1)\r              + replacementCollection size.\r   endReplacement := start - 1 + replacementCollection size.\r   newSequenceableCollection := self species newTenured: newSize.\r   start > 1 ifTrue: [\r         newSequenceableCollection\r            replaceFrom: 1\r            to: start - 1\r            with: self\r            startingAt: 1 ].\r   start <= endReplacement ifTrue: [\r         newSequenceableCollection\r            replaceFrom: start\r            to: endReplacement\r            with: replacementCollection\r            startingAt: 1 ].\r   endReplacement < newSize ifTrue: [\r         newSequenceableCollection\r            replaceFrom: endReplacement + 1\r            to: newSize\r            with: self\r            startingAt: stop + 1 ].\r   ^ newSequenceableCollection"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "collect: aBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tCollect the resulting values into a collection like the receiver. Answer\r\tthe new collection.\"\r\r   \"(#(1 2 3) collect: [:each | each  + 10]) >>> #(11 12 13) \"\r\r   | newCollection |\r   newCollection := self species newTenured: self size.\r   1 to: self size do: [ :index |\r      newCollection at: index put: (aBlock value: (self at: index)) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "FT2Face",
+		"sourceCode" : "transformOutlineAngle: angle scalePoint: scalePoint slant: slant\r\r   | oneX oneY matrix slantOne |\r   oneX := (16r10000 * scalePoint x) asInteger.\r   oneY := (16r10000 * scalePoint y) asInteger.\r   slantOne := (16r10000 * scalePoint x * slant) asInteger.\r   matrix := IntegerArray new: 4.\r   angle isZero\r      ifTrue: [\r            matrix at: 1 put: oneX.\r            matrix at: 2 put: slantOne.\r            matrix at: 4 put: oneY ]\r      ifFalse: [\r            | phi cos sin |\r            phi := angle degreesToRadians.\r            cos := (phi sin * oneX) rounded.\r            sin := (phi cos * oneY) rounded.\r            matrix at: 1 put: sin.\r            matrix at: 2 put: cos negated.\r            matrix at: 3 put: cos.\r            matrix at: 4 put: sin ].\r   self _pretenured_primTransformGlyphSlotOutline: matrix"
+	},
+	{
+		"methodClass" : "FreeTypeCache",
+		"sourceCode" : "atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r   | charCodeTable typeTable scaleTable entry v vSize |\r   mutex criticalReleasingOnError: [\r         charCodeTable := fontTable\r                             at: aFreeTypeFont\r                             ifAbsentPut: [\r                             self dictionaryClass new: 60 ].\r         typeTable := charCodeTable\r                         at: charCodeInteger\r                         ifAbsentPut: [\r                         self dictionaryClass newTenured: 10 ].\r         scaleTable := typeTable\r                          at: typeFlag\r                          ifAbsentPut: [\r                          self dictionaryClass newTenured: 1 ].\r         entry := scaleTable at: scale ifAbsent: [ ].\r         entry ifNotNil: [\r               fifo moveDown: entry.\r               ^ entry object ].\r         v := aBlock\r                 on: Error\r                 do: [ :error |\r                       self\r                          removeIfEmptyScaleTable: scaleTable\r                          type: typeFlag\r                          typeTable: typeTable\r                          charCode: charCodeInteger\r                          charCodeTable: charCodeTable\r                          font: aFreeTypeFont.\r                       error pass ].\r         vSize := self sizeOf: v.\r         (maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r               self\r                  removeIfEmptyScaleTable: scaleTable\r                  type: typeFlag\r                  typeTable: typeTable\r                  charCode: charCodeInteger\r                  charCodeTable: charCodeTable\r                  font: aFreeTypeFont.\r               ^ v ].\r         used := used + vSize.\r         entry := self fifoEntryClass new\r                     font: aFreeTypeFont;\r                     charCode: charCodeInteger;\r                     type: typeFlag;\r                     scale: scale;\r                     object: v;\r                     yourself.\r         scaleTable at: scale put: entry.\r         fifo addLast: entry.\r         maximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r         ^ v ]"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary newTenured.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer the receiver\r\r\tWe use a widthAndKernedWidthCache to store these values for speed\"\r\r   | privateArray |\r   privateArray := (self widthAndKernedWidthCache\r                       at: leftCharacter\r                       ifAbsentPut: [ Dictionary newTenured ])\r                      at:\r                      (rightCharacterOrNil ifNil: [ 0 asCharacter ])\r                      ifAbsentPut: [\r                            super\r                               widthAndKernedWidthOfLeft:\r                               leftCharacter\r                               right: rightCharacterOrNil\r                               into: (Array new: 2) ].\r   \"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\r   aTwoElementArray\r      at: 1 put: (privateArray at: 1);\r      at: 2 put: (privateArray at: 2).\r   ^ aTwoElementArray"
+	},
+	{
+		"methodClass" : "HGParticle class",
+		"sourceCode" : "at: position velocity: velocity temperature: temperature mass: mass in: anHGSimulator\r\r   | particle |\r   particle := self newTenured.\r   particle position: position.\r   particle velocity: velocity.\r   particle temperature: temperature.\r   particle mass: mass.\r   ^ particle"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+	}
+]

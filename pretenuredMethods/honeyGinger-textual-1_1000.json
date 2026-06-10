@@ -1,0 +1,42 @@
+[
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_x: aNumber y: anotherNumber\r\r   ^ self newTenured setX: aNumber y: anotherNumber"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_zero\r\r   ^ self _pretenured_x: 0.0 y: 0.0"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary new.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint _pretenured_zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary newTenured.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "intersect: aRectangle ifNone: aBlock\r   \"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r   | aPoint left right top bottom |\r   (self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r   aPoint := aRectangle origin.\r   left := aPoint x max: origin x.\r   top := aPoint y max: origin y.\r   aPoint := aRectangle corner.\r   right := aPoint x min: corner x.\r   bottom := aPoint y min: corner y.\r   ^ Rectangle _pretenured_origin: left @ top corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+	},
+	{
+		"methodClass" : "HGParticle class",
+		"sourceCode" : "at: position velocity: velocity temperature: temperature mass: mass in: anHGSimulator\r\r   | particle |\r   particle := self newTenured.\r   particle position: position.\r   particle velocity: velocity.\r   particle temperature: temperature.\r   particle mass: mass.\r   ^ particle"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	}
+]

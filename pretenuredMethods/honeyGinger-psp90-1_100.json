@@ -1,0 +1,238 @@
+[
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2D: arg\r   \"Answer a Point that is the difference of the receiver and arg.\"\r\r   \"((2@2) - (100@200)) >>> (-98@ -198)\"\r\r   \"((2@2) - 200) >>> (-198@ -198)\"\r\r   arg isPoint ifTrue: [ ^ x - arg x @ (y - arg y) ].\r   ^ arg adaptToPoint: self andSend: #-"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_insetBy: delta\r   \"Answer a Rectangle that is inset from the receiver by delta. delta is a\r\tRectangle, Point, or scalar.\"\r\r   ^ delta _pretenured_asMargin _pretenured_insetRectangle: self"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_right: aNumber\r\r   ^ origin _pretenured_corner: aNumber @ corner y"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_left: left right: right top: top bottom: bottom\r   \"Answer an instance of me whose left, right, top, and bottom coordinates\r\tare determined by the arguments.\"\r\r   ^ self basicNewTenured\r        _pretenured_setLeft: left\r        right: right\r        top: top\r        bottom: bottom"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key ifAbsentPut: aBlock\r   \"Return the value at the given key.\r\tIf the key is not included in the receiver store and return the result\r\tof evaluating aBlock as the new value.\"\r\r   ^ self\r        _pretenured_at: key\r        ifAbsent: [ self at: key put: aBlock value ]"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_asPoint\r   \"Answer a Point with the receiver as both coordinates; often used to\r\tsupply the same value in two dimensions, as with symmetrical gridding\r\tor scaling.\"\r\r   ^ self @ self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_innerBounds\r   \"Return the inner rectangle enclosed by the bounds of this morph excluding the space taken by its borders. For an unbordered morph, this is just its bounds.\"\r\r   ^ self bounds _pretenured_insetBy: self borderWidth"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_extent\r\r   ^ bounds _pretenured_extent"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_adaptToPoint: rcvr andSend: selector\r   \"If I am involved in arithmetic with a Point, convert me to a Point.\"\r\r   ^ rcvr _pretenured_perform: selector with: self @ self"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_asIntegerPoint\r   \"Convert me to an integer point transforming both of my coordinates\r\tto integers using #asInteger. If x and y are already represented\r\tby integers return myself, otherwise create a new Point instance.\"\r\r   self isIntegerPoint ifTrue: [ ^ self ].\r   ^ x asInteger @ y asInteger"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_asMargin\r\r   ^ Margin _pretenured_fromNumber: self"
+	},
+	{
+		"methodClass" : "GeneralScrollPaneMorph",
+		"sourceCode" : "_pretenured_scrollBounds\r   \"Return the visible scroll area taking into account whether\r\tthe scrollbars need to be shown.\"\r\r   | b |\r   b := self _pretenured_innerBounds.\r   self _pretenured_vScrollbarNeeded ifTrue: [\r      b := b _pretenured_right: b right - self scrollBarThickness ].\r   self hScrollbarNeeded ifTrue: [\r      b := b bottom: b bottom - self scrollBarThickness ].\r   ^ b"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_corner: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose corner is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   \"(10@10 corner: 100@100) >>> (10@10 corner: 100@100)\"\r\r   ^ Rectangle _pretenured_origin: self corner: aPoint"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key ifAbsent: aBlock\r   \"Answer the value associated with the key or, if key isn't found,\r\tanswer the result of evaluating aBlock.\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ aBlock ]\r         ifNotNil: [ :assoc | assoc ]) value"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2A: arg\r   \"Answer a Point that is the product of the receiver and arg.\"\r\r   \"((2@2) * (100@200)) >>> (200@400)\"\r\r   \"((2@2) * 200) >>> (400@400)\"\r\r   arg isPoint ifTrue: [ ^ x * arg x @ (y * arg y) ].\r   ^ arg _pretenured_adaptToPoint: self andSend: #*"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "Margin class",
+		"sourceCode" : "_pretenured_fromNumber: aNumber\r   \"Create a margin whose four values are the same and based on anInteger\"\r\r   ^ self newTenured\r        fromNumber: aNumber;\r        yourself"
+	},
+	{
+		"methodClass" : "KeyedTree",
+		"sourceCode" : "_pretenured_atPath: anArray put: aBlock\r   \"Answer the value of aBlock after creating its path.\"\r\r   | element |\r   anArray isEmpty ifTrue: [ ^ self ].\r   element := self.\r   anArray _pretenured_allButLastDo: [ :key |\r         element := element\r                       _pretenured_at: key\r                       ifAbsentPut: [ self _pretenured_copyEmpty ] ].\r   ^ element at: anArray last put: aBlock"
+	},
+	{
+		"methodClass" : "Form class",
+		"sourceCode" : "_pretenured_extent: extentPoint depth: bitsPerPixel\r   \"Answer an instance of me with blank bitmap of the given dimensions and depth.\"\r\r   ^ self basicNewTenured setExtent: extentPoint depth: bitsPerPixel"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_allButLastDo: block\r   \"Executes aBlock on each of the receiver's elements except for the last one\"\r\r   \"(Array streamContents: [:stream | #(1 2 3) allButLastDo: [:each | stream nextPut: (each + 10)]]) >>> #(11 12)\"\r\r   1 to: self size - 1 do: [ :index | block value: (self at: index) ]"
+	},
+	{
+		"methodClass" : "Margin",
+		"sourceCode" : "_pretenured_insetRectangle: aRectangle\r   \"Answer a rectangle whose size has been reduced by the receiver. The limitation is that since a rectangle topleft is always less than its bottomright you may have a some cases that are not possible to express. For that you should use a margin object instead of a rectangle.\"\r\r   | l r t b |\r   l := aRectangle left + self left.\r   r := left max: aRectangle right - self right.\r   t := aRectangle top + self top.\r   b := top max: aRectangle bottom - self bottom.\r\r   ^ Rectangle\r        _pretenured_left: l\r        right: r\r        top: t\r        bottom: b"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_setLeft: left right: right top: top bottom: bottom\r\r   origin := (left min: right) @ (top min: bottom).\r   corner := (left max: right) @ (top max: bottom)"
+	},
+	{
+		"methodClass" : "GeneralScrollPaneMorph",
+		"sourceCode" : "_pretenured_vScrollbarNeeded\r   \"Return whether the vertical scrollbar is needed.\"\r\r   self vScrollbar showsAlways ifTrue: [ ^ true ].\r   self vScrollbar showsNever ifTrue: [ ^ false ].\r   ^ self scrollTarget height\r     + (self scrollTarget width > self innerBounds width\r            ifTrue: [ self scrollBarThickness ]\r            ifFalse: [ 0 ]) > self _pretenured_innerBounds height"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_extent\r   \"Answer a point with the receiver's width @ the receiver's height.\"\r\r   ^ corner _pretenured_016r2D: origin"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: cornerPoint"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2B: arg\r   \"Answer a Point that is the sum of the receiver and arg.\"\r\r   \"((2@2) + (100@200)) >>> (102@202)\"\r\r   \"((2@2) + 200) >>> (202@202)\"\r\r   arg isPoint ifTrue: [ ^ x + arg x @ (y + arg y) ].\r   ^ arg adaptToPoint: self andSend: #+"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_layoutBounds\r   \"Return the bounds for laying out children of the receiver\"\r\r   | inset box |\r   inset := self layoutInset.\r   box := self _pretenured_innerBounds.\r   inset isZero ifTrue: [ ^ box ].\r   ^ box insetBy: inset"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "layoutBounds: aRectangle\r   \"Set the bounds for laying out children of the receiver.\r\tNote: written so that #layoutBounds can be changed without touching this method\"\r\r   | outer inner |\r   outer := self bounds.\r   inner := self _pretenured_layoutBounds.\r   bounds := aRectangle origin + (outer origin - inner origin)\r                corner:\r                aRectangle corner + (outer corner - inner corner)"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "h: hue s: saturation v: brightness alpha: alpha\r   \"Create a color with the given hue, saturation, brightness, and alpha. Hue is given as the angle in degrees of the color on the color circle where red is zero degrees. Saturation and brightness are numbers in [0.0..1.0] where larger values are more saturated or brighter colors. For example, (Color h: 0 s: 1 v: 1 alpha: 1) is pure red.\"\r\r   \"(Color h: 0 s: 1 v: 1 alpha: 1) >>> Color red \"\r\r   ^ self basicNewTenured\r        initializeHue: hue\r        saturation: saturation\r        brightness: brightness\r        alpha: alpha;\r        yourself"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary newTenured.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "ScrollBarMorph",
+		"sourceCode" : "buttonExtent\r\r   | size |\r   size := self theme scrollbarThickness.\r\r   ^ bounds isWide\r        ifTrue: [\r              upButton\r                 ifNil: [ size @ size ]\r                 ifNotNil: [ upButton _pretenured_extent ] ]\r        ifFalse: [\r        downButton\r           ifNil: [ size @ size ]\r           ifNotNil: [ downButton extent ] ]"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer the receiver\r\r\tWe use a widthAndKernedWidthCache to store these values for speed\"\r\r   | privateArray |\r   privateArray := (self widthAndKernedWidthCache\r                       at: leftCharacter\r                       ifAbsentPut: [ Dictionary newTenured ])\r                      at:\r                      (rightCharacterOrNil ifNil: [ 0 asCharacter ])\r                      ifAbsentPut: [\r                            super\r                               widthAndKernedWidthOfLeft:\r                               leftCharacter\r                               right: rightCharacterOrNil\r                               into: (Array new: 2) ].\r   \"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\r   aTwoElementArray\r      at: 1 put: (privateArray at: 1);\r      at: 2 put: (privateArray at: 2).\r   ^ aTwoElementArray"
+	},
+	{
+		"methodClass" : "MultistateButtonMorph",
+		"sourceCode" : "privateMoveBy: delta\r   \"Adjust all the fill styles\"\r\r   super privateMoveBy: delta.\r   (self fillStyles copyWithout: self fillStyle) do: [ :fs |\r         fs isOrientedFill ifTrue: [\r            fs origin: (fs origin _pretenured_016r2B: delta) ] ]"
+	},
+	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "new\r\r   ^ self fromHandle: (ByteArray newTenured: self byteSize)"
+	},
+	{
+		"methodClass" : "SliderMorph",
+		"sourceCode" : "computeSlider\r\r   | r |\r   r := self roomToMove.\r   self descending\r      ifFalse: [\r            slider position: (bounds isWide\r                   ifTrue: [\r                   r topLeft _pretenured_016r2B:\r                      (r width * value) asInteger @ 0 ]\r                   ifFalse: [\r                   r topLeft _pretenured_016r2B:\r                      0 @ (r height * value) asInteger ]) ]\r      ifTrue: [\r            slider position: (bounds isWide\r                   ifTrue: [\r                   r bottomRight - ((r width * value) asInteger @ 0) ]\r                   ifFalse: [\r                   r bottomRight - (0 @ (r height * value) asInteger) ]) ].\r   slider extent: self sliderExtent"
+	},
+	{
+		"methodClass" : "GeneralScrollPaneMorph",
+		"sourceCode" : "hPageDelta\r   \"Answer the horizontal page delta.\"\r\r   | pd tw sw |\r   tw := self scrollTarget width.\r   sw := self _pretenured_scrollBounds width.\r   pd := tw - sw max: 0.\r   pd = 0 ifFalse: [ pd := sw / pd ].\r   ^ pd"
+	},
+	{
+		"methodClass" : "ScrollBarMorph",
+		"sourceCode" : "adoptGradientColor: aColor\r   \"Adopt the given pane color.\"\r\r   | c fs bfs bs bbs |\r   aColor ifNil: [ ^ self ].\r   c := aColor.\r   fs := self normalThumbFillStyle.\r   bfs := self normalButtonFillStyle.\r   bs := self normalThumbBorderStyle.\r   bbs := self normalButtonBorderStyle.\r   sliderColor := c.\r   downButton\r      fillStyle: bfs;\r      borderStyle: bbs.\r   upButton\r      fillStyle: bfs shallowCopy;\r      borderStyle: bbs.\r   slider\r      fillStyle: fs;\r      borderStyle: bs.\r   self updateUpButtonImage.\r   self updateDownButtonImage"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "characterWidthCache\r\r   ^ characterWidthCache ifNil: [\r        characterWidthCache := IdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "SpMorphicBoxLayoutCalculatorLeftToRight",
+		"sourceCode" : "doCalculateFor: aMorph in: newBounds\r   \"An optimized left-to-right list layout\"\r\r   | inset extent posX posY centering extraPerCell cell amount last submorphs |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize _pretenured_asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset _pretenured_asPoint x.\r   extent := newBounds extent.\r   number := 0.\r   vFill := false.\r   sum := 0.\r   width := height := 0.\r   firstCell := lastCell := nil.\r\r   submorphs := aMorph submorphs.\r   properties reverseTableCells ifTrue: [\r      submorphs := submorphs reversed ].\r   submorphs do: [ :each |\r         | cellExtent oldExtent |\r         oldExtent := each extent.\r         cellExtent := each visible\r                          ifTrue: [ self calculateCellFor: each ]\r                          ifFalse: [ 0 @ 0 ].\r         \"decide if restore or not\"\r         (oldExtent x = 0 or: [ cellExtent x = 0 ]) ifTrue: [\r            each privateBounds:\r               (each bounds topLeft extent: cellExtent) ] ].\r\r   number > 1 ifTrue: [ width := width + (number - 1 * inset) ].\r\r   (properties hResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ sum isZero ] ]) ifTrue: [\r      extent := width @ (extent y max: height) ].\r   (properties vResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ vFill not ] ]) ifTrue: [\r      extent := (extent x max: width) @ height ].\r\r   posX := newBounds left.\r   posY := newBounds top.\r\r   \"Compute extra vertical space\"\r   extra := extent y - height.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extra > 0 ifTrue: [\r         vFill\r            ifTrue: [ height := extent y ]\r            ifFalse: [\r                  centering := properties wrapCentering.\r                  centering == #bottomRight ifTrue: [\r                     posY := posY + extra ].\r                  centering == #center ifTrue: [\r                     posY := posY + (extra // 2) ] ] ].\r\r   \"Compute extra horizontal space\"\r   extra := extent x - width.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extraPerCell := 0.\r   extra > 0 ifTrue: [\r         sum isZero\r            ifTrue: [ \"extra space but no #spaceFillers\"\r                  centering := properties listCentering.\r                  centering == #bottomRight ifTrue: [\r                     posX := posX + extra ].\r                  centering == #center ifTrue: [\r                     posX := posX + (extra // 2) ] ]\r            ifFalse: [ extraPerCell := extra asFloat / sum asFloat ] ].\r\r   number := 0.\r   extra := last := 0.\r   cell := firstCell.\r   [ cell isNil ] whileFalse: [\r         number := number + 1.\r         width := cell cellSize.\r         (extraPerCell > 0 and: [ cell hSpaceFill ]) ifTrue: [\r               extra := (last := extra)\r                        + (extraPerCell * cell extraSpace).\r               amount := extra truncated - last truncated.\r               width := width + amount ].\r         cell target layoutInBounds:\r            (posX @ posY extent: width @ height).\r         posX := posX + width + inset.\r         cell := cell nextCell ]"
+	},
+	{
+		"methodClass" : "SpMorphicBoxLayoutCalculatorTopToBottom",
+		"sourceCode" : "doCalculateFor: aMorph in: newBounds\r   \"An optimized top-to-bottom list layout\"\r\r   | inset extent posX posY centering extraPerCell cell amount last submorphs |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset _pretenured_asPoint y.\r   extent := newBounds _pretenured_extent.\r   number := 0.\r   vFill := false.\r   sum := 0.\r   width := height := 0.\r   firstCell := lastCell := nil.\r\r   submorphs := aMorph submorphs.\r   properties reverseTableCells ifTrue: [\r      submorphs := submorphs reversed ].\r   submorphs do: [ :each |\r         | cellExtent oldExtent |\r         oldExtent := each extent.\r         cellExtent := each visible\r                          ifTrue: [ self calculateCellFor: each ]\r                          ifFalse: [ 0 @ 0 ].\r         \"decide if restore or not\"\r         (oldExtent y = 0 or: [ cellExtent y = 0 ]) ifTrue: [\r            each privateBounds:\r               (each bounds topLeft extent: cellExtent) ] ].\r\r   number > 1 ifTrue: [ height := height + (number - 1 * inset) ].\r\r   (properties vResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ sum isZero ] ]) ifTrue: [\r      extent := (extent x max: width) @ height ].\r   (properties hResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ vFill not ] ]) ifTrue: [\r      extent := width @ (extent y max: height) ].\r\r   posX := newBounds left.\r   posY := newBounds top.\r\r   \"Compute extra horizontal space\"\r   extra := extent x - width.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extra > 0 ifTrue: [\r         vFill\r            ifTrue: [ width := extent x ]\r            ifFalse: [\r                  centering := properties wrapCentering.\r                  centering == #bottomRight ifTrue: [\r                     posX := posX + extra ].\r                  centering == #center ifTrue: [\r                     posX := posX + (extra // 2) ] ] ].\r\r\r   \"Compute extra vertical space\"\r   extra := extent y - height.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extraPerCell := 0.\r   extra > 0 ifTrue: [\r         sum isZero\r            ifTrue: [ \"extra space but no #spaceFillers\"\r                  centering := properties listCentering.\r                  centering == #bottomRight ifTrue: [\r                     posY := posY + extra ].\r                  centering == #center ifTrue: [\r                     posY := posY + (extra // 2) ] ]\r            ifFalse: [ extraPerCell := extra asFloat / sum asFloat ] ].\r\r   number := 0.\r   extra := last := 0.\r   cell := firstCell.\r   [ cell == nil ] whileFalse: [\r         number := number + 1.\r         height := cell cellSize.\r         (extraPerCell > 0 and: [ cell vSpaceFill ]) ifTrue: [\r               extra := (last := extra)\r                        + (extraPerCell * cell extraSpace).\r               amount := extra truncated - last truncated.\r               height := height + amount ].\r         cell target layoutInBounds:\r            (posX @ posY extent: width @ height).\r         posY := posY + height + inset.\r         cell := cell nextCell ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "privateFullBounds\r   \"Private. Compute the actual full bounds of the receiver\"\r\r   | box |\r   submorphs isEmpty ifTrue: [ ^ self outerBounds ].\r   box := self outerBounds copy.\r   box := box quickMerge: (self clipSubmorphs\r                 ifTrue: [\r                       self submorphBounds\r                          intersect: self clippingBounds\r                          ifNone: [ self clippingBounds ] ]\r                 ifFalse: [ self submorphBounds ]).\r   ^ box origin asIntegerPoint corner:\r        box corner _pretenured_asIntegerPoint"
+	},
+	{
+		"methodClass" : "GeneralScrollPaneMorph",
+		"sourceCode" : "hScrollbarValue: scrollValue\r   \"Set the offset of the scroller to match the 0.0-1.0 scroll value.\"\r\r   | r |\r   r := self scrollTarget width - self _pretenured_scrollBounds width\r           max: 0.\r   self scroller offset:\r      (r * scrollValue) rounded @ self scroller offset y"
+	},
+	{
+		"methodClass" : "TableLayout",
+		"sourceCode" : "minExtentVertical: aMorph\r   \"Return the minimal size aMorph's children would require given the new bounds\"\r\r   | inset minX minY maxX maxY n size width height |\r   size := properties minCellSize _pretenured_asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint.\r   n := 0.\r   width := height := 0.\r   aMorph submorphsDo: [ :m |\r         | sizeX sizeY |\r         m disableTableLayout ifFalse: [\r               n := n + 1.\r               size := m minExtent.\r               sizeX := size x.\r               sizeY := size y.\r               sizeX < minX\r                  ifTrue: [ sizeX := minX ]\r                  ifFalse: [ sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r               sizeY < minY\r                  ifTrue: [ sizeY := minY ]\r                  ifFalse: [ sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r               height := height + sizeY.\r               sizeX > width ifTrue: [ width := sizeX ] ] ].\r   n > 1 ifTrue: [ height := height + (n - 1 * inset y) ].\r   ^ minExtentCache := width @ height"
+	},
+	{
+		"methodClass" : "MultistateButtonMorph",
+		"sourceCode" : "passiveDisabledNotOverUpFillStyle: aFillStyle\r   \"Set the passive, disabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( passive disabled notOver up )\r      put: aFillStyle.\r   self changed"
+	},
+	{
+		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
+		"sourceCode" : "filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                _pretenured_extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset:\r         ((baseOffset x / 3) rounded @ baseOffset y\r             _pretenured_016r2A: scale);\r      advance: (baseAdvance / 3) rounded * scale;\r      linearAdvance: (baseLinearAdvance _pretenured_016r2A: scale).\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "copyReplaceFrom: start to: stop with: replacementCollection\r   \"Answer a copy of the receiver satisfying the following conditions: If\r\tstop is less than start, then this is an insertion; stop should be exactly\r\tstart-1, start = 1 means insert before the first character, start = size+1\r\tmeans append after last character. Otherwise, this is a replacement; start\r\tand stop have to be within the receiver's bounds.\"\r\r   | newSequenceableCollection newSize endReplacement |\r   newSize := self size - (stop - start + 1)\r              + replacementCollection size.\r   endReplacement := start - 1 + replacementCollection size.\r   newSequenceableCollection := self species newTenured: newSize.\r   start > 1 ifTrue: [\r         newSequenceableCollection\r            replaceFrom: 1\r            to: start - 1\r            with: self\r            startingAt: 1 ].\r   start <= endReplacement ifTrue: [\r         newSequenceableCollection\r            replaceFrom: start\r            to: endReplacement\r            with: replacementCollection\r            startingAt: 1 ].\r   endReplacement < newSize ifTrue: [\r         newSequenceableCollection\r            replaceFrom: endReplacement + 1\r            to: newSize\r            with: self\r            startingAt: stop + 1 ].\r   ^ newSequenceableCollection"
+	},
+	{
+		"methodClass" : "GeneralScrollPaneMorph",
+		"sourceCode" : "resizeScroller\r   \"Resize the scroller to fit the scroll bounds.\"\r\r   self scroller bounds: self _pretenured_scrollBounds"
+	},
+	{
+		"methodClass" : "MultistateButtonMorph",
+		"sourceCode" : "activeEnabledNotOverUpFillStyle: aFillStyle\r   \"Set the active, enabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( active enabled notOver up )\r      put: aFillStyle.\r   self changed"
+	},
+	{
+		"methodClass" : "PSPRunner",
+		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "defaultBounds\r   \"answer the default bounds for the receiver\"\r\r   ^ 0 @ 0 corner: 50 @ 40"
+	},
+	{
+		"methodClass" : "TableLayout",
+		"sourceCode" : "minExtentHorizontal: aMorph\r   \"Return the minimal size aMorph's children would require given the new bounds\"\r\r   | inset minX minY maxX maxY n size width height |\r   size := properties minCellSize _pretenured_asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint.\r   n := 0.\r   width := height := 0.\r   aMorph submorphsDo: [ :m |\r         | sizeY sizeX |\r         m disableTableLayout ifFalse: [\r               n := n + 1.\r               size := m minExtent.\r               sizeX := size x.\r               sizeY := size y.\r               sizeX < minX\r                  ifTrue: [ sizeX := minX ]\r                  ifFalse: [ sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r               sizeY < minY\r                  ifTrue: [ sizeY := minY ]\r                  ifFalse: [ sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r               width := width + sizeX.\r               sizeY > height ifTrue: [ height := sizeY ] ] ].\r   n > 1 ifTrue: [ width := width + (n - 1 * inset x) ].\r   ^ minExtentCache := width @ height"
+	},
+	{
+		"methodClass" : "ScrollBarMorph",
+		"sourceCode" : "extent: p\r\r   p x > p y\r      ifTrue: [\r      super extent: (p max: (42 @ 8) scaledByDisplayScaleFactor) ]\r      ifFalse: [\r      super extent: (p max: (8 @ 42) scaledByDisplayScaleFactor) ]"
+	},
+	{
+		"methodClass" : "TableLayout",
+		"sourceCode" : "layout: aMorph in: box\r   \"Compute the layout for the given morph based on the new bounds\"\r\r   | cells arrangement horizontal newBounds |\r   aMorph hasSubmorphs ifFalse: [ ^ self ].\r   properties := aMorph assureTableProperties.\r   newBounds := box origin _pretenured_asIntegerPoint\r                   _pretenured_corner: box corner asIntegerPoint.\r   (properties wrapDirection == #none and: [\r       properties cellSpacing == #none ]) ifTrue: [ \"get into the fast lane\"\r         properties listCentering == #justified ifFalse: [ \"can't deal with that\"\r               properties listDirection == #leftToRight ifTrue: [\r                  ^ self layoutLeftToRight: aMorph in: newBounds ].\r               properties listDirection == #topToBottom ifTrue: [\r                  ^ self layoutTopToBottom: aMorph in: newBounds ] ] ].\r   horizontal := (properties listDirection == #topToBottom or: [\r                     properties listDirection == #bottomToTop ]) not.\r   \"Step 1: Compute the minimum extent for all the children of aMorph\"\r   cells := self\r               computeCellSizes: aMorph\r               in: (0 @ 0 corner: newBounds extent)\r               horizontal: horizontal.\r   \"Step 2: Compute the arrangement of the cells for each row and column\"\r   arrangement := self\r                     computeCellArrangement: cells\r                     in: newBounds\r                     horizontal: horizontal\r                     target: aMorph.\r   \"Step 3: Compute the extra spacing for each cell\"\r   self\r      computeExtraSpacing: arrangement\r      in: newBounds\r      horizontal: horizontal\r      target: aMorph.\r   \"Step 4: Place the children within the cells accordingly\"\r   self\r      placeCells: arrangement\r      in: newBounds\r      horizontal: horizontal\r      target: aMorph"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "submorphBounds\r   \"Private. Compute the actual full bounds of the receiver\"\r\r   | box |\r   submorphs do: [ :m |\r         | subBox |\r         m visible ifTrue: [\r               subBox := m fullBounds.\r               box\r                  ifNil: [ box := subBox copy ]\r                  ifNotNil: [ box := box quickMerge: subBox ] ] ].\r   box ifNil: [ ^ self bounds ]. \"e.g., having submorphs but not visible\"\r   ^ box origin _pretenured_asIntegerPoint corner:\r        box corner asIntegerPoint"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "minExtent\r   \"Layout specific. Return the minimum size the receiver can be represented in.\r\tImplementation note: When this message is sent from an owner trying to lay out its children it will traverse down the morph tree and recompute the minimal arrangement of the morphs based on which the minimal extent is returned. When a morph with some layout strategy is encountered, the morph will ask its strategy to compute the new arrangement. However, since the final size given to the receiver is unknown at the point of the query, the assumption is made that the current bounds of the receiver are the base on which the layout should be computed. This scheme prevents strange layout changes when for instance, a table is contained in another table. Unless the inner table has been resized manually (which means its bounds are already enlarged) the arrangement of the inner table will not change here. Thus the entire layout computation is basically an iterative process which may have different results depending on the incremental changes applied.\r\tFixed for shrinkWrap.\"\r\r   | layout minExtent extra hFit vFit |\r   hFit := self hResizing.\r   vFit := self vResizing.\r   (hFit == #rigid and: [ vFit == #rigid ]) ifTrue: [ \"The receiver will not adjust to parents layout by growing or shrinking,\r\t\twhich means that an accurate layout defines the minimum size.\"\r      ^ self fullBounds extent max: self minWidth @ self minHeight ].\r\r   \"An exception -- a receiver with #shrinkWrap constraints but no children is being treated #rigid (the equivalent to a #spaceFill receiver in a non-layouting owner)\"\r   self hasSubmorphs ifFalse: [\r         hFit == #shrinkWrap ifTrue: [ hFit := #rigid ].\r         vFit == #shrinkWrap ifTrue: [ vFit := #rigid ] ].\r   layout := self layoutPolicy.\r   layout\r      ifNil: [ minExtent := 0 @ 0 ]\r      ifNotNil: [\r      minExtent := layout minExtentOf: self in: self layoutBounds ].\r   hFit == #rigid\r      ifTrue: [ minExtent := self fullBounds extent x @ minExtent y ]\r      ifFalse: [\r            extra := self bounds width - self layoutBounds width.\r            minExtent := minExtent x + extra @ minExtent y ].\r   minExtent := vFit == #rigid\r                   ifTrue: [ minExtent x @ self fullBounds extent y ]\r                   ifFalse: [\r                         extra := self bounds height\r                                  - self layoutBounds height.\r                         minExtent x @ (minExtent y + extra) ].\r   minExtent := minExtent max: self minWidth @ self minHeight.\r   ^ minExtent"
+	}
+]

@@ -1,0 +1,790 @@
+[
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "_pretenured_fillColor: c\r   \"Note: This always fills, even if the color is transparent.\"\r\r   self setClearColor: c.\r   port fillRect: form _pretenured_boundingBox offset: origin"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream _pretenured_contents ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_readStream\r\r   ^ ReadStream _pretenured_on: self"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "_pretenured_updateParticleMap\r\r   (simulationOrigin notNil and: [ simulationCorner notNil ]) ifTrue: [\r         | newParticleMap |\r         newParticleMap := HGSpatialPartitionedCollection\r                              _pretenured_origin: simulationOrigin\r                              corner: simulationCorner\r                              step: particleMapResolution.\r         self particlesDo: [ :particle |\r            newParticleMap at: particle position add: particle ].\r         particleMap := newParticleMap ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_submorphBounds\r   \"Private. Compute the actual full bounds of the receiver\"\r\r   | box |\r   submorphs _pretenured_do: [ :m |\r         | subBox |\r         m visible ifTrue: [\r               subBox := m _pretenured_fullBounds.\r               box\r                  ifNil: [ box := subBox _pretenured_copy ]\r                  ifNotNil: [\r                  box := box _pretenured_quickMerge: subBox ] ] ].\r   box ifNil: [ ^ self bounds ]. \"e.g., having submorphs but not visible\"\r   ^ box origin asIntegerPoint _pretenured_corner:\r        box corner asIntegerPoint"
+	},
+	{
+		"methodClass" : "TableLayout",
+		"sourceCode" : "_pretenured_layout: aMorph in: box\r   \"Compute the layout for the given morph based on the new bounds\"\r\r   | cells arrangement horizontal newBounds |\r   aMorph hasSubmorphs ifFalse: [ ^ self ].\r   properties := aMorph assureTableProperties.\r   newBounds := box origin asIntegerPoint _pretenured_corner:\r                   box corner asIntegerPoint.\r   (properties wrapDirection == #none and: [\r       properties cellSpacing == #none ]) ifTrue: [ \"get into the fast lane\"\r         properties listCentering == #justified ifFalse: [ \"can't deal with that\"\r               properties listDirection == #leftToRight ifTrue: [\r                  ^ self layoutLeftToRight: aMorph in: newBounds ].\r               properties listDirection == #topToBottom ifTrue: [\r                  ^ self\r                       _pretenured_layoutTopToBottom: aMorph\r                       in: newBounds ] ] ].\r   horizontal := (properties listDirection == #topToBottom or: [\r                     properties listDirection == #bottomToTop ]) not.\r   \"Step 1: Compute the minimum extent for all the children of aMorph\"\r   cells := self\r               computeCellSizes: aMorph\r               in: (0 @ 0 corner: newBounds extent)\r               horizontal: horizontal.\r   \"Step 2: Compute the arrangement of the cells for each row and column\"\r   arrangement := self\r                     computeCellArrangement: cells\r                     in: newBounds\r                     horizontal: horizontal\r                     target: aMorph.\r   \"Step 3: Compute the extra spacing for each cell\"\r   self\r      computeExtraSpacing: arrangement\r      in: newBounds\r      horizontal: horizontal\r      target: aMorph.\r   \"Step 4: Place the children within the cells accordingly\"\r   self\r      placeCells: arrangement\r      in: newBounds\r      horizontal: horizontal\r      target: aMorph"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "_pretenured_linearWidthOf: aCharacter\r   \"retrieve linear advance width for character. try to use cached glyph if possible.\r\tThis is the scaled, unrounded advance width.\"\r\r   | charCode answer |\r   charCode := aCharacter asUnicode asInteger.\r   answer := FreeTypeCache current\r                _pretenured_atFont: self\r                charCode: charCode\r                type: FreeTypeCacheLinearWidth\r                scale: 1\r                ifAbsentPut: [\r                self _pretenured_getLinearWidthOf: aCharacter ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "ArrayedCollection class",
+		"sourceCode" : "_pretenured_with: anObject\r   \"Answer a new instance of me, containing only anObject.\"\r\r   | newCollection |\r   newCollection := self newTenured: 1.\r   newCollection at: 1 put: anObject.\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "Form class",
+		"sourceCode" : "_pretenured_extent: extentPoint depth: bitsPerPixel\r   \"Answer an instance of me with blank bitmap of the given dimensions and depth.\"\r\r   ^ self basicNewTenured\r        _pretenured_setExtent: extentPoint\r        depth: bitsPerPixel"
+	},
+	{
+		"methodClass" : "WorldMorph",
+		"sourceCode" : "_pretenured_invalidRect: damageRect from: aMorph\r   \"Clip damage reports to my bounds, since drawing is clipped to my bounds.\"\r\r   worldState _pretenured_recordDamagedRect:\r      (damageRect\r          _pretenured_intersect: self bounds\r          ifNone: [ ^ self ])"
+	},
+	{
+		"methodClass" : "Collection",
+		"sourceCode" : "_pretenured_copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_quickMerge: aRectangle\r   \"Answer the receiver if it encloses the given rectangle or the merge of the two rectangles if it doesn't. This method is an optimization to reduce extra rectangle creations.\"\r\r   | useRcvr rOrigin rCorner minX maxX minY maxY |\r   aRectangle ifNil: [ ^ self ].\r\r   useRcvr := true.\r   rOrigin := aRectangle topLeft.\r   rCorner := aRectangle bottomRight.\r   minX := rOrigin x < origin x\r              ifTrue: [\r                    useRcvr := false.\r                    rOrigin x ]\r              ifFalse: [ origin x ].\r   maxX := rCorner x > corner x\r              ifTrue: [\r                    useRcvr := false.\r                    rCorner x ]\r              ifFalse: [ corner x ].\r   minY := rOrigin y < origin y\r              ifTrue: [\r                    useRcvr := false.\r                    rOrigin y ]\r              ifFalse: [ origin y ].\r   maxY := rCorner y > corner y\r              ifTrue: [\r                    useRcvr := false.\r                    rCorner y ]\r              ifFalse: [ corner y ].\r   ^ useRcvr\r        ifTrue: [ self ]\r        ifFalse: [\r        Rectangle _pretenured_origin: minX @ minY corner: maxX @ maxY ]"
+	},
+	{
+		"methodClass" : "FT2GlyphSlot",
+		"sourceCode" : "_pretenured_loadFrom: anFT2Face\r\r   face := anFT2Face.\r   anFT2Face _pretenured_fillGlyph: self.\r   format := (EndianDetector isLittleEndian\r                 ifTrue: [ format _pretenured_reversed ]\r                 ifFalse: [ format ]) _pretenured_asString.\r   linearHorizontalAdvance := linearHorizontalAdvance / 65536.0.\r   linearVerticalAdvance isZero ifFalse: [\r      linearVerticalAdvance := linearVerticalAdvance / 65536.0 ].\r   advanceX := advanceX bitShift: -6.\r   advanceY isZero ifFalse: [ advanceY := advanceY bitShift: -6 ].\r   width := width + 63 bitShift: -6. \"round up\"\r   height := height + 63 bitShift: -6. \"round up\"\r   hBearingX := hBearingX bitShift: -6.\r   hBearingY := hBearingY bitShift: -6.\r   hAdvance := hAdvance bitShift: -6.\r   vBearingX := vBearingX bitShift: -6.\r   vBearingY := vBearingY bitShift: -6.\r   vAdvance := vAdvance bitShift: -6"
+	},
+	{
+		"methodClass" : "Margin",
+		"sourceCode" : "_pretenured_insetRectangle: aRectangle\r   \"Answer a rectangle whose size has been reduced by the receiver. The limitation is that since a rectangle topleft is always less than its bottomright you may have a some cases that are not possible to express. For that you should use a margin object instead of a rectangle.\"\r\r   | l r t b |\r   l := aRectangle left + self left.\r   r := left max: aRectangle right - self right.\r   t := aRectangle top + self top.\r   b := top max: aRectangle bottom - self bottom.\r\r   ^ Rectangle\r        _pretenured_left: l\r        right: r\r        top: t\r        bottom: b"
+	},
+	{
+		"methodClass" : "DisplayTransform",
+		"sourceCode" : "_pretenured_localPointsToGlobal: inArray\r   \"Transform all the points of inArray from local into global coordinates\"\r\r   ^ inArray _pretenured_collect: [ :pt | self localPointToGlobal: pt ]"
+	},
+	{
+		"methodClass" : "Integer",
+		"sourceCode" : "_pretenured_asByteArray\r   \"Answer a ByteArray with my value, most-significant byte first.\r\tWarning: Sign is not encoded\"\r\r   \"1 asByteArray >>> #[1]\"\r\r   \"-1 asByteArray >>> #[1]\"\r\r   | answer digitPos bytesCount |\r   bytesCount := self bytesCount.\r   answer := ByteArray newTenured: bytesCount.\r\r   digitPos := 1.\r   bytesCount to: 1 by: -1 do: [ :pos |\r         answer at: pos put: (self byteAt: digitPos).\r         digitPos := digitPos + 1 ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "KMTarget class",
+		"sourceCode" : "_pretenured_for: aTarget in: aMorph\r\r   ^ self newTenured\r        targetSelector: aTarget;\r        morph: aMorph;\r        yourself"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_on: exception do: handlerAction\r   \"Evaluate the receiver in the scope of an exception handler.\r\tThe following primitive is just a marker used to find the error handling context.\r\tSee MethodContext>>#isHandlerOrSignalingContext. \"\r\r   <primitive: 199>\r   ^ self value"
+	},
+	{
+		"methodClass" : "BitBlt class",
+		"sourceCode" : "_pretenured_toForm: aForm\r\r   ^ self newTenured _pretenured_setDestForm: aForm"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_protected: aBlock\r\r   ^ monitor _pretenured_critical: [ aBlock value ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Refer to the comment in Collection|do:.\"\r\r   1 to: self size do: [ :index | aBlock value: (self at: index) ]"
+	},
+	{
+		"methodClass" : "Announcer",
+		"sourceCode" : "_pretenured_announce: anAnnouncement\r\r   ^ self isSuspended\r        ifFalse: [\r              | announcement |\r              announcement := anAnnouncement asAnnouncement.\r\r              \"Stop if there isn't any subscriber\"\r              registry isEmpty ifTrue: [ ^ announcement ].\r\r              \"If the user required to prevent the current announcement, we stop here.\"\r              (self preventedAnnouncements handlesAnnouncement:\r                  announcement) ifTrue: [ ^ announcement ].\r\r              registry _pretenured_deliver: announcement.\r              announcement ]\r        ifTrue: [\r              storedAnnouncements ifNotNil: [\r                 storedAnnouncements add: anAnnouncement ] ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_privateAddMorph: aMorph atIndex: index\r\r   | oldIndex myWorld itsWorld oldOwner |\r   (index between: 1 and: submorphs size + 1) ifFalse: [\r      ^ self error: 'index out of range' ].\r   myWorld := self world.\r   oldOwner := aMorph owner.\r   (oldOwner == self and: [\r       (oldIndex := submorphs indexOf: aMorph) > 0 ])\r      ifTrue: [ \"aMorph's position changes within in the submorph chain\"\r            oldIndex < index\r               ifTrue: [ \"moving aMorph to back\"\r                     submorphs\r                        replaceFrom: oldIndex\r                        to: index - 2\r                        with: submorphs\r                        startingAt: oldIndex + 1.\r                     submorphs at: index - 1 put: aMorph ]\r               ifFalse: [ \"moving aMorph to front\"\r                     oldIndex - 1 to: index by: -1 do: [ :i |\r                     submorphs at: i + 1 put: (submorphs at: i) ].\r                     submorphs at: index put: aMorph ] ]\r      ifFalse: [ \"adding a new morph\"\r            oldOwner ifNotNil: [\r                  itsWorld := aMorph world.\r                  itsWorld ifNotNil: [\r                     self privateInvalidateMorph: aMorph ].\r                  itsWorld == myWorld ifFalse: [\r                     aMorph outOfWorld: itsWorld ].\r                  oldOwner privateRemove: aMorph.\r                  oldOwner removedMorph: aMorph ].\r            aMorph privateOwner: self.\r            submorphs := submorphs\r                            _pretenured_copyReplaceFrom: index\r                            to: index - 1\r                            with: { aMorph }.\r            itsWorld == myWorld ifFalse: [ aMorph intoWorld: myWorld ] ].\r   myWorld ifNotNil: [ self privateInvalidateMorph: aMorph ].\r   self layoutChanged.\r   oldOwner == self ifFalse: [\r         self addedMorph: aMorph.\r         aMorph noteNewOwner: self ]"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_corner: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose corner is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   \"(10@10 corner: 100@100) >>> (10@10 corner: 100@100)\"\r\r   ^ Rectangle _pretenured_origin: self corner: aPoint"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_privateFullBounds\r   \"Private. Compute the actual full bounds of the receiver\"\r\r   | box |\r   submorphs isEmpty ifTrue: [ ^ self outerBounds ].\r   box := self outerBounds _pretenured_copy.\r   box := box quickMerge: (self clipSubmorphs\r                 ifTrue: [\r                       self _pretenured_submorphBounds\r                          _pretenured_intersect:\r                          self _pretenured_clippingBounds\r                          ifNone: [ self clippingBounds ] ]\r                 ifFalse: [ self _pretenured_submorphBounds ]).\r   ^ box origin asIntegerPoint _pretenured_corner:\r        box corner asIntegerPoint"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_expandBy: delta\r   \"Answer a Rectangle that is outset from the receiver by delta. delta is a\r\tRectangle, Point, or scalar.\"\r\r   ^ delta _pretenured_asMargin _pretenured_expandRectangle: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_minExtent\r   \"Layout specific. Return the minimum size the receiver can be represented in.\r\tImplementation note: When this message is sent from an owner trying to lay out its children it will traverse down the morph tree and recompute the minimal arrangement of the morphs based on which the minimal extent is returned. When a morph with some layout strategy is encountered, the morph will ask its strategy to compute the new arrangement. However, since the final size given to the receiver is unknown at the point of the query, the assumption is made that the current bounds of the receiver are the base on which the layout should be computed. This scheme prevents strange layout changes when for instance, a table is contained in another table. Unless the inner table has been resized manually (which means its bounds are already enlarged) the arrangement of the inner table will not change here. Thus the entire layout computation is basically an iterative process which may have different results depending on the incremental changes applied.\r\tFixed for shrinkWrap.\"\r\r   | layout minExtent extra hFit vFit |\r   hFit := self hResizing.\r   vFit := self vResizing.\r   (hFit == #rigid and: [ vFit == #rigid ]) ifTrue: [ \"The receiver will not adjust to parents layout by growing or shrinking,\r\t\twhich means that an accurate layout defines the minimum size.\"\r      ^ self fullBounds extent max: self minWidth @ self minHeight ].\r\r   \"An exception -- a receiver with #shrinkWrap constraints but no children is being treated #rigid (the equivalent to a #spaceFill receiver in a non-layouting owner)\"\r   self hasSubmorphs ifFalse: [\r         hFit == #shrinkWrap ifTrue: [ hFit := #rigid ].\r         vFit == #shrinkWrap ifTrue: [ vFit := #rigid ] ].\r   layout := self layoutPolicy.\r   layout ifNil: [ minExtent := 0 @ 0 ] ifNotNil: [\r         minExtent := layout\r                         minExtentOf: self\r                         in: self _pretenured_layoutBounds ].\r   hFit == #rigid\r      ifTrue: [ minExtent := self fullBounds extent x @ minExtent y ]\r      ifFalse: [\r            extra := self bounds width\r                     - self _pretenured_layoutBounds width.\r            minExtent := minExtent x + extra @ minExtent y ].\r   minExtent := vFit == #rigid\r                   ifTrue: [ minExtent x @ self fullBounds extent y ]\r                   ifFalse: [\r                         extra := self bounds height\r                                  -\r                                  self _pretenured_layoutBounds height.\r                         minExtent x @ (minExtent y + extra) ].\r   minExtent := minExtent max: self minWidth @ self minHeight.\r   ^ minExtent"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_extent: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose extent is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   ^ Rectangle _pretenured_origin: self extent: aPoint"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "_pretenured_setForm: aForm\r\r   self _pretenured_reset.\r   form := aForm.\r   port := GrafPort _pretenured_toForm: form"
+	},
+	{
+		"methodClass" : "FTGlyphSlotRec",
+		"sourceCode" : "_pretenured_advance\r   \"This method was automatically generated\"\r\r   ^ FTVector _pretenured_fromHandle: (handle\r            _pretenured_referenceStructAt: OFFSET_ADVANCE\r            length: FTVector byteSize)"
+	},
+	{
+		"methodClass" : "HGBorderlinePressureVisualizer class",
+		"sourceCode" : "_pretenured_pressure: pressure width: width color: aColor\r\r   ^ self\r        pressure: pressure\r        xgrids: 40\r        ygrids: 40\r        kernel: (HGSimpleKernel _pretenured_support: 30)\r        width: width\r        color: aColor"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_subscriptionsHandling: anAnnouncement\r\r   ^ Array _pretenured_streamContents: [ :s |\r           subscriptions do: [ :each |\r              (each handlesAnnouncement: anAnnouncement) ifTrue: [\r                 s nextPut: each ] ] ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_changed\r   \"Report that the area occupied by this morph should be redrawn.\r\tFixed to include submorphs outside the outerBounds.\"\r\r   ^ fullBounds\r        ifNil: [\r        self _pretenured_invalidRect:\r           self _pretenured_privateFullBounds ]\r        ifNotNil: [ self _pretenured_invalidRect: fullBounds ]"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "_pretenured_characterWidthCache\r\r   ^ characterWidthCache ifNil: [\r        characterWidthCache := IdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "FT2GlyphSlot",
+		"sourceCode" : "_pretenured_fillFromGlyphSlotRec: aGlyphRec\r\r   linearHorizontalAdvance := aGlyphRec linearHoriAdvance.\r   linearVerticalAdvance := aGlyphRec linearVertAdvance.\r   advanceX := aGlyphRec _pretenured_advance x.\r   advanceY := aGlyphRec _pretenured_advance y.\r\r   format := aGlyphRec format _pretenured_asByteArray.\r\r   bitmapLeft := aGlyphRec bitmap_left.\r   bitmapTop := aGlyphRec bitmap_top.\r\r   width := aGlyphRec _pretenured_metrics width.\r   height := aGlyphRec _pretenured_metrics height.\r   hBearingX := aGlyphRec _pretenured_metrics horiBearingX.\r   hBearingY := aGlyphRec _pretenured_metrics horiBearingY.\r   hAdvance := aGlyphRec _pretenured_metrics horiAdvance.\r   vBearingX := aGlyphRec _pretenured_metrics vertBearingX.\r   vBearingY := aGlyphRec _pretenured_metrics vertBearingY.\r   vAdvance := aGlyphRec _pretenured_metrics vertAdvance"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "_pretenured_r: r g: g b: b\r   \"Return a color with the given r, g, and b components in the range [0.0..1.0].\"\r\r   \"(Color r: 1 g: 1 b: 1) >>> Color white\"\r\r   ^ self\r        _pretenured_r: r\r        g: g\r        b: b\r        alpha: 1.0"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_left: left right: right top: top bottom: bottom\r   \"Answer an instance of me whose left, right, top, and bottom coordinates\r\tare determined by the arguments.\"\r\r   ^ self basicNewTenured\r        setLeft: left\r        right: right\r        top: top\r        bottom: bottom"
+	},
+	{
+		"methodClass" : "HG2dRectangle class",
+		"sourceCode" : "_pretenured_originX: x0 originY: y0 cornerX: x1 cornerY: y1\r\r   ^ self newTenured\r        setOrigin: (HG2dPoint _pretenured_x: x0 y: y0)\r        corner: (HG2dPoint _pretenured_x: x1 y: y1)"
+	},
+	{
+		"methodClass" : "BitBlt",
+		"sourceCode" : "_pretenured_setDestForm: df\r\r   | bb |\r   bb := df _pretenured_boundingBox.\r   destForm := df.\r   clipX := bb left.\r   clipY := bb top.\r   clipWidth := bb width.\r   clipHeight := bb height"
+	},
+	{
+		"methodClass" : "TransformMorph",
+		"sourceCode" : "_pretenured_invalidRect: damageRect from: aMorph\r   \"Translate damage reports from submorphs by the scrollOffset.\"\r\r   aMorph == self\r      ifTrue: [ super invalidRect: damageRect from: self ]\r      ifFalse: [\r            super\r               _pretenured_invalidRect:\r                  (((transform _pretenured_localBoundsToGlobal:\r                        damageRect)\r                       _pretenured_intersect: bounds\r                       ifNone: [ ^ self ]) _pretenured_expandBy: 1)\r               from: self ]"
+	},
+	{
+		"methodClass" : "Margin class",
+		"sourceCode" : "_pretenured_fromNumber: aNumber\r   \"Create a margin whose four values are the same and based on anInteger\"\r\r   ^ self newTenured\r        fromNumber: aNumber;\r        yourself"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "_pretenured_r: r g: g b: b alpha: alpha\r   \"Return a color with the given r, g, and b components in the range [0.0..1.0].\"\r\r   ^ self basicNewTenured\r        initializeRed: r\r        green: g\r        blue: b\r        alpha: alpha;\r        yourself"
+	},
+	{
+		"methodClass" : "HG2dPoint",
+		"sourceCode" : "_pretenured_016r2F: aNumber\r\r   ^ self class _pretenured_x: x / aNumber y: y / aNumber"
+	},
+	{
+		"methodClass" : "ExternalAddress",
+		"sourceCode" : "_pretenured_asByteArrayPointer\r   \"Answer a ByteArray containing a copy of pointer to the contents of the receiver.\"\r\r   | sz |\r   ^ (ByteArray basicNewTenured: (sz := self size))\r        replaceFrom: 1\r        to: sz\r        with: self\r        startingAt: 1 \"answers self\""
+	},
+	{
+		"methodClass" : "Color",
+		"sourceCode" : "_pretenured_darker\r   \"Answer a darker shade of this color.\"\r\r   ^ self _pretenured_adjustBrightness: -0.08"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_copyFrom: start to: stop\r   \"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r   | newSize |\r   newSize := stop - start + 1.\r   ^ (self species newTenured: newSize)\r        replaceFrom: 1\r        to: newSize\r        with: self\r        startingAt: start"
+	},
+	{
+		"methodClass" : "ArrayedCollection class",
+		"sourceCode" : "_pretenured_with: firstObject with: secondObject with: thirdObject with: fourthObject\r   \"Answer a new instance of me, containing only the three arguments as\r\telements.\"\r\r   | newCollection |\r   newCollection := self newTenured: 4.\r   newCollection at: 1 put: firstObject.\r   newCollection at: 2 put: secondObject.\r   newCollection at: 3 put: thirdObject.\r   newCollection at: 4 put: fourthObject.\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "_pretenured_getLinearWidthOf: aCharacter\r\r   | em glyph la charCode |\r   aCharacter < $  ifTrue: [ ^ self getLinearWidthOf: $  ].\r   charCode := aCharacter asUnicode asInteger.\r   (self face charmaps includes: 'unic')\r      ifTrue: [\r            (self isSymbolFont and: [\r                charCode between: 16r20 and: 16rFF ]) ifTrue: [\r               charCode := charCode + 16rF000 ] ]\r      ifFalse: [\r            (self face charmaps includes: 'armn') ifTrue: [ \"select apple roman char map, and map character from unicode to mac encoding\"\r                  self face setCharMap: 'armn'.\r                  charCode := self unicodeToMacRoman: aCharacter \"check this!\" ] ].\r   em := self pixelSize.\r   face validate.\r   face setPixelWidth: em height: em.\r   [\r      face\r         _pretenured_loadCharacter: charCode\r         flags: (LoadNoBitmap bitOr: (LoadIgnoreTransform bitOr: 2)) \"FreeTypeSettings current hintingFlags\" \"no hinting\" ]\r      _pretenured_on: (FT2Error _pretenured_016r2C: PrimitiveFailed)\r      do: [ :e |\r            face loadGlyph: 0 flags: (LoadNoBitmap bitOr:\r                   (LoadIgnoreTransform bitOr:\r                       FreeTypeSettings current hintingFlags)) \"no hinting\" ].\r   glyph := face glyph.\r   la := glyph linearHorizontalAdvance.\r   la isZero ifTrue: [ \"FreeType 2.2.1 sometimes screws up when getting metrics,\r\t\tMaybe the bug is in the plugin?\r\t\tFor example Calibri pixel size 13 gives linearAdvance x of zero !\r\t\tWe try again at double the size, and half the result\"\r         em := self pixelSize * 2.\r         face validate.\r         face setPixelWidth: em height: em.\r         face\r            loadCharacter: charCode\r            flags:\r            (LoadNoBitmap bitOr: (LoadIgnoreTransform bitOr: 2)). \"FreeTypeSettings current hintingFlags\" \"no hinting\" \"load glyph metrics\"\r         glyph := face glyph.\r         la := glyph linearHorizontalAdvance / 2.0 ].\r   ^ la"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_invalidRect: damageRect\r\r   ^ self _pretenured_invalidRect: damageRect from: self"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_doLayoutIn: layoutBounds\r   \"Compute a new layout based on the given layout bounds.\"\r\r   \"Note: Testing for #bounds or #layoutBounds would be sufficient to\r\tfigure out if we need an invalidation afterwards but #outerBounds\r\tis what we need for all leaf nodes so we use that.\"\r\r   | box priorBounds |\r   priorBounds := self outerBounds.\r   submorphs isEmpty ifTrue: [ ^ fullBounds := priorBounds ].\r   \"Send #ownerChanged to our children\"\r   submorphs do: [ :m | m ownerChanged ].\r   self layoutPolicy ifNotNil: [ :layout |\r      layout _pretenured_layout: self in: layoutBounds ].\r   self adjustLayoutBounds.\r   fullBounds := self _pretenured_privateFullBounds.\r   box := self outerBounds.\r   box = priorBounds ifFalse: [\r      self invalidRect: (priorBounds quickMerge: box) ]"
+	},
+	{
+		"methodClass" : "SmallDictionary",
+		"sourceCode" : "initialize\r\r   super initialize.\r   keys := Array newTenured: 2.\r   values := Array newTenured: 2.\r   size := 0"
+	},
+	{
+		"methodClass" : "HG2dPoint",
+		"sourceCode" : "_pretenured_016r2D: anHG2dPoint\r\r   ^ self class _pretenured_x: x - anHG2dPoint x y: y - anHG2dPoint y\r   \"^self copy minus: anHG2dPoint \""
+	},
+	{
+		"methodClass" : "WriteStream",
+		"sourceCode" : "_pretenured_contents\r\r   readLimit := readLimit max: position.\r   ^ collection _pretenured_copyFrom: 1 to: position"
+	},
+	{
+		"methodClass" : "HG2dPoint",
+		"sourceCode" : "_pretenured_floor\r\r   ^ self class _pretenured_x: x floor y: y floor"
+	},
+	{
+		"methodClass" : "HG2dPoint",
+		"sourceCode" : "_pretenured_016r2B: anHG2dPoint\r\r   ^ self class _pretenured_x: x + anHG2dPoint x y: y + anHG2dPoint y"
+	},
+	{
+		"methodClass" : "HGBorderlineFillPressureVisualizer class",
+		"sourceCode" : "_pretenured_pressure: pressure color: aColor\r\r   ^ self\r        pressure: pressure\r        xgrids: 40\r        ygrids: 40\r        kernel: (HGSimpleKernel _pretenured_support: 30)\r        color: aColor"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "_pretenured_simulationOrigin: anHG2dPoint corner: anotherHG2dPoint\r\r   simulationOrigin := anHG2dPoint.\r   simulationCorner := anotherHG2dPoint.\r   form := Form\r              extent: anotherHG2dPoint x - anHG2dPoint x\r                 @ (anotherHG2dPoint y - anHG2dPoint y)\r              depth: 32.\r   form _pretenured_getCanvas _pretenured_fillColor: self color.\r   visibleForm := Form\r                     extent: anotherHG2dPoint x - anHG2dPoint x\r                        @ (anotherHG2dPoint y - anHG2dPoint y)\r                     depth: 32.\r   visibleForm _pretenured_getCanvas _pretenured_fillColor: self color.\r   scale := self width / (anotherHG2dPoint x - anHG2dPoint x) min:\r               self height / (anotherHG2dPoint y - anHG2dPoint y).\r   self _pretenured_updateParticleMap"
+	},
+	{
+		"methodClass" : "Color",
+		"sourceCode" : "_pretenured_adjustBrightness: brightness\r   \"Adjust the relative brightness of this color. (lowest value is 0.005 so that hue information is not lost)\"\r\r   ^ self class\r        _pretenured_h: self hue\r        s: self saturation\r        v: (self brightness + brightness min: 1.0 max: 0.005)\r        alpha: self alpha"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_encompassing: listOfPoints\r   \"A number of callers of encompass: should use this method.\"\r\r   | topLeft bottomRight |\r   topLeft := bottomRight := listOfPoints first.\r   listOfPoints allButFirstDo: [ :p |\r         topLeft := topLeft min: p.\r         bottomRight := bottomRight max: p ].\r   ^ topLeft _pretenured_corner: bottomRight"
+	},
+	{
+		"methodClass" : "Margin",
+		"sourceCode" : "_pretenured_expandRectangle: aRectangle\r   \"Answer a rectangle whose size has been expanded by the receiver which represents each rectangle corner.\"\r\r   ^ Rectangle\r        _pretenured_left: aRectangle left - self left\r        right: aRectangle right + self right\r        top: aRectangle top - self top\r        bottom: aRectangle bottom + self bottom"
+	},
+	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "_pretenured_fromHandle: aHandle\r\r   ^ self basicNewTenured setHandle: aHandle"
+	},
+	{
+		"methodClass" : "FT2Face",
+		"sourceCode" : "_pretenured_loadCharacter: index flags: flags\r\r   self primLoadCharacter: index flags: flags.\r   glyph\r      ifNil: [ glyph := FT2GlyphSlot fromFace: self ]\r      ifNotNil: [ glyph _pretenured_loadFrom: self ]"
+	},
+	{
+		"methodClass" : "HGSpatialPartitionedCollection class",
+		"sourceCode" : "_pretenured_origin: anHGPoint corner: anotherHGPoint step: aNumber\r\r   | size |\r   size := ((anotherHGPoint _pretenured_016r2D: anHGPoint)\r               _pretenured_016r2F: aNumber) _pretenured_floor\r              _pretenured_016r2B:\r              (anHGPoint class _pretenured_fromNumber: 1).\r   ^ (self newTenured: size product)\r        setOrigin: anHGPoint\r        corner: anotherHGPoint\r        step: aNumber\r        size: size"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_zero\r\r   ^ self _pretenured_x: 0.0 y: 0.0"
+	},
+	{
+		"methodClass" : "Semaphore",
+		"sourceCode" : "_pretenured_critical: mutuallyExcludedBlock\r   \"Evaluate mutuallyExcludedBlock only if the receiver is not currently in\r\tthe process of running the critical: message. If the receiver is, evaluate\r\tmutuallyExcludedBlock after the other critical: message is finished.\"\r\r   \"We need to catch eventual interruptions very carefully.\r\tThe naive approach of just doing, e.g.,:\r\t\t\tself wait.\r\t\t\taBlock ensure: [self signal].\r\twill fail if the active process gets terminated while in the wait.\r\tHowever, the equally naive:\r\t\t\t[self wait.\r\t\t\taBlock value] ensure: [self signal].\r\twill fail too, since the active process may get interrupted while\r\tentering the ensured block and leave the semaphore signaled twice.\r\tTo avoid both problems we make use of the fact that interrupts only\r\toccur on sends (or backward jumps) and use an assignment (bytecode)\r\tright before we go into the wait primitive (which is not a real send and\r\ttherefore not interruptable either).\"\r\r   | blockValue caught |\r   caught := false.\r   [\r      caught := true.\r      self wait.\r      blockValue := mutuallyExcludedBlock value ] _pretenured_ensure: [\r      caught ifTrue: [ self signal ] ].\r   ^ blockValue"
+	},
+	{
+		"methodClass" : "Object",
+		"sourceCode" : "_pretenured_copy\r   \"Answer another instance just like the receiver. Subclasses typically override postCopy; they typically do not override shallowCopy. Copy is a template method in the sense of Design Patterns. So do not override it. Override postCopy instead. Pay attention that normally you should call postCopy of your superclass too.\"\r\r   ^ self shallowCopy postCopy"
+	},
+	{
+		"methodClass" : "Bitmap class",
+		"sourceCode" : "_pretenured_decompressFromByteArray: byteArray\r\r   | s bitmap size |\r   s := byteArray _pretenured_readStream.\r   size := self decodeIntFrom: s.\r   bitmap := self new: size.\r   bitmap\r      decompress: bitmap\r      fromByteArray: byteArray\r      at: s position + 1.\r   ^ bitmap"
+	},
+	{
+		"methodClass" : "ByteArray",
+		"sourceCode" : "_pretenured_asString\r   \"Convert to a String with Characters for each byte.\r\tFast code uses primitive that avoids character conversion\"\r\r   ^ (String newTenured: self size)\r        replaceFrom: 1\r        to: self size\r        with: self"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_truncated\r   \"Answer a Rectangle whose origin and corner have any fractional parts removed. Answer the receiver if its coordinates are already integral.\"\r\r   (origin x isInteger and: [\r          origin y isInteger and: [\r             corner x isInteger and: [ corner y isInteger ] ] ])\r      ifTrue: [ ^ self ].\r\r   ^ Rectangle\r        _pretenured_origin: origin truncated\r        corner: corner truncated"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_setExtent: extent depth: bitsPerPixel\r   \"Create a virtual bit map with the given extent and bitsPerPixel.\"\r\r   width := extent x asInteger.\r   width < 0 ifTrue: [ width := 0 ].\r   height := extent y asInteger.\r   height < 0 ifTrue: [ height := 0 ].\r   depth := bitsPerPixel.\r   bits := Bitmap newTenured: self bitsSize"
+	},
+	{
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Override the superclass for performance reasons.\"\r\r   firstIndex to: lastIndex do: [ :index |\r   aBlock value: (array at: index) ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_innerBounds\r   \"Return the inner rectangle enclosed by the bounds of this morph excluding the space taken by its borders. For an unbordered morph, this is just its bounds.\"\r\r   ^ self bounds _pretenured_insetBy: self borderWidth"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_color: aColor\r   \"Set the receiver's color.  Directly set the color if appropriate, else go by way of fillStyle\"\r\r   (aColor isColor or: [ aColor isKindOf: InfiniteForm ]) ifFalse: [\r      ^ self fillStyle: aColor ].\r   color = aColor ifFalse: [\r         self assureExtension.\r         extension fillStyle: nil.\r         color := aColor.\r         self _pretenured_changed ]"
+	},
+	{
+		"methodClass" : "KMDispatcher class",
+		"sourceCode" : "_pretenured_target: aTargetSelector morph: aMorph\r\r   ^ self newTenured\r        target: (KMTarget _pretenured_for: aTargetSelector in: aMorph);\r        yourself"
+	},
+	{
+		"methodClass" : "FormCanvas class",
+		"sourceCode" : "_pretenured_on: aForm\r\r   ^ self newTenured _pretenured_setForm: aForm"
+	},
+	{
+		"methodClass" : "WorldState",
+		"sourceCode" : "_pretenured_recordDamagedRect: damageRect\r\r   damageRecorder ifNotNil: [\r      damageRecorder _pretenured_recordInvalidRect:\r         damageRect truncated ]"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_getCanvas\r   \"Return a Canvas that can be used to draw onto the receiver\"\r\r   ^ self defaultCanvasClass _pretenured_on: self"
+	},
+	{
+		"methodClass" : "FT2Face",
+		"sourceCode" : "_pretenured_fillGlyph: aGlyphSlot\r\r   | faceRec |\r   self validate.\r\r   aGlyphSlot face: self.\r   faceRec := FTFaceRec _pretenured_fromHandle: handle.\r   aGlyphSlot _pretenured_fillFromGlyphSlotRec:\r      faceRec _pretenured_glyph"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "_pretenured_h: hue s: saturation v: brightness alpha: alpha\r   \"Create a color with the given hue, saturation, brightness, and alpha. Hue is given as the angle in degrees of the color on the color circle where red is zero degrees. Saturation and brightness are numbers in [0.0..1.0] where larger values are more saturated or brighter colors. For example, (Color h: 0 s: 1 v: 1 alpha: 1) is pure red.\"\r\r   \"(Color h: 0 s: 1 v: 1 alpha: 1) >>> Color red \"\r\r   ^ self basicNewTenured\r        initializeHue: hue\r        saturation: saturation\r        brightness: brightness\r        alpha: alpha;\r        yourself"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_insetBy: delta\r   \"Answer a Rectangle that is inset from the receiver by delta. delta is a\r\tRectangle, Point, or scalar.\"\r\r   ^ delta _pretenured_asMargin _pretenured_insetRectangle: self"
+	},
+	{
+		"methodClass" : "ExternalAddress",
+		"sourceCode" : "_pretenured_016r2B: offset\r   \"Create an address that is offset by the given number of bytes.\r\tMore tricky than one would think due to the FFI's handling of ExternalAddress\r\tas pointer to an object so that 'self unsignedLongAt: ' would dereference.\"\r\r   | bytes |\r   \"Convert xaddr -> bytes\"\r   bytes := self _pretenured_asByteArrayPointer.\r   \"Update bytes using platform dependent accessors\"\r   self size = 4\r      ifTrue: [\r      bytes unsignedLongAt: 1 put: (bytes unsignedLongAt: 1) + offset ]\r      ifFalse: [\r            bytes\r               unsignedLongLongAt: 1\r               put: (bytes unsignedLongLongAt: 1) + offset ].\r   \"Convert bytes -> xaddr\"\r   ^ bytes asExternalPointer"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_fromPoint: aPoint\r\r   ^ self _pretenured_x: aPoint x y: aPoint y"
+	},
+	{
+		"methodClass" : "FTFaceRec",
+		"sourceCode" : "_pretenured_glyph\r   \"This method was automatically generated\"\r\r   ^ FTGlyphSlotRec _pretenured_fromHandle:\r        (handle pointerAt: OFFSET_GLYPH)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_addMorphFront: aMorph\r\r   ^ self _pretenured_privateAddMorph: aMorph atIndex: 1"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "_pretenured_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer the receiver\r\r\tWe use a widthAndKernedWidthCache to store these values for speed\"\r\r   | privateArray |\r   privateArray := (self widthAndKernedWidthCache\r                       at: leftCharacter\r                       ifAbsentPut: [ Dictionary new ])\r                      at:\r                      (rightCharacterOrNil ifNil: [ 0 asCharacter ])\r                      ifAbsentPut: [\r                            super\r                               _pretenured_widthAndKernedWidthOfLeft:\r                               leftCharacter\r                               right: rightCharacterOrNil\r                               into: (Array new: 2) ].\r   \"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\r   aTwoElementArray\r      at: 1 put: (privateArray at: 1);\r      at: 2 put: (privateArray at: 2).\r   ^ aTwoElementArray"
+	},
+	{
+		"methodClass" : "AbstractFont",
+		"sourceCode" : "_pretenured_widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer aTwoElementArray\"\r\r   | w k |\r   w := self _pretenured_widthOf: leftCharacter.\r   rightCharacterOrNil\r      ifNil: [\r            aTwoElementArray\r               at: 1 put: w;\r               at: 2 put: w ]\r      ifNotNil: [\r            k := self\r                    kerningLeft: leftCharacter\r                    right: rightCharacterOrNil.\r            aTwoElementArray\r               at: 1 put: w;\r               at: 2 put: w + k ].\r   ^ aTwoElementArray"
+	},
+	{
+		"methodClass" : "ExceptionSet",
+		"sourceCode" : "initialize\r\r   super initialize.\r   exceptions := OrderedCollection newTenured"
+	},
+	{
+		"methodClass" : "BlockClosure",
+		"sourceCode" : "_pretenured_ensure: aBlock\r   \"Evaluate a termination block after evaluating the receiver, regardless of\r\t whether the receiver's evaluation completes.  N.B.  This method is *not*\r\t implemented as a primitive.  Primitive 198 always fails.  The VM uses prim\r\t 198 in a context's method as the mark for an ensure:/ifCurtailed: activation.\"\r\r   <primitive: 198>\r   | handler complete returnValue |\r   handler := aBlock.\r   \"The handler should be in the first temporary to find it easily and support more complex unwind methods\"\r   returnValue := self valueNoContextSwitch.\r   complete ifNil: [\r         complete := true.\r         aBlock value ].\r   ^ returnValue"
+	},
+	{
+		"methodClass" : "TableLayout",
+		"sourceCode" : "_pretenured_layoutTopToBottom: aMorph in: newBounds\r   \"An optimized top-to-bottom list layout\"\r\r   | inset extent block posX posY centering extraPerCell amount minX minY maxX maxY n height extra last cell size width sum vFill first submorphs |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint y.\r   extent := newBounds extent.\r   n := 0.\r   vFill := false.\r   sum := 0.\r   width := height := 0.\r   first := last := nil.\r   block := [ :m |\r               | sizeX props sizeY |\r               props := m layoutProperties ifNil: [ m ].\r               props disableTableLayout ifFalse: [\r                     n := n + 1.\r                     cell := LayoutCell newTenured target: m.\r                     props vResizing == #spaceFill\r                        ifTrue: [\r                              cell vSpaceFill: true.\r                              extra := m spaceFillWeight.\r                              cell extraSpace: extra.\r                              sum := sum + extra ]\r                        ifFalse: [ cell vSpaceFill: false ].\r                     props hResizing == #spaceFill ifTrue: [\r                        vFill := true ].\r                     size := m _pretenured_minExtent.\r                     sizeX := size x.\r                     sizeY := size y.\r                     sizeX < minX\r                        ifTrue: [ sizeX := minX ]\r                        ifFalse: [\r                        sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r                     sizeY < minY\r                        ifTrue: [ sizeY := minY ]\r                        ifFalse: [\r                        sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r                     cell cellSize: sizeY.\r                     first\r                        ifNil: [ first := cell ]\r                        ifNotNil: [ last nextCell: cell ].\r                     last := cell.\r                     height := height + sizeY.\r                     sizeX > width ifTrue: [ width := sizeX ] ] ].\r\r   submorphs := aMorph submorphs.\r   properties reverseTableCells ifTrue: [\r      submorphs := submorphs reversed ].\r   submorphs _pretenured_do: [ :each |\r         each visible\r            ifTrue: [ block value: each ]\r            ifFalse: [\r            each privateBounds: (each bounds topLeft extent: 0 @ 0) ] ].\r\r   n > 1 ifTrue: [ height := height + (n - 1 * inset) ].\r\r   (properties vResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ sum isZero ] ]) ifTrue: [\r      extent := (extent x max: width) @ height ].\r   (properties hResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ vFill not ] ]) ifTrue: [\r      extent := width @ (extent y max: height) ].\r\r   posX := newBounds left.\r   posY := newBounds top.\r\r   \"Compute extra horizontal space\"\r   extra := extent x - width.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extra > 0 ifTrue: [\r         vFill\r            ifTrue: [ width := extent x ]\r            ifFalse: [\r                  centering := properties wrapCentering.\r                  centering == #bottomRight ifTrue: [\r                     posX := posX + extra ].\r                  centering == #center ifTrue: [\r                     posX := posX + (extra // 2) ] ] ].\r\r\r   \"Compute extra vertical space\"\r   extra := extent y - height.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extraPerCell := 0.\r   extra > 0 ifTrue: [\r         sum isZero\r            ifTrue: [ \"extra space but no #spaceFillers\"\r                  centering := properties listCentering.\r                  centering == #bottomRight ifTrue: [\r                     posY := posY + extra ].\r                  centering == #center ifTrue: [\r                     posY := posY + (extra // 2) ] ]\r            ifFalse: [ extraPerCell := extra asFloat / sum asFloat ] ].\r\r   n := 0.\r   extra := last := 0.\r   cell := first.\r   [ cell == nil ] whileFalse: [\r         n := n + 1.\r         height := cell cellSize.\r         (extraPerCell > 0 and: [ cell vSpaceFill ]) ifTrue: [\r               extra := (last := extra)\r                        + (extraPerCell * cell extraSpace).\r               amount := extra truncated - last truncated.\r               height := height + amount ].\r         cell target layoutInBounds:\r            (posX @ posY _pretenured_extent: width @ height).\r         posY := posY + height + inset.\r         cell := cell nextCell ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_intersect: aRectangle ifNone: aBlock\r   \"Answer a Rectangle that is the area in which the receiver overlaps with\r\taRectangle.\r\tIf there's no overlap, evaluate the block instead\r\t\"\r\r   | aPoint left right top bottom |\r   (self intersects: aRectangle) ifFalse: [ ^ aBlock value ].\r   aPoint := aRectangle origin.\r   left := aPoint x max: origin x.\r   top := aPoint y max: origin y.\r   aPoint := aRectangle corner.\r   right := aPoint x min: corner x.\r   bottom := aPoint y min: corner y.\r   ^ Rectangle _pretenured_origin: left @ top corner: right @ bottom"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNewTenured setPoint: originPoint point: cornerPoint"
+	},
+	{
+		"methodClass" : "Semaphore",
+		"sourceCode" : "_pretenured_criticalReleasingOnError: mutuallyExcludedBlock\r   \"This is like #critical: but releasing the lock if there is an exception in the block\"\r\r   | blockValue caught |\r   caught := false.\r   [\r      caught := true.\r      self wait.\r      blockValue := mutuallyExcludedBlock\r                       _pretenured_on: Exception\r                       do: [ :e |\r                             caught ifTrue: [ self signal ].\r                             caught := false.\r                             e pass ] ] _pretenured_ensure: [\r      caught ifTrue: [ self signal ] ].\r\r   ^ blockValue"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_assureExtension\r   \"creates an extension for the receiver if needed\"\r\r   ^ extension ifNil: [ extension := MorphExtension newTenured ]"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_corners\r   \"Return an array of corner points in the order of a quadrilateral spec for WarpBlt.\"\r\r   ^ Array\r        _pretenured_with: self topLeft\r        with: self bottomLeft\r        with: self bottomRight\r        with: self topRight"
+	},
+	{
+		"methodClass" : "Margin class",
+		"sourceCode" : "_pretenured_left: leftNumber top: topNumber right: rightNumber bottom: bottomNumber\r\r   ^ self newTenured\r        setTop: topNumber\r        left: leftNumber\r        bottom: bottomNumber\r        right: rightNumber"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_invalidRect: aRectangle from: aMorph\r\r   | damageRect |\r   aRectangle hasPositiveExtent ifFalse: [ ^ self ].\r   damageRect := aRectangle.\r   aMorph == self ifFalse: [ \"Clip to receiver's clipping bounds if the damage came from a child\"\r         self clipSubmorphs ifTrue: [\r               damageRect := aRectangle\r                                _pretenured_intersect:\r                                self _pretenured_clippingBounds\r                                ifNone: [ ^ self ] ] ].\r   owner ifNotNil: [\r      owner _pretenured_invalidRect: damageRect from: self ]"
+	},
+	{
+		"methodClass" : "ByteArray",
+		"sourceCode" : "_pretenured_referenceStructAt: byteOffset length: length\r\r   ^ FFIExternalStructureReferenceHandle\r        _pretenured_handle: self\r        offset: byteOffset"
+	},
+	{
+		"methodClass" : "PositionableStream class",
+		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+	},
+	{
+		"methodClass" : "HGSimpleKernel class",
+		"sourceCode" : "_pretenured_support: aNumber\r\r   ^ self newTenured setSupport: aNumber"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_copyReplaceFrom: start to: stop with: replacementCollection\r   \"Answer a copy of the receiver satisfying the following conditions: If\r\tstop is less than start, then this is an insertion; stop should be exactly\r\tstart-1, start = 1 means insert before the first character, start = size+1\r\tmeans append after last character. Otherwise, this is a replacement; start\r\tand stop have to be within the receiver's bounds.\"\r\r   | newSequenceableCollection newSize endReplacement |\r   newSize := self size - (stop - start + 1)\r              + replacementCollection size.\r   endReplacement := start - 1 + replacementCollection size.\r   newSequenceableCollection := self species newTenured: newSize.\r   start > 1 ifTrue: [\r         newSequenceableCollection\r            replaceFrom: 1\r            to: start - 1\r            with: self\r            startingAt: 1 ].\r   start <= endReplacement ifTrue: [\r         newSequenceableCollection\r            replaceFrom: start\r            to: endReplacement\r            with: replacementCollection\r            startingAt: 1 ].\r   endReplacement < newSize ifTrue: [\r         newSequenceableCollection\r            replaceFrom: endReplacement + 1\r            to: newSize\r            with: self\r            startingAt: stop + 1 ].\r   ^ newSequenceableCollection"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_clippingBounds\r   \"Return the bounds to which any submorphs should be clipped if the property is set\"\r\r   ^ self _pretenured_innerBounds"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_boundingBox\r\r   ^ Rectangle _pretenured_origin: 0 @ 0 corner: width @ height"
+	},
+	{
+		"methodClass" : "Exception class",
+		"sourceCode" : "_pretenured_016r2C: anotherException\r   \"Create an exception set containing the receiver and anotherException\"\r\r   ^ ExceptionSet newTenured\r        add: self;\r        add: anotherException;\r        yourself"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_fullBounds\r   \"Return the bounding box of the receiver and all its children. Recompute the layout if necessary.\"\r\r   fullBounds ifNotNil: [ ^ fullBounds ]. \"Errors at this point can be critical so make sure we catch 'em all right\"\r   self _pretenured_computeFullBounds. \"This should do it unless you don't screw up the bounds\"\r   ^ fullBounds"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_x: aNumber y: anotherNumber\r\r   ^ self newTenured setX: aNumber y: anotherNumber"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_layoutBounds\r   \"Return the bounds for laying out children of the receiver\"\r\r   | inset box |\r   inset := self layoutInset.\r   box := self _pretenured_innerBounds.\r   inset isZero ifTrue: [ ^ box ].\r   ^ box insetBy: inset"
+	},
+	{
+		"methodClass" : "DamageRecorder",
+		"sourceCode" : "_pretenured_recordInvalidRect: newRect\r   \"Record the given rectangle in my damage list, a list of rectangular areas of the display that should be redraw on the next display cycle.\"\r\r   \"Details: Damaged rectangles are often identical or overlap significantly. In these cases, we merge them to reduce the number of damage rectangles that must be processed when the display is updated. Moreover, above a certain threshold, we ignore the individual rectangles completely, and simply do a complete repaint on the next cycle.\"\r\r   | mergeRect zeroRect |\r   totalRepaint ifTrue: [ ^ self ]. \"planning full repaint; don't bother collecting damage\"\r   zeroRect := 0 @ 0 _pretenured_corner: 0 @ 0.\r   invalidRects _pretenured_do: [ :rect |\r         | a |\r         ((a := (rect\r                    _pretenured_intersect: newRect\r                    ifNone: [ zeroRect ]) area) > 40 and: [ \"Avoid combining a vertical and horizontal rects.\r\t\t\t\t  Can make a big diff and we only test when likely.\"\r             a > (newRect area // 4) or: [ a > (rect area // 4) ] ])\r            ifTrue: [ \"merge rectangle in place (see note below) if there is significant overlap\"\r                  rect\r                     setPoint:\r                     (rect origin min: newRect origin) truncated\r                     point:\r                     (rect corner max: newRect corner) truncated.\r                  ^ self ] ].\r\r\r   invalidRects size >= 50 ifTrue: [ \"if there are too many separate areas, merge them all\"\r         mergeRect := Rectangle merging: invalidRects.\r         self reset.\r         invalidRects addLast: mergeRect ].\r\r   \"add the given rectangle to the damage list\"\r   \"Note: We make a deep copy of all rectangles added to the damage list,\r\t\tsince rectangles in this list may be extended in place.\"\r   newRect hasPositiveExtent ifTrue: [\r         invalidRects addLast:\r            (newRect topLeft truncated corner:\r                newRect bottomRight truncated) ]"
+	},
+	{
+		"methodClass" : "Rectangle class",
+		"sourceCode" : "_pretenured_origin: originPoint extent: extentPoint\r   \"Answer an instance of me whose top left corner is originPoint and width by height is extentPoint. Note that extentPoint should be non negative since it represents the size of the rectangle\"\r\r   ^ self basicNewTenured\r        setPoint: originPoint\r        point: originPoint x + (extentPoint x max: 0)\r           @ (originPoint y + (extentPoint y max: 0))"
+	},
+	{
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "_pretenured_reset\r\r   origin := 0 @ 0. \"origin of the top-left corner of this cavas\"\r   clipRect := 0 @ 0 _pretenured_corner: 10000 @ 10000. \"default clipping rectangle\"\r   self shadowColor: nil"
+	},
+	{
+		"methodClass" : "SubscriptionRegistry",
+		"sourceCode" : "_pretenured_deliver: anAnnouncement\r\r   | interestedSubscriptions |\r   \"using a copy, so subscribers can unsubscribe from announcer \"\r   subscriptions ifEmpty: [ ^ self ].\r   self _pretenured_protected: [\r         interestedSubscriptions := self\r                                       _pretenured_subscriptionsHandling:\r                                       anAnnouncement ].\r   interestedSubscriptions ifEmpty: [ ^ self ].\r\r   anAnnouncement prepareForDelivery.\r   self deliver: anAnnouncement to: interestedSubscriptions"
+	},
+	{
+		"methodClass" : "HG2dCircle class",
+		"sourceCode" : "_pretenured_center: anHG2dPoint radius: aNumber\r\r   ^ self newTenured setCenter: anHG2dPoint radius: aNumber"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "_pretenured_assureOtherProperties\r   \"creates an otherProperties for the receiver if needed\"\r\r   ^ otherProperties ifNil: [\r        otherProperties := SmallIdentityDictionary newTenured ]"
+	},
+	{
+		"methodClass" : "Number",
+		"sourceCode" : "_pretenured_asMargin\r\r   ^ Margin _pretenured_fromNumber: self"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "_pretenured_widthOf: aCharacter\r   \"retrieve advance width for character. try to use cached glyph if possible\"\r\r   ^ self _pretenured_characterWidthCache\r        at: aCharacter\r        ifAbsentPut: [\r              self isSubPixelPositioned\r                 ifTrue: [ self _pretenured_linearWidthOf: aCharacter ]\r                 ifFalse: [ self hintedWidthOf: aCharacter ] ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_addMorph: aMorph\r\r   self _pretenured_addMorphFront: aMorph"
+	},
+	{
+		"methodClass" : "FFIExternalStructureReferenceHandle class",
+		"sourceCode" : "_pretenured_handle: aHandle offset: aNumber\r\r   ^ self basicNewTenured\r        initializeHandle: aHandle offset: aNumber;\r        yourself"
+	},
+	{
+		"methodClass" : "SequenceableCollection class",
+		"sourceCode" : "_pretenured_streamContents: blockWithArg\r   \"Build an instance of the receiver by writing elements to a stream.\r\tMore specifically: blockWithArg will be given a WriteStream on an instance of the receiver.\r\tInside blockWithArg you write elements to the stream to build up the collection.\r\tAt the end, the contents of the stream up to that point will be returned.\r\tNote that the underlying collection grows as needed.\"\r\r   \"(Array streamContents: [ :out | out nextPut: 1; nextPutAll: #(2 3 4); nextPut: 5 ]) >>> #(1 2 3 4 5)\"\r\r   ^ self _pretenured_new: 100 streamContents: blockWithArg"
+	},
+	{
+		"methodClass" : "SolidFillStyle class",
+		"sourceCode" : "_pretenured_color: aColor\r\r   ^ self newTenured color: aColor"
+	},
+	{
+		"methodClass" : "DisplayTransform",
+		"sourceCode" : "_pretenured_localBoundsToGlobal: aRectangle\r   \"Transform aRectangle from local coordinates into global coordinates\"\r\r   ^ Rectangle _pretenured_encompassing:\r        (self _pretenured_localPointsToGlobal:\r            aRectangle _pretenured_corners)"
+	},
+	{
+		"methodClass" : "ExternalAddress",
+		"sourceCode" : "_pretenured_copyFrom: startIndex to: endIndex\r\r   | result size |\r   size := endIndex - startIndex + 1.\r   result := ByteArray new: size.\r   LibC\r      memCopy: (self _pretenured_016r2B: startIndex - 1)\r      to: result\r      size: size.\r   ^ result"
+	},
+	{
+		"methodClass" : "HGRandomPosition class",
+		"sourceCode" : "_pretenured_origin: aPoint corner: anotherPoint region: anHG2dRegion\r\r   ^ self new\r        setOrigin: (HG2dPoint _pretenured_fromPoint: aPoint)\r        corner: (HG2dPoint _pretenured_fromPoint: anotherPoint)\r        region: anHG2dRegion"
+	},
+	{
+		"methodClass" : "FreeTypeCache",
+		"sourceCode" : "_pretenured_atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r   | charCodeTable typeTable scaleTable entry v vSize |\r   mutex _pretenured_criticalReleasingOnError: [\r         charCodeTable := fontTable\r                             at: aFreeTypeFont\r                             ifAbsentPut: [\r                             self dictionaryClass new: 60 ].\r         typeTable := charCodeTable\r                         at: charCodeInteger\r                         ifAbsentPut: [ self dictionaryClass new: 10 ].\r         scaleTable := typeTable\r                          at: typeFlag\r                          ifAbsentPut: [ self dictionaryClass new: 1 ].\r         entry := scaleTable at: scale ifAbsent: [ ].\r         entry ifNotNil: [\r               fifo moveDown: entry.\r               ^ entry object ].\r         v := aBlock _pretenured_on: Error do: [ :error |\r                    self\r                       removeIfEmptyScaleTable: scaleTable\r                       type: typeFlag\r                       typeTable: typeTable\r                       charCode: charCodeInteger\r                       charCodeTable: charCodeTable\r                       font: aFreeTypeFont.\r                    error pass ].\r         vSize := self sizeOf: v.\r         (maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r               self\r                  removeIfEmptyScaleTable: scaleTable\r                  type: typeFlag\r                  typeTable: typeTable\r                  charCode: charCodeInteger\r                  charCodeTable: charCodeTable\r                  font: aFreeTypeFont.\r               ^ v ].\r         used := used + vSize.\r         entry := self fifoEntryClass new\r                     font: aFreeTypeFont;\r                     charCode: charCodeInteger;\r                     type: typeFlag;\r                     scale: scale;\r                     object: v;\r                     yourself.\r         scaleTable at: scale put: entry.\r         fifo addLast: entry.\r         maximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r         ^ v ]"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_collect: aBlock\r   \"Evaluate aBlock with each of the receiver's elements as the argument.\r\tCollect the resulting values into a collection like the receiver. Answer\r\tthe new collection.\"\r\r   \"(#(1 2 3) collect: [:each | each  + 10]) >>> #(11 12 13) \"\r\r   | newCollection |\r   newCollection := self species newTenured: self size.\r   1 to: self size do: [ :index |\r      newCollection at: index put: (aBlock value: (self at: index)) ].\r   ^ newCollection"
+	},
+	{
+		"methodClass" : "SequenceableCollection",
+		"sourceCode" : "_pretenured_reversed\r   \"Answer a copy of the receiver with element order reversed.\"\r\r   \"Example: 'frog' reversed\"\r\r   | n result src |\r   n := self size.\r   result := self species newTenured: n.\r   src := n + 1.\r   1 to: n do: [ :i | result at: i put: (self at: (src := src - 1)) ].\r   ^ result"
+	},
+	{
+		"methodClass" : "KeyedTree",
+		"sourceCode" : "_pretenured_atPath: anArray put: aBlock\r   \"Answer the value of aBlock after creating its path.\"\r\r   | element |\r   anArray isEmpty ifTrue: [ ^ self ].\r   element := self.\r   anArray allButLastDo: [ :key |\r      element := element\r                    at: key\r                    ifAbsentPut: [ self _pretenured_copyEmpty ] ].\r   ^ element at: anArray last put: aBlock"
+	},
+	{
+		"methodClass" : "FFIStructure class",
+		"sourceCode" : "_pretenured_fromHandle: aHandle\r   \"Offsets are calculated when specs are compiled, but sometimes there is a possibility that\r\t user access them before actually using the compiled spec, so I need to be sure they are\r\t initialized before anything. This is why I send #compiledSpec here.\"\r\r   self compiledSpec.\r   ^ (super _pretenured_fromHandle: aHandle) initialize"
+	},
+	{
+		"methodClass" : "FTGlyphSlotRec",
+		"sourceCode" : "_pretenured_metrics\r   \"This method was automatically generated\"\r\r   ^ FTGlyphMetrics _pretenured_fromHandle: (handle\r            _pretenured_referenceStructAt: OFFSET_METRICS\r            length: FTGlyphMetrics byteSize)"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_addMorph: aMorph fullFrame: aLayoutFrame\r\r   aMorph layoutFrame: aLayoutFrame asLayoutFrame.\r   aMorph\r      hResizing: #spaceFill;\r      vResizing: #spaceFill.\r   self _pretenured_addMorph: aMorph"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "_pretenured_computeFullBounds\r   \"turn off error handler to track down https://github.com/pharo-project/pharo/issues/12502\"\r\r   self _pretenured_doLayoutIn: self _pretenured_layoutBounds\r   \"\r\t[ self doLayoutIn: self layoutBounds ]\r\t\ton: Error\r\t\tdo: [ :ex |\r\t\t\tThis should do it unless you don't screw up the bounds\r\t\t\tfullBounds := bounds.\r\t\t\tex pass ]\""
+	},
+	{
+		"methodClass" : "HGSpatialPartitionedCollection",
+		"sourceCode" : "initialize\r\r   1 to: self size do: [ :index |\r   self at: index put: IdentitySet newTenured ]"
+	},
+	{
+		"methodClass" : "UITheme",
+		"sourceCode" : "_pretenured_configureWindowLabelAreaFrameFor: aWindow\r   \"Configure the layout frame for the label area for the given window.\"\r\r   | frame windowBorderWidth |\r   aWindow labelArea ifNil: [ ^ self ].\r   windowBorderWidth := aWindow class borderWidth.\r   aWindow labelArea\r      layoutPolicy: RowLayout newTenured;\r      cellPositioning: #topCenter;\r      hResizing: #spaceFill;\r      wrapCentering: #topLeft;\r      layoutInset: (Margin\r             _pretenured_left: 0\r             top: windowBorderWidth\r             right: 0\r             bottom: 1 scaledByDisplayScaleFactor).\r   frame := LayoutFrame identity\r               bottomFraction: 0;\r               topOffset: aWindow labelHeight negated.\r   aWindow labelArea layoutFrame: frame"
+	},
+	{
+		"methodClass" : "HG2dPoint class",
+		"sourceCode" : "_pretenured_fromNumber: aNumber\r\r   ^ self _pretenured_x: aNumber y: aNumber"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "assureTableProperties\r\r   | props |\r   props := self layoutProperties.\r   props == self ifTrue: [ props := nil ].\r   props ifNil: [\r         props := TableLayoutProperties newTenured initializeFrom:\r                     self.\r         self layoutProperties: props ].\r   props includesTableProperties ifFalse: [\r      self layoutProperties: (props := props asTableLayoutProperties) ].\r   ^ props"
+	},
+	{
+		"methodClass" : "RubPrimarySelectionMorph",
+		"sourceCode" : "whenTextAreaGotFocus: anAnnouncement\r\r   self _pretenured_color: self selectionColor"
+	},
+	{
+		"methodClass" : "KeyboardKey",
+		"sourceCode" : "asKeyCombination\r\r   ^ KMSingleKeyCombination newTenured\r        key: self;\r        yourself"
+	},
+	{
+		"methodClass" : "KMModifier class",
+		"sourceCode" : "shift\r\r   ^ KMShiftModifier newTenured"
+	},
+	{
+		"methodClass" : "Random class",
+		"sourceCode" : "new\r\r   ^ super newTenured\r        useClockBasedSeed;\r        yourself"
+	},
+	{
+		"methodClass" : "ExternalAddress",
+		"sourceCode" : "copyFrom: startIndex to: endIndex\r\r   | result size |\r   size := endIndex - startIndex + 1.\r   result := ByteArray newTenured: size.\r   LibC memCopy: self + (startIndex - 1) to: result size: size.\r   ^ result"
+	},
+	{
+		"methodClass" : "ModelMorph",
+		"sourceCode" : "defaultBounds\r   \"answer the default bounds for the receiver\"\r\r   ^ 0 @ 0 _pretenured_corner: 200 @ 100"
+	},
+	{
+		"methodClass" : "SystemWindow",
+		"sourceCode" : "addMorph: aMorph fullFrame: aLayoutFrame\r   \"Add a morph to the receiver with the given layout frame.\"\r\r   | left right bottom top windowBorderWidth frame |\r   frame := aLayoutFrame asLayoutFrame.\r   windowBorderWidth := self class borderWidth.\r\r   left := frame leftOffset.\r   right := frame rightOffset.\r\r   bottom := frame bottomOffset.\r   top := frame topOffset.\r\r   frame rightFraction = 1 ifTrue: [\r         frame rightOffset:\r            right - windowBorderWidth - self theme windowRightOffset ].\r   frame leftFraction = 0\r      ifTrue: [\r            frame leftOffset:\r               left + windowBorderWidth + self theme windowLeftOffset ]\r      ifFalse: [\r            frame leftFraction = 1 ifFalse: [\r               frame leftOffset:\r                  left + ProportionalSplitterMorph splitterWidth ] ].\r\r   frame bottomFraction = 1 ifTrue: [\r         frame bottomOffset:\r            bottom - windowBorderWidth - self theme windowBottomOffset ].\r   frame topFraction = 0\r      ifTrue: [ frame topOffset: top + self theme windowTopOffset ]\r      ifFalse: [\r            frame topFraction = 1 ifFalse: [\r               frame topOffset:\r                  top + ProportionalSplitterMorph splitterWidth ] ].\r\r   super _pretenured_addMorph: aMorph fullFrame: frame.\r\r   paneMorphs := paneMorphs copyReplaceFrom: 1 to: 0 with: { aMorph }.\r   \"aMorph adoptPaneColor: self paneColor.\"\r   aMorph borderStyle:\r      (self theme windowPaneBorderStyleFor: aMorph in: self).\r   self addMorphBack: aMorph. \"reorder panes so flop-out right-side scrollbar is visible\"\r\r   self owner ifNotNil: [ \"do when opened for performance\"\r      self addPaneSplitters ]"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "simulationOrigin: anHG2dPoint corner: anotherHG2dPoint\r\r   simulationOrigin := anHG2dPoint.\r   simulationCorner := anotherHG2dPoint.\r   form := Form\r              _pretenured_extent: anotherHG2dPoint x - anHG2dPoint x\r                 @ (anotherHG2dPoint y - anHG2dPoint y)\r              depth: 32.\r   form getCanvas fillColor: self color.\r   visibleForm := Form\r                     _pretenured_extent:\r                        anotherHG2dPoint x - anHG2dPoint x\r                        @ (anotherHG2dPoint y - anHG2dPoint y)\r                     depth: 32.\r   visibleForm getCanvas fillColor: self color.\r   scale := self width / (anotherHG2dPoint x - anHG2dPoint x) min:\r               self height / (anotherHG2dPoint y - anHG2dPoint y).\r   self updateParticleMap"
+	},
+	{
+		"methodClass" : "KMModifier class",
+		"sourceCode" : "meta\r\r   ^ KMMetaModifier newTenured"
+	},
+	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "new\r\r   ^ self fromHandle: (ByteArray newTenured: self byteSize)"
+	},
+	{
+		"methodClass" : "PharoLightTheme",
+		"sourceCode" : "buttonNormalBorderStyleFor: aButton\r   \"Return the normal button borderStyle for the given button.\"\r\r   | outerColor |\r   (aButton valueOfProperty: #noBorder ifAbsent: [ false ]) ifTrue: [\r         ^ SimpleBorderStyle new\r              width: 0;\r              baseColor: Color transparent ].\r   outerColor := self darkBaseColorFor: aButton.\r   ^ SimpleBorderStyle newTenured\r        width: 1 scaledByDisplayScaleFactor;\r        baseColor: outerColor"
+	},
+	{
+		"methodClass" : "KMDispatcher",
+		"sourceCode" : "targets\r\r   ^ targets ifNil: [ targets := Set newTenured ]"
+	},
+	{
+		"methodClass" : "HG2dRectangle class",
+		"sourceCode" : "origin: anHG2dPoint corner: anotherHG2dPoint\r\r   ^ self newTenured setOrigin: anHG2dPoint corner: anotherHG2dPoint"
+	},
+	{
+		"methodClass" : "Color class",
+		"sourceCode" : "gray: brightness\r   \"Return a gray shade with the given brightness in the range [0.0..1.0].\"\r\r   ^ self _pretenured_r: brightness g: brightness b: brightness"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "color: aColor\r   \"Set the receiver's color.  Directly set the color if appropriate, else go by way of fillStyle\"\r\r   (aColor isColor or: [ aColor isKindOf: InfiniteForm ]) ifFalse: [\r      ^ self fillStyle: aColor ].\r   color = aColor ifFalse: [\r         self _pretenured_assureExtension.\r         extension fillStyle: nil.\r         color := aColor.\r         self changed ]"
+	},
+	{
+		"methodClass" : "HGForceInitialization class",
+		"sourceCode" : "with: anHGPoint\r\r   ^ self newTenured setForce: anHGPoint"
+	},
+	{
+		"methodClass" : "HG2dTriangle",
+		"sourceCode" : "setVertex1: anHG2dPoint1 vertex2: anHG2dPoint2 vertex3: anHG2dPoint3\r\r   vertex1 := anHG2dPoint1.\r   vertex2 := anHG2dPoint2.\r   vertex3 := anHG2dPoint3.\r   bounds := HG2dRectangle\r                origin: (HG2dPoint\r                       _pretenured_x:\r                       ((vertex1 x min: vertex2 x) min: vertex3 x)\r                       y: ((vertex1 y min: vertex2 y) min: vertex3 y))\r                corner: (HG2dPoint\r                       _pretenured_x:\r                       ((vertex1 x max: vertex2 x) max: vertex3 x)\r                       y: ((vertex1 y max: vertex2 y) max: vertex3 y))"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "initialize\r\r   super initialize.\r   self color: Color white.\r   actions := OrderedCollection new.\r   initializers := OrderedCollection newTenured.\r   particles := Array new.\r   particleMapResolution := 50.\r   random := Random new.\r   self updateParticleMap"
+	},
+	{
+		"methodClass" : "KMCategoryBinding class",
+		"sourceCode" : "target: aTarget morph: aMorph category: aCategory\r\r   ^ self newTenured\r        target: aTarget;\r        category: aCategory;\r        morph: aMorph;\r        yourself"
+	},
+	{
+		"methodClass" : "HGAbstractBorderlinePressureVisualizer",
+		"sourceCode" : "initialize\r\r   super initialize.\r   marchingSquares := Array newTenured: 2r1111.\r   self initialize0001to0111.\r   self initialize1000to1111"
+	},
+	{
+		"methodClass" : "HGObstacle class",
+		"sourceCode" : "with: anHG2dRegion color: aColor\r\r   ^ self newTenured setRegion: anHG2dRegion color: aColor"
+	},
+	{
+		"methodClass" : "KMDispatcher class",
+		"sourceCode" : "target: aTarget\r\r   ^ self _pretenured_target: #yourself morph: aTarget"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary new.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint _pretenured_zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+	},
+	{
+		"methodClass" : "MorphExtension",
+		"sourceCode" : "valueOfProperty: aSymbol ifAbsentPut: aBlock\r   \"If the receiver possesses a property of the given name, answer\r\tits value. If not, then create a property of the given name, give\r\tit the value obtained by evaluating aBlock, then answer that\r\tvalue\"\r\r   ^ self _pretenured_assureOtherProperties\r        at: aSymbol\r        ifAbsentPut: aBlock"
+	},
+	{
+		"methodClass" : "HashedCollection",
+		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "layoutProperties: newProperties\r   \"Return the current layout properties associated with the receiver\"\r\r   self layoutProperties == newProperties ifTrue: [ ^ self ].\r   self _pretenured_assureExtension layoutProperties: newProperties"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "layoutBounds: aRectangle\r   \"Set the bounds for laying out children of the receiver.\r\tNote: written so that #layoutBounds can be changed without touching this method\"\r\r   | outer inner |\r   outer := self bounds.\r   inner := self layoutBounds.\r   bounds := aRectangle origin + (outer origin - inner origin)\r                _pretenured_corner:\r                aRectangle corner + (outer corner - inner corner)"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "unhibernate\r   \"If my bitmap has been compressed into a ByteArray,\r\tthen expand it now, and return true.\"\r\r   | resBits |\r   bits isForm ifTrue: [\r         resBits := bits.\r         bits := Bitmap new: self bitsSize.\r         resBits displayResourceFormOn: self.\r         ^ true ].\r   bits ifNil: [\r         bits := Bitmap new: self bitsSize.\r         ^ true ].\r   (bits isMemberOf: ByteArray) ifTrue: [\r         bits := Bitmap _pretenured_decompressFromByteArray: bits.\r         ^ true ].\r   ^ false"
+	},
+	{
+		"methodClass" : "RubAbstractTextArea",
+		"sourceCode" : "keyboardFocusChange: aBoolean\r\r   aBoolean\r      ifTrue: [\r            self hasFocus: true.\r            editing := false.\r            self requestTextEditingAt:\r               (self cursor positionInWorld _pretenured_corner:\r                   (self cursor positionInWorld translateBy:\r                       0 @ (self font height + 4)))\r                  _pretenured_truncated.\r            self showOverEditableTextCursor ]\r      ifFalse: [\r            self hasFocus: false.\r            editing ifTrue: [ editing := false ].\r            self hideOverEditableTextCursor ].\r   super keyboardFocusChange: aBoolean"
+	},
+	{
+		"methodClass" : "FT2Face",
+		"sourceCode" : "renderGlyphIntoForm: aForm pixelMode: pixelMode\r   \"render the current glyph (selected by loadChar/loadGlyph into the given form (1 or 8 bpp)\r\twith pixel mode anInteger \"\r\r   | ftBitmap outline |\r   ftBitmap := FTBitmap new.\r   outline := self outline.\r\r   ExternalAddress\r      allocate: aForm bits byteSize\r      bytesDuring: [ :buffer |\r            1 to: aForm bits byteSize do: [ :i |\r            buffer byteAt: i put: 0 ].\r\r            ftBitmap setBuffer: buffer.\r            ftBitmap initializeFromForm: aForm pixelMode: pixelMode.\r\r            FT2Library current\r               getBitmap: ftBitmap getHandle\r               fromOutline: outline getHandle.\r\r            aForm bits copyFromByteArray:\r               (buffer _pretenured_copyFrom: 1 to: aForm bits byteSize) ]"
+	},
+	{
+		"methodClass" : "RubScrolledTextMorph",
+		"sourceCode" : "whenGotFocus: anAnnouncement\r\r   self announcer _pretenured_announce: anAnnouncement.\r   self changed"
+	},
+	{
+		"methodClass" : "FreeTypeFont class",
+		"sourceCode" : "face: freeTypeFace pointSize: pointSize simulatedEmphasis: simulatedEmphasis\r\r   ^ self all\r        detect: [ :font |\r              font face = freeTypeFace and: [\r                    font pointSize = pointSize and: [\r                       font basicSimulatedEmphasis = simulatedEmphasis ] ] ]\r        ifNone: [\r              (self all add: self newTenured)\r                 setFace: freeTypeFace pointSize: pointSize;\r                 simulatedEmphasis: simulatedEmphasis;\r                 yourself ]"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "assureLayoutProperties\r\r   | props |\r   props := self layoutProperties.\r   props == self ifTrue: [ props := nil ].\r   props ifNil: [\r         props := LayoutProperties newTenured initializeFrom: self.\r         self layoutProperties: props ].\r   ^ props"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "bounds: aRectangle in: referenceMorph\r   \"Return the receiver's bounds as seen by aMorphs coordinate frame\"\r\r   owner ifNil: [ ^ aRectangle ].\r   ^ (owner transformFrom: referenceMorph)\r        _pretenured_localBoundsToGlobal: aRectangle"
+	},
+	{
+		"methodClass" : "Bitmap class",
+		"sourceCode" : "decompressFromByteArray: byteArray\r\r   | s bitmap size |\r   s := byteArray readStream.\r   size := self decodeIntFrom: s.\r   bitmap := self newTenured: size.\r   bitmap\r      decompress: bitmap\r      fromByteArray: byteArray\r      at: s position + 1.\r   ^ bitmap"
+	},
+	{
+		"methodClass" : "FreeTypeCache",
+		"sourceCode" : "atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r   | charCodeTable typeTable scaleTable entry v vSize |\r   mutex criticalReleasingOnError: [\r         charCodeTable := fontTable\r                             at: aFreeTypeFont\r                             ifAbsentPut: [\r                             self dictionaryClass new: 60 ].\r         typeTable := charCodeTable\r                         at: charCodeInteger\r                         ifAbsentPut: [ self dictionaryClass new: 10 ].\r         scaleTable := typeTable\r                          at: typeFlag\r                          ifAbsentPut: [ self dictionaryClass new: 1 ].\r         entry := scaleTable at: scale ifAbsent: [ ].\r         entry ifNotNil: [\r               fifo moveDown: entry.\r               ^ entry object ].\r         v := aBlock\r                 on: Error\r                 do: [ :error |\r                       self\r                          removeIfEmptyScaleTable: scaleTable\r                          type: typeFlag\r                          typeTable: typeTable\r                          charCode: charCodeInteger\r                          charCodeTable: charCodeTable\r                          font: aFreeTypeFont.\r                       error pass ].\r         vSize := self sizeOf: v.\r         (maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r               self\r                  removeIfEmptyScaleTable: scaleTable\r                  type: typeFlag\r                  typeTable: typeTable\r                  charCode: charCodeInteger\r                  charCodeTable: charCodeTable\r                  font: aFreeTypeFont.\r               ^ v ].\r         used := used + vSize.\r         entry := self fifoEntryClass newTenured\r                     font: aFreeTypeFont;\r                     charCode: charCodeInteger;\r                     type: typeFlag;\r                     scale: scale;\r                     object: v;\r                     yourself.\r         scaleTable at: scale put: entry.\r         fifo addLast: entry.\r         maximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r         ^ v ]"
+	},
+	{
+		"methodClass" : "LayoutFrame class",
+		"sourceCode" : "identity\r   \"by default a layout frame is initialized to represent the identity transformation\"\r\r   ^ self newTenured"
+	},
+	{
+		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
+		"sourceCode" : "filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                _pretenured_extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset: (baseOffset x / 3) rounded @ baseOffset y * scale;\r      advance: (baseAdvance / 3) rounded * scale;\r      linearAdvance: baseLinearAdvance * scale.\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "FreeTypeFont",
+		"sourceCode" : "widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer the receiver\r\r\tWe use a widthAndKernedWidthCache to store these values for speed\"\r\r   | privateArray |\r   privateArray := (self widthAndKernedWidthCache\r                       at: leftCharacter\r                       ifAbsentPut: [ Dictionary newTenured ])\r                      at:\r                      (rightCharacterOrNil ifNil: [ 0 asCharacter ])\r                      ifAbsentPut: [\r                            super\r                               widthAndKernedWidthOfLeft:\r                               leftCharacter\r                               right: rightCharacterOrNil\r                               into: (Array newTenured: 2) ].\r   \"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\r   aTwoElementArray\r      at: 1 put: (privateArray at: 1);\r      at: 2 put: (privateArray at: 2).\r   ^ aTwoElementArray"
+	},
+	{
+		"methodClass" : "HGBorderlineFillPressureVisualizer class",
+		"sourceCode" : "pressure: pressure xgrids: xgrids ygrids: ygrids kernel: kernel color: aColor\r\r   ^ self newTenured\r        pressure: pressure;\r        xgrids: xgrids;\r        ygrids: ygrids;\r        kernel: kernel;\r        color: aColor;\r        yourself"
+	},
+	{
+		"methodClass" : "KMCategory",
+		"sourceCode" : "entriesAt: aPlatform\r\r   platforms ifNil: [ platforms := Dictionary newTenured ].\r   ^ platforms at: aPlatform ifAbsentPut: [ KMStorage newTenured ]"
+	},
+	{
+		"methodClass" : "SystemWindow",
+		"sourceCode" : "basicActivate\r   \"Bring me to the front and make me able to respond to mouse and keyboard.\"\r\r   | outerMorph |\r   outerMorph := self topRendererOrSelf.\r   outerMorph owner ifNil: [\r      ^ self \"avoid spurious activate when drop in trash\" ].\r   self isTopWindow ifTrue: [ ^ self ].\r\r   self beTopWindow.\r\r   outerMorph owner firstSubmorph == outerMorph ifFalse: [ \"Bring me (with any flex) to the top if not already\"\r      outerMorph owner addMorphFront: outerMorph ].\r\r   self submorphsDo: [ :m | m unlock ].\r\r   labelArea ifNotNil: [\r         labelArea submorphsDo: [ :m | m unlock ].\r         self setStripeColorsFrom: self paneColorToUse ].\r\r   self isCollapsed ifFalse: [\r         model modelWakeUpIn: self.\r         self positionSubmorphs.\r         labelArea ifNil: [\r            self adjustBorderUponActivationWhenLabeless ] ].\r\r   self\r      privateFullBounds: nil;\r      \"ensure fullBounds computed for active drop shadow\"\r         _pretenured_changed"
+	},
+	{
+		"methodClass" : "KMModifier",
+		"sourceCode" : "modifiedBy: modifier\r\r   ^ KMComposedModifier newTenured\r        modifiedBy: modifier;\r        modifiedBy: self;\r        yourself"
+	},
+	{
+		"methodClass" : "HG2dCircle",
+		"sourceCode" : "setCenter: anHG2dPoint radius: aNumber\r\r   center := anHG2dPoint.\r   radius := aNumber.\r   bounds := HG2dRectangle\r                _pretenured_originX: center x - radius\r                originY: center y - radius\r                cornerX: center x + radius\r                cornerY: center y + radius"
+	},
+	{
+		"methodClass" : "SpPluggableButtonMorph",
+		"sourceCode" : "fillStyleToUse\r\r   (self backgroundColor isNil or: [ self interactionState ~= #normal ])\r      ifTrue: [ ^ super fillStyleToUse ].\r\r   ^ SolidFillStyle _pretenured_color: self backgroundColor"
+	},
+	{
+		"methodClass" : "Association class",
+		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+	},
+	{
+		"methodClass" : "FreeTypeGlyphRenderer",
+		"sourceCode" : "convert8to32: aGlyphForm colorValue: foreColorValue\r   \"Convert from the 8 bit deep form produced by FreeType, where each byte represents the intensity of a single pixel, to a 32 bit deep form with pixels of color foreColorValue\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal foreColorVal foreColorA foreColorR foreColorG foreColorB r g b |\r   foreColorVal := foreColorValue.\r   foreColorA := foreColorVal >> 24.\r   foreColorR := foreColorVal >> 16 bitAnd: 16rFF.\r   foreColorG := foreColorVal >> 8 bitAnd: 16rFF.\r   foreColorB := foreColorVal bitAnd: 16rFF.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class _pretenured_extent: w @ h depth: 32.\r   answer\r      offset: aGlyphForm offset x @ aGlyphForm offset y;\r      advance: aGlyphForm advance;\r      linearAdvance: aGlyphForm linearAdvance.\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         0 to: w - 1 do: [ :x |\r               word := bytes at: rowstart + (x // 4).\r               shift := 8 * (littleEndian\r                            ifTrue: [ x bitAnd: 3 ]\r                            ifFalse: [ 3 - (x bitAnd: 3) ]).\r               v := word >> shift bitAnd: 16rFF.\r               a := v > 0\r                       ifTrue: [ v * foreColorA // 16rFF ]\r                       ifFalse: [ 0 ].\r               r := v > 0\r                       ifTrue: [ a * foreColorR // 16rFF ]\r                       ifFalse: [ 0 ].\r               g := v > 0\r                       ifTrue: [ a * foreColorG // 16rFF ]\r                       ifFalse: [ 0 ].\r               b := v > 0\r                       ifTrue: [ a * foreColorB // 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := (a bitShift: 24) + (r bitShift: 16)\r                           + (g bitShift: 8) + b.\r               answer bits integerAt: y * w + (x + 1) put: colorVal ] ].\r   ^ answer"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "velocity: anHGPoint\r\r   velocity ifNil: [ velocity := anHGPoint class _pretenured_zero ].\r   velocity set: anHGPoint.\r   attributes at: #velocity put: velocity"
+	},
+	{
+		"methodClass" : "SystemWindow",
+		"sourceCode" : "setFramesForLabelArea\r   \"Set the layout for the label area.\"\r\r   self theme _pretenured_configureWindowLabelAreaFrameFor: self"
+	},
+	{
+		"methodClass" : "HGRandomPosition class",
+		"sourceCode" : "origin: aPoint corner: anotherPoint region: anHG2dRegion\r\r   ^ self newTenured\r        setOrigin: (HG2dPoint fromPoint: aPoint)\r        corner: (HG2dPoint fromPoint: anotherPoint)\r        region: anHG2dRegion"
+	},
+	{
+		"methodClass" : "HGBorderlinePressureVisualizer class",
+		"sourceCode" : "pressure: pressure xgrids: xgrids ygrids: ygrids kernel: kernel width: width color: aColor\r\r   ^ self newTenured\r        pressure: pressure;\r        xgrids: xgrids;\r        ygrids: ygrids;\r        kernel: kernel;\r        width: width;\r        color: aColor;\r        yourself"
+	},
+	{
+		"methodClass" : "RubTextScrollPane",
+		"sourceCode" : "adoptPaneColor: paneColor\r   \"Adopt the given pane color.\"\r\r   super adoptPaneColor: paneColor.\r   self hScrollbar adoptPaneColor: paneColor _pretenured_darker.\r   self vScrollbar adoptPaneColor: paneColor _pretenured_darker"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "force: anHGPoint\r\r   force ifNil: [ force := anHGPoint class _pretenured_zero ].\r   force set: anHGPoint.\r   attributes at: #force put: force"
+	},
+	{
+		"methodClass" : "KMComposedModifier",
+		"sourceCode" : "initialize\r\r   super initialize.\r   modifiers := OrderedCollection newTenured"
+	},
+	{
+		"methodClass" : "HG2dTriangle class",
+		"sourceCode" : "on: anHG2dPoint1 on: anHG2dPoint2 on: anHG2dPoint3\r\r   ^ self newTenured\r        setVertex1: anHG2dPoint1\r        vertex2: anHG2dPoint2\r        vertex3: anHG2dPoint3"
+	},
+	{
+		"methodClass" : "Random",
+		"sourceCode" : "initialize\r\r   super initialize.\r   state := DoubleWordArray newTenured: 1"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key ifAbsentPut: aBlock\r   \"Return the value at the given key.\r\tIf the key is not included in the receiver store and return the result\r\tof evaluating aBlock as the new value.\"\r\r   ^ self at: key ifAbsent: [ self at: key put: aBlock value ]"
+	},
+	{
+		"methodClass" : "HGSimulator class",
+		"sourceCode" : "butterBallGraffitiAtDie\r   \"HGSimulator butterBallGraffitiAtDie\"\r\r   | simulator |\r   simulator := HGSimulator new.\r   simulator extent: 500 @ 500.\r   simulator\r      _pretenured_simulationOrigin: (HG2dPoint x: 0.0 y: 0.0)\r      corner: (HG2dPoint x: 500.0 y: 500.0).\r   simulator addInitializer: (HGRandomPosition\r          _pretenured_origin: 300 @ 150\r          corner: 500 @ 350\r          region:\r          (HG2dCircle\r              _pretenured_center: (HG2dPoint x: 400 y: 250)\r              radius: 50.0)).\r   simulator addInitializer:\r      (HGVelocityInitialization with: (HG2dPoint x: -20.0 y: 0.0)).\r   simulator addInitializer: (HGTemperatureInitialization with: 360).\r   simulator addAction: HGTemperatureViscosityCurve butter.\r   simulator addAction: (HGForceInitialization with: HG2dPoint zero).\r   simulator addAction: (HGGravity g: (HG2dPoint x: 0.0 y: 0.1)).\r   simulator addAction:\r      (HGPressure\r          gasConstant: 0.01\r          kernel: (HGSimpleKernel support: 10.0)).\r   simulator addAction:\r      (HGPressureRepulsion kernel: (HGSimpleKernel support: 10.0)).\r   simulator addAction: HGForceIntegration new.\r   simulator addAction: (HGForceInitialization with: HG2dPoint zero).\r   simulator addAction:\r      (HGViscosityTraction kernel: (HGSimpleKernel support: 80.0)).\r   simulator addAction: HGForceIntegration new.\r   simulator addAction: HGVelocityIntegration new.\r   simulator addAction: (HGObstacle\r          with: (HG2dTriangle\r                 on: (HG2dPoint x: 200.0 y: 260.0)\r                 on: (HG2dPoint x: 200.0 y: 450.0)\r                 on: (HG2dPoint x: 10.0 y: 300.0))\r          color: (Color gray: 0.8)).\r   simulator addAction: (HGObstacle\r          with: (HG2dTriangle\r                 on: (HG2dPoint x: 200.0 y: 240.0)\r                 on: (HG2dPoint x: 10.0 y: 200.0)\r                 on: (HG2dPoint x: 200.0 y: 30.0))\r          color: (Color gray: 0.8)).\r   simulator addAction: (HGBoundingBox reflectionRate: 0.1).\r   simulator addAction: HGLocalityMap new.\r   simulator addAction: ((HGBorderlineFillPressureVisualizer\r           _pretenured_pressure: 0.01\r           color: Color yellow)\r          kernel: (HGSimpleKernel support: 10.0);\r          yourself).\r   simulator addAction: ((HGBorderlinePressureVisualizer\r           _pretenured_pressure: 0.01\r           width: 3\r           color: Color black)\r          xgrids: 50;\r          ygrids: 50;\r          kernel: (HGSimpleKernel support: 10.0);\r          yourself).\r   simulator addAction: ((HGBorderlinePressureVisualizer\r           _pretenured_pressure: 0.01\r           width: 3\r           color: Color black)\r          kernel: (HGSimpleKernel support: 10.0);\r          xgrids: 60;\r          ygrids: 60;\r          yourself).\r   400 timesRepeat: [\r      simulator addParticleAt: 0 @ 0 temperature: 390 mass: 200.0 ].\r   simulator openInWindowLabeled: 'Butter Ball at a Die (Graffiti)'.\r   simulator color: (Color gray: 0.87).\r   ^ simulator"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "layoutPolicy: aLayoutPolicy\r   \"Layout specific. Return the layout policy describing how children of the receiver should appear.\"\r\r   self layoutPolicy == aLayoutPolicy ifTrue: [ ^ self ].\r   self _pretenured_assureExtension layoutPolicy: aLayoutPolicy.\r   self layoutChanged"
+	},
+	{
+		"methodClass" : "ByteString",
+		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+	},
+	{
+		"methodClass" : "KMKeymap class",
+		"sourceCode" : "shortcut: aShortcut action: anAction\r\r   ^ self newTenured\r        defaultShortcut: aShortcut;\r        shortcut: aShortcut;\r        action: anAction;\r        yourself"
+	},
+	{
+		"methodClass" : "Color",
+		"sourceCode" : "bitPatternForDepth: depth\r   \"Return a Bitmap, possibly containing a stipple pattern, that best represents this color at the given depth. BitBlt calls this method to convert colors into Bitmaps. The resulting Bitmap may be multiple words to represent a stipple pattern of several lines.  \"\r\r   \"See also:\tpixelValueAtDepth:\t-- value for single pixel\r\t\t\t\tpixelWordAtDepth:\t-- a 32-bit word filled with the pixel value\"\r\r   \"Details: The pattern for the most recently requested depth is cached.\"\r\r   \"Note for depths > 2, there are stippled and non-stippled versions (generated with #balancedPatternForDepth: and #bitPatternForDepth:, respectively). The stippled versions don't work with the window bit caching of StandardSystemView, so we make sure that for these depths, only unstippled patterns are returned\"\r\r   (depth = cachedDepth and: [\r       depth <= 2 or: [ cachedBitPattern size = 1 ] ]) ifTrue: [\r      ^ cachedBitPattern ].\r   (self isTransparent and: [ cachedBitPattern isNil ]) ifTrue: [\r         cachedBitPattern := Bitmap with: 0.\r         ^ cachedBitPattern ].\r   cachedDepth := depth.\r   depth > 2 ifTrue: [\r         ^ cachedBitPattern := Bitmap _pretenured_with:\r                                  (self pixelWordForDepth: depth) ].\r   depth = 1 ifTrue: [ ^ cachedBitPattern := self halfTonePattern1 ].\r   depth = 2 ifTrue: [ ^ cachedBitPattern := self halfTonePattern2 ]"
+	},
+	{
+		"methodClass" : "KMStorage",
+		"sourceCode" : "initialize\r\r   anonymousRegistry := Set newTenured.\r   namedRegistry := Dictionary newTenured"
+	},
+	{
+		"methodClass" : "KMModifier class",
+		"sourceCode" : "alt\r\r   ^ KMAltModifier newTenured"
+	}
+]
