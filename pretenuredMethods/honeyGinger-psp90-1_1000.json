@@ -1,50 +1,46 @@
 [
-	{
-		"methodClass" : "Rectangle",
-		"sourceCode" : "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
-	},
-	{
-		"methodClass" : "Rectangle class",
-		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: cornerPoint"
-	},
-	{
-		"methodClass" : "Form",
-		"sourceCode" : "_pretenured_boundingBox\r\r   ^ Rectangle _pretenured_origin: 0 @ 0 corner: width @ height"
-	},
-	{
-		"methodClass" : "BitBlt",
-		"sourceCode" : "_pretenured_setDestForm: df\r\r   | bb |\r   bb := df _pretenured_boundingBox.\r   destForm := df.\r   clipX := bb left.\r   clipY := bb top.\r   clipWidth := bb width.\r   clipHeight := bb height"
-	},
-	{
-		"methodClass" : "BitBlt class",
-		"sourceCode" : "_pretenured_toForm: aForm\r\r   ^ self new _pretenured_setDestForm: aForm"
-	},
-	{
-		"methodClass" : "FormCanvas",
-		"sourceCode" : "_pretenured_setForm: aForm\r\r   self reset.\r   form := aForm.\r   port := GrafPort _pretenured_toForm: form"
-	},
-	{
-		"methodClass" : "FormCanvas class",
-		"sourceCode" : "_pretenured_on: aForm\r\r   ^ self new _pretenured_setForm: aForm"
-	},
-	{
-		"methodClass" : "Form",
-		"sourceCode" : "_pretenured_getCanvas\r   \"Return a Canvas that can be used to draw onto the receiver\"\r\r   ^ self defaultCanvasClass _pretenured_on: self"
-	},
-	{
-		"methodClass" : "PSPRunner",
-		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
-	},
-	{
-		"methodClass" : "Association class",
-		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
-	},
-	{
-		"methodClass" : "HGVisualizer",
-		"sourceCode" : "effectIn: anHGSimulator deltaT: aNumber\r\r   self\r      draw: anHGSimulator\r      on: anHGSimulator form _pretenured_getCanvas"
-	},
-	{
-		"methodClass" : "ImageFillStyle",
-		"sourceCode" : "initialize\r   \"Initialize the receiver.\"\r\r   super initialize.\r   self\r      origin: 0 @ 0;\r      offset: 0 @ 0"
-	}
+  {
+    "methodClass": "Rectangle",
+    "sourceCode": "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+  },
+  {
+    "methodClass": "Rectangle class",
+    "sourceCode": "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: cornerPoint"
+  },
+  {
+    "methodClass": "Form",
+    "sourceCode": "_pretenured_boundingBox\r\r   ^ Rectangle _pretenured_origin: 0 @ 0 corner: width @ height"
+  },
+  {
+    "methodClass": "BitBlt",
+    "sourceCode": "_pretenured_setDestForm: df\r\r   | bb |\r   bb := df _pretenured_boundingBox.\r   destForm := df.\r   clipX := bb left.\r   clipY := bb top.\r   clipWidth := bb width.\r   clipHeight := bb height"
+  },
+  {
+    "methodClass": "BitBlt class",
+    "sourceCode": "_pretenured_toForm: aForm\r\r   ^ self new _pretenured_setDestForm: aForm"
+  },
+  {
+    "methodClass": "FormCanvas",
+    "sourceCode": "_pretenured_setForm: aForm\r\r   self reset.\r   form := aForm.\r   port := GrafPort _pretenured_toForm: form"
+  },
+  {
+    "methodClass": "FormCanvas class",
+    "sourceCode": "_pretenured_on: aForm\r\r   ^ self new _pretenured_setForm: aForm"
+  },
+  {
+    "methodClass": "Form",
+    "sourceCode": "_pretenured_getCanvas\r   \"Return a Canvas that can be used to draw onto the receiver\"\r\r   ^ self defaultCanvasClass _pretenured_on: self"
+  },
+  {
+    "methodClass": "Association class",
+    "sourceCode": "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "methodClass": "HGVisualizer",
+    "sourceCode": "effectIn: anHGSimulator deltaT: aNumber\r\r   self\r      draw: anHGSimulator\r      on: anHGSimulator form _pretenured_getCanvas"
+  },
+  {
+    "methodClass": "ImageFillStyle",
+    "sourceCode": "initialize\r   \"Initialize the receiver.\"\r\r   super initialize.\r   self\r      origin: 0 @ 0;\r      offset: 0 @ 0"
+  }
 ]

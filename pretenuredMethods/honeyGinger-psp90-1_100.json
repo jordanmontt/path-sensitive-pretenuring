@@ -1,34 +1,30 @@
 [
-	{
-		"methodClass" : "HGAbstractBorderlinePressureVisualizer",
-		"sourceCode" : "_pretenured_bottom: args\r\r   | leftBottomValue left |\r   leftBottomValue := (args at: 3) abs asFloat.\r   left := args at: 5.\r   ^ leftBottomValue / (leftBottomValue + (args at: 4) abs)\r     * ((args at: 6) - left) + left @ (args at: 8)"
-	},
-	{
-		"methodClass" : "HGAbstractBorderlinePressureVisualizer",
-		"sourceCode" : "_pretenured_rightBottom: args\r\r   ^ (args at: 6) @ (args at: 8)"
-	},
-	{
-		"methodClass" : "HashedCollection",
-		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
-	},
-	{
-		"methodClass" : "HGBorderlineFillPressureVisualizer",
-		"sourceCode" : "initialize1000to1111\r\r   marchingSquares at: 2r1000 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1001 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1010 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self _pretenured_bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1011 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self rightTop: args)\r                   with: (self _pretenured_rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1100 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self left: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1101 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1110 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1111 put: [ :args |\r         (args at: 9)\r            fillRectangle:\r            ((self leftTop: args) corner: (self rightBottom: args))\r            color: color ]"
-	},
-	{
-		"methodClass" : "Collection",
-		"sourceCode" : "copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
-	},
-	{
-		"methodClass" : "Association class",
-		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
-	},
-	{
-		"methodClass" : "PSPRunner",
-		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
-	},
-	{
-		"methodClass" : "Rectangle",
-		"sourceCode" : "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
-	}
+  {
+    "methodClass": "HGAbstractBorderlinePressureVisualizer",
+    "sourceCode": "_pretenured_bottom: args\r\r   | leftBottomValue left |\r   leftBottomValue := (args at: 3) abs asFloat.\r   left := args at: 5.\r   ^ leftBottomValue / (leftBottomValue + (args at: 4) abs)\r     * ((args at: 6) - left) + left @ (args at: 8)"
+  },
+  {
+    "methodClass": "HGAbstractBorderlinePressureVisualizer",
+    "sourceCode": "_pretenured_rightBottom: args\r\r   ^ (args at: 6) @ (args at: 8)"
+  },
+  {
+    "methodClass": "HashedCollection",
+    "sourceCode": "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+  },
+  {
+    "methodClass": "HGBorderlineFillPressureVisualizer",
+    "sourceCode": "initialize1000to1111\r\r   marchingSquares at: 2r1000 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1001 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1010 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self _pretenured_bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1011 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self rightTop: args)\r                   with: (self _pretenured_rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1100 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self left: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1101 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1110 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1111 put: [ :args |\r         (args at: 9)\r            fillRectangle:\r            ((self leftTop: args) corner: (self rightBottom: args))\r            color: color ]"
+  },
+  {
+    "methodClass": "Collection",
+    "sourceCode": "copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+  },
+  {
+    "methodClass": "Association class",
+    "sourceCode": "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "methodClass": "Rectangle",
+    "sourceCode": "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
+  }
 ]

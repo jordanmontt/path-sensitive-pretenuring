@@ -1,66 +1,62 @@
 [
-	{
-		"methodClass" : "HGAbstractBorderlinePressureVisualizer",
-		"sourceCode" : "_pretenured_bottom: args\r\r   | leftBottomValue left |\r   leftBottomValue := (args at: 3) abs asFloat.\r   left := args at: 5.\r   ^ leftBottomValue / (leftBottomValue + (args at: 4) abs)\r     * ((args at: 6) - left) + left @ (args at: 8)"
-	},
-	{
-		"methodClass" : "HGAbstractBorderlinePressureVisualizer",
-		"sourceCode" : "_pretenured_rightBottom: args\r\r   ^ (args at: 6) @ (args at: 8)"
-	},
-	{
-		"methodClass" : "Rectangle",
-		"sourceCode" : "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
-	},
-	{
-		"methodClass" : "Rectangle class",
-		"sourceCode" : "_pretenured_origin: originPoint extent: extentPoint\r   \"Answer an instance of me whose top left corner is originPoint and width by height is extentPoint. Note that extentPoint should be non negative since it represents the size of the rectangle\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: originPoint x + (extentPoint x max: 0)\r           @ (originPoint y + (extentPoint y max: 0))"
-	},
-	{
-		"methodClass" : "Point",
-		"sourceCode" : "_pretenured_extent: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose extent is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   ^ Rectangle _pretenured_origin: self extent: aPoint"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_extent: aPoint\r\r   | newExtent |\r   newExtent := aPoint rounded.\r   (bounds extent closeTo: newExtent) ifTrue: [ ^ self ].\r   self changed.\r   bounds := bounds topLeft _pretenured_extent: newExtent.\r   self layoutChanged.\r   self changed"
-	},
-	{
-		"methodClass" : "CornerGripMorph",
-		"sourceCode" : "initialize\r\r   super initialize.\r   self _pretenured_extent: self defaultWidth @ self defaultHeight.\r   self layoutFrame: self gripLayoutFrame"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_addCornerGrips\r   \"Should add these to the front!\"\r\r   | tl tr lh |\r   lh := self labelHeight.\r   tl := TopLeftGripMorph new\r            target: self;\r            position: self position.\r   tl layoutFrame topOffset: lh negated.\r   tr := TopRightGripMorph newTenured\r            target: self;\r            position: self position.\r   tr layoutFrame topOffset: lh negated.\r   self\r      addMorph: tl;\r      addMorph: tr;\r      addMorph: (BottomLeftGripMorph new\r             target: self;\r             position: self position);\r      addMorph: (BottomRightGripMorph new\r             target: self;\r             position: self position)"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_addGrips\r   \"Add the edge and corner grips.\"\r\r   self\r      _pretenured_addCornerGrips;\r      addEdgeGrips"
-	},
-	{
-		"methodClass" : "HashedCollection",
-		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
-	},
-	{
-		"methodClass" : "HGBorderlineFillPressureVisualizer",
-		"sourceCode" : "initialize1000to1111\r\r   marchingSquares at: 2r1000 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1001 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1010 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self _pretenured_bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1011 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self rightTop: args)\r                   with: (self _pretenured_rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1100 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self left: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1101 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1110 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1111 put: [ :args |\r         (args at: 9)\r            fillRectangle:\r            ((self leftTop: args) corner: (self rightBottom: args))\r            color: color ]"
-	},
-	{
-		"methodClass" : "Collection",
-		"sourceCode" : "copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
-	},
-	{
-		"methodClass" : "Association class",
-		"sourceCode" : "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
-	},
-	{
-		"methodClass" : "PSPRunner",
-		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
-	},
-	{
-		"methodClass" : "Rectangle",
-		"sourceCode" : "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "addGripsIfWanted\r   \"Add the edge and corner grips if the window wants them.\"\r\r   self wantsGrips ifTrue: [ self _pretenured_addGrips ]"
-	}
+  {
+    "methodClass": "HGAbstractBorderlinePressureVisualizer",
+    "sourceCode": "_pretenured_bottom: args\r\r   | leftBottomValue left |\r   leftBottomValue := (args at: 3) abs asFloat.\r   left := args at: 5.\r   ^ leftBottomValue / (leftBottomValue + (args at: 4) abs)\r     * ((args at: 6) - left) + left @ (args at: 8)"
+  },
+  {
+    "methodClass": "HGAbstractBorderlinePressureVisualizer",
+    "sourceCode": "_pretenured_rightBottom: args\r\r   ^ (args at: 6) @ (args at: 8)"
+  },
+  {
+    "methodClass": "Rectangle",
+    "sourceCode": "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
+  },
+  {
+    "methodClass": "Rectangle class",
+    "sourceCode": "_pretenured_origin: originPoint extent: extentPoint\r   \"Answer an instance of me whose top left corner is originPoint and width by height is extentPoint. Note that extentPoint should be non negative since it represents the size of the rectangle\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: originPoint x + (extentPoint x max: 0)\r           @ (originPoint y + (extentPoint y max: 0))"
+  },
+  {
+    "methodClass": "Point",
+    "sourceCode": "_pretenured_extent: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose extent is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   ^ Rectangle _pretenured_origin: self extent: aPoint"
+  },
+  {
+    "methodClass": "Morph",
+    "sourceCode": "_pretenured_extent: aPoint\r\r   | newExtent |\r   newExtent := aPoint rounded.\r   (bounds extent closeTo: newExtent) ifTrue: [ ^ self ].\r   self changed.\r   bounds := bounds topLeft _pretenured_extent: newExtent.\r   self layoutChanged.\r   self changed"
+  },
+  {
+    "methodClass": "CornerGripMorph",
+    "sourceCode": "initialize\r\r   super initialize.\r   self _pretenured_extent: self defaultWidth @ self defaultHeight.\r   self layoutFrame: self gripLayoutFrame"
+  },
+  {
+    "methodClass": "SystemWindow",
+    "sourceCode": "_pretenured_addCornerGrips\r   \"Should add these to the front!\"\r\r   | tl tr lh |\r   lh := self labelHeight.\r   tl := TopLeftGripMorph new\r            target: self;\r            position: self position.\r   tl layoutFrame topOffset: lh negated.\r   tr := TopRightGripMorph newTenured\r            target: self;\r            position: self position.\r   tr layoutFrame topOffset: lh negated.\r   self\r      addMorph: tl;\r      addMorph: tr;\r      addMorph: (BottomLeftGripMorph new\r             target: self;\r             position: self position);\r      addMorph: (BottomRightGripMorph new\r             target: self;\r             position: self position)"
+  },
+  {
+    "methodClass": "SystemWindow",
+    "sourceCode": "_pretenured_addGrips\r   \"Add the edge and corner grips.\"\r\r   self\r      _pretenured_addCornerGrips;\r      addEdgeGrips"
+  },
+  {
+    "methodClass": "HashedCollection",
+    "sourceCode": "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
+  },
+  {
+    "methodClass": "HGBorderlineFillPressureVisualizer",
+    "sourceCode": "initialize1000to1111\r\r   marchingSquares at: 2r1000 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1001 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1010 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self _pretenured_bottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1011 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self rightTop: args)\r                   with: (self _pretenured_rightBottom: args)\r                   with: (self bottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1100 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self left: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1101 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self leftTop: args)\r                   with: (self top: args)\r                   with: (self right: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1110 put: [ :args |\r         (args at: 9)\r            drawPolygon: (Array\r                   with: (self top: args)\r                   with: (self rightTop: args)\r                   with: (self rightBottom: args)\r                   with: (self leftBottom: args)\r                   with: (self left: args))\r            fillStyle: color ].\r   marchingSquares at: 2r1111 put: [ :args |\r         (args at: 9)\r            fillRectangle:\r            ((self leftTop: args) corner: (self rightBottom: args))\r            color: color ]"
+  },
+  {
+    "methodClass": "Collection",
+    "sourceCode": "copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
+  },
+  {
+    "methodClass": "Association class",
+    "sourceCode": "key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "methodClass": "Rectangle",
+    "sourceCode": "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
+  },
+  {
+    "methodClass": "SystemWindow",
+    "sourceCode": "addGripsIfWanted\r   \"Add the edge and corner grips if the window wants them.\"\r\r   self wantsGrips ifTrue: [ self _pretenured_addGrips ]"
+  }
 ]

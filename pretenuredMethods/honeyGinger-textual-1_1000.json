@@ -1,22 +1,18 @@
 [
-	{
-		"methodClass" : "Association class",
-		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
-	},
-	{
-		"methodClass" : "ImageFillStyle",
-		"sourceCode" : "initialize\r   \"Initialize the receiver.\"\r\r   super initialize.\r   self\r      origin: 0 @ 0;\r      offset: 0 @ 0"
-	},
-	{
-		"methodClass" : "PSPRunner",
-		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
-	},
-	{
-		"methodClass" : "Dictionary",
-		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
-	},
-	{
-		"methodClass" : "ImageFillStyle class",
-		"sourceCode" : "formSet: aFormSet\r   \"Answer a new instance of the receiver with the given form set.\"\r\r   ^ self newTenured formSet: aFormSet"
-	}
+  {
+    "methodClass": "Association class",
+    "sourceCode": "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
+  },
+  {
+    "methodClass": "ImageFillStyle",
+    "sourceCode": "initialize\r   \"Initialize the receiver.\"\r\r   super initialize.\r   self\r      origin: 0 @ 0;\r      offset: 0 @ 0"
+  },
+  {
+    "methodClass": "Dictionary",
+    "sourceCode": "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
+  },
+  {
+    "methodClass": "ImageFillStyle class",
+    "sourceCode": "formSet: aFormSet\r   \"Answer a new instance of the receiver with the given form set.\"\r\r   ^ self newTenured formSet: aFormSet"
+  }
 ]
