@@ -1,231 +1,155 @@
 [
 	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_createExpandBox\r   \"Answer a button for maximising/restoring the window.\"\r\r   ^ self theme _pretenured_createExpandBoxFor: self"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_addMenuControl\r   \"If I have a label area, add a menu control to it.\"\r\r   labelArea ifNil: [ ^ self ]. \"No menu if no label area\"\r   menuBox ifNotNil: [ menuBox delete ].\r   labelArea addMorphBack: (menuBox := self _pretenured_createMenuBox)"
-	},
-	{
-		"methodClass" : "TableLayout",
-		"sourceCode" : "_pretenured_minExtentHorizontal: aMorph\r   \"Return the minimal size aMorph's children would require given the new bounds\"\r\r   | inset minX minY maxX maxY n size width height |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint.\r   n := 0.\r   width := height := 0.\r   aMorph _pretenured_submorphsDo: [ :m |\r         | sizeY sizeX |\r         m disableTableLayout ifFalse: [\r               n := n + 1.\r               size := m _pretenured_minExtent.\r               sizeX := size x.\r               sizeY := size y.\r               sizeX < minX\r                  ifTrue: [ sizeX := minX ]\r                  ifFalse: [ sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r               sizeY < minY\r                  ifTrue: [ sizeY := minY ]\r                  ifFalse: [ sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r               width := width + sizeX.\r               sizeY > height ifTrue: [ height := sizeY ] ] ].\r   n > 1 ifTrue: [ width := width + (n - 1 * inset x) ].\r   ^ minExtentCache := width @ height"
-	},
-	{
-		"methodClass" : "FFIStructure class",
-		"sourceCode" : "_pretenured_fromHandle: aHandle\r   \"Offsets are calculated when specs are compiled, but sometimes there is a possibility that\r\t user access them before actually using the compiled spec, so I need to be sure they are\r\t initialized before anything. This is why I send #compiledSpec here.\"\r\r   self compiledSpec.\r   ^ (super _pretenured_fromHandle: aHandle) initialize"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_layoutBounds\r   \"Return the bounds for laying out children of the receiver\"\r\r   | inset box |\r   inset := self layoutInset.\r   box := self _pretenured_innerBounds.\r   inset isZero ifTrue: [ ^ box ].\r   ^ box insetBy: inset"
-	},
-	{
-		"methodClass" : "TableLayout",
-		"sourceCode" : "_pretenured_minExtentOf: aMorph in: box\r   \"Return the minimal size aMorph's children would require given the new bounds\"\r\r   | cells arrangement horizontal newBounds minX minY dir |\r   minExtentCache ifNotNil: [ ^ minExtentCache ].\r   aMorph hasSubmorphs ifFalse: [ ^ 0 @ 0 ].\r   properties := aMorph assureTableProperties.\r   (properties wrapDirection == #none and: [\r       properties cellSpacing == #none ]) ifTrue: [ \"Get into the fast lane\"\r         dir := properties listDirection.\r         (dir == #leftToRight or: [ dir == #rightToLeft ]) ifTrue: [\r            ^ self _pretenured_minExtentHorizontal: aMorph ].\r         (dir == #topToBottom or: [ dir == #bottomToTop ]) ifTrue: [\r            ^ self minExtentVertical: aMorph ] ].\r   newBounds := box origin asIntegerPoint corner:\r                   box corner asIntegerPoint.\r   horizontal := (properties listDirection == #topToBottom or: [\r                     properties listDirection == #bottomToTop ]) not. \"Step 1: Compute the minimum extent for all the children of aMorph\"\r   cells := self\r               computeCellSizes: aMorph\r               in: (0 @ 0 corner: newBounds extent)\r               horizontal: horizontal. \"Step 2: Compute the arrangement of the cells for each row and column\"\r   arrangement := self\r                     computeCellArrangement: cells\r                     in: newBounds\r                     horizontal: horizontal\r                     target: aMorph. \"Step 3: Extract the minimum size out of the arrangement\"\r   minX := minY := 0.\r   arrangement do: [ :cell |\r         minX := minX max: cell cellSize x + cell extraSpace x.\r         minY := minY + cell cellSize y + cell extraSpace y ].\r   minExtentCache := horizontal\r                        ifTrue: [ minX @ minY ]\r                        ifFalse: [ minY @ minX ].\r   ^ minExtentCache"
-	},
-	{
 		"methodClass" : "Point",
-		"sourceCode" : "_pretenured_rounded\r   \"Answer a Point that is the receiver's x and y rounded. Answer the receiver if its coordinates are already integral.\"\r\r   self isIntegerPoint ifTrue: [ ^ self ].\r   ^ x rounded @ y _pretenured_rounded"
+		"sourceCode" : "_pretenured_016r2A: arg\r   \"Answer a Point that is the product of the receiver and arg.\"\r\r   \"((2@2) * (100@200)) >>> (200@400)\"\r\r   \"((2@2) * 200) >>> (400@400)\"\r\r   arg isPoint ifTrue: [ ^ x * arg x @ (y * arg y) ].\r   ^ arg _pretenured_adaptToPoint: self andSend: #*"
 	},
 	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_addExpandBox\r   \"If I have a labelArea, add a close box to it\"\r\r   labelArea ifNil: [ ^ self ].\r   expandBox := self _pretenured_createExpandBox.\r   self setExpandBoxBalloonText.\r   expandBox layoutFrame: (LayoutFrame new\r          leftFraction: 1;\r          leftOffset: (self boxExtent x * 2 + 3) negated).\r   labelArea addMorphBack: expandBox"
+		"methodClass" : "Rectangle",
+		"sourceCode" : "_pretenured_setPoint: pt1 point: pt2\r\r   origin := (pt1 x min: pt2 x) @ (pt1 y min: pt2 y).\r   corner := (pt1 x max: pt2 x) @ (pt1 y max: pt2 y)"
 	},
 	{
-		"methodClass" : "WriteStream",
-		"sourceCode" : "_pretenured_contents\r\r   readLimit := readLimit max: position.\r   ^ collection _pretenured_copyFrom: 1 to: position"
-	},
-	{
-		"methodClass" : "Fraction",
-		"sourceCode" : "_pretenured_016r2B: aNumber\r   \"Answer the sum of the receiver and aNumber.\"\r\r   | n d d1 d2 |\r   aNumber isInteger ifTrue: [\r         ^ Fraction\r              numerator: numerator + (denominator * aNumber)\r              denominator: denominator ].\r   aNumber isFraction ifTrue: [\r         d := denominator gcd: aNumber denominator.\r         n := numerator * (d1 := aNumber denominator // d)\r              + (aNumber numerator * (d2 := denominator // d)).\r         d1 := d1 * d2.\r         n := n // (d2 := n gcd: d).\r         (d := d1 * (d // d2)) = 1 ifTrue: [ ^ n ].\r         ^ Fraction _pretenured_numerator: n denominator: d ].\r   ^ aNumber adaptToFraction: self andSend: #+"
-	},
-	{
-		"methodClass" : "Form",
-		"sourceCode" : "_pretenured_setExtent: extent depth: bitsPerPixel\r   \"Create a virtual bit map with the given extent and bitsPerPixel.\"\r\r   width := extent x asInteger.\r   width < 0 ifTrue: [ width := 0 ].\r   height := extent y asInteger.\r   height < 0 ifTrue: [ height := 0 ].\r   depth := bitsPerPixel.\r   bits := Bitmap newTenured: self bitsSize"
-	},
-	{
-		"methodClass" : "MultistateButtonMorph",
-		"sourceCode" : "_pretenured_fillStyleToUse\r   \"Answer the fill style to used based on the current state.\"\r\r   | map |\r   map := self active\r             ifTrue: [\r                   self stateMap _pretenured_at: #active ifAbsent: [\r                         self stateMap\r                            _pretenured_at: #passive\r                            ifAbsent: [ Dictionary newTenured ] ] ]\r             ifFalse: [\r                   self stateMap\r                      at: #passive\r                      ifAbsent: [\r                      self stateMap\r                         at: #active\r                         ifAbsent: [ Dictionary new ] ] ].\r   map := self enabled\r             ifTrue: [\r                   map\r                      at: #enabled\r                      ifAbsent: [\r                      map at: #disabled ifAbsent: [ Dictionary new ] ] ]\r             ifFalse: [\r                   map\r                      at: #disabled\r                      ifAbsent: [\r                      map at: #enabled ifAbsent: [ Dictionary new ] ] ].\r   map := self over\r             ifTrue: [\r                   map\r                      at: #over\r                      ifAbsent: [\r                      map at: #notOver ifAbsent: [ Dictionary new ] ] ]\r             ifFalse: [\r                   map\r                      at: #notOver\r                      ifAbsent: [\r                      map at: #over ifAbsent: [ Dictionary new ] ] ].\r   ^ map\r        at: (self down\r               ifTrue: [ #down ]\r               ifFalse: [ #up ])\r        ifAbsent: [\r              map\r                 at: (self down\r                        ifTrue: [ #up ]\r                        ifFalse: [ #down ])\r                 ifAbsent: [ Color transparent ] ]"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_minExtent\r   \"Layout specific. Return the minimum size the receiver can be represented in.\r\tImplementation note: When this message is sent from an owner trying to lay out its children it will traverse down the morph tree and recompute the minimal arrangement of the morphs based on which the minimal extent is returned. When a morph with some layout strategy is encountered, the morph will ask its strategy to compute the new arrangement. However, since the final size given to the receiver is unknown at the point of the query, the assumption is made that the current bounds of the receiver are the base on which the layout should be computed. This scheme prevents strange layout changes when for instance, a table is contained in another table. Unless the inner table has been resized manually (which means its bounds are already enlarged) the arrangement of the inner table will not change here. Thus the entire layout computation is basically an iterative process which may have different results depending on the incremental changes applied.\r\tFixed for shrinkWrap.\"\r\r   | layout minExtent extra hFit vFit |\r   hFit := self hResizing.\r   vFit := self vResizing.\r   (hFit == #rigid and: [ vFit == #rigid ]) ifTrue: [ \"The receiver will not adjust to parents layout by growing or shrinking,\r\t\twhich means that an accurate layout defines the minimum size.\"\r      ^ self fullBounds extent max: self minWidth @ self minHeight ].\r\r   \"An exception -- a receiver with #shrinkWrap constraints but no children is being treated #rigid (the equivalent to a #spaceFill receiver in a non-layouting owner)\"\r   self hasSubmorphs ifFalse: [\r         hFit == #shrinkWrap ifTrue: [ hFit := #rigid ].\r         vFit == #shrinkWrap ifTrue: [ vFit := #rigid ] ].\r   layout := self layoutPolicy.\r   layout ifNil: [ minExtent := 0 @ 0 ] ifNotNil: [\r         minExtent := layout\r                         _pretenured_minExtentOf: self\r                         in: self _pretenured_layoutBounds ].\r   hFit == #rigid\r      ifTrue: [ minExtent := self fullBounds extent x @ minExtent y ]\r      ifFalse: [\r            extra := self bounds width\r                     - self _pretenured_layoutBounds width.\r            minExtent := minExtent x + extra @ minExtent y ].\r   minExtent := vFit == #rigid\r                   ifTrue: [ minExtent x @ self fullBounds extent y ]\r                   ifFalse: [\r                         extra := self bounds height\r                                  -\r                                  self _pretenured_layoutBounds height.\r                         minExtent x @ (minExtent y + extra) ].\r   minExtent := minExtent max: self minWidth @ self minHeight.\r   ^ minExtent"
-	},
-	{
-		"methodClass" : "ExternalStructure class",
-		"sourceCode" : "_pretenured_fromHandle: aHandle\r\r   ^ self basicNewTenured setHandle: aHandle"
-	},
-	{
-		"methodClass" : "PositionableStream class",
-		"sourceCode" : "_pretenured_on: aCollection\r   \"Answer an instance of me, streaming over the elements of aCollection.\"\r\r   ^ self basicNewTenured on: aCollection"
+		"methodClass" : "ImageFillStyle",
+		"sourceCode" : "initialize\r   \"Initialize the receiver.\"\r\r   super initialize.\r   self\r      origin: 0 @ 0;\r      offset: 0 @ 0"
 	},
 	{
 		"methodClass" : "UITheme",
-		"sourceCode" : "_pretenured_configureWindowLabelAreaFor: aWindow\r   \"Configure the label area for the given window.\"\r\r   | macOSLayout addCloseBox addCollapseExpandBoxes addMenuBox padding paddingStep |\r   macOSLayout := self labelAreaLayout = #macOS or: [\r                     self labelAreaLayout = #platformDependent and:\r                        Smalltalk os isMacOS ].\r   addCloseBox := [\r                  aWindow hasCloseBox ifTrue: [ aWindow addCloseBox ] ].\r   addCollapseExpandBoxes := [\r                                aWindow hasCollapseBox ifTrue: [\r                                   aWindow _pretenured_addCollapseBox ].\r                                aWindow hasExpandBox ifTrue: [\r                                   aWindow _pretenured_addExpandBox ] ].\r   addMenuBox := [\r                 aWindow hasMenuBox ifTrue: [\r                    aWindow _pretenured_addMenuControl ] ].\r   padding := 0.\r   aWindow labelArea addMorphBack:\r      (Morph new extent: aWindow class borderWidth @ 0).\r   macOSLayout\r      ifTrue: [\r            addCloseBox value.\r            addCollapseExpandBoxes value.\r            paddingStep := 1 ]\r      ifFalse: [\r            addMenuBox value.\r            paddingStep := -1 ].\r   aWindow hasCloseBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasCollapseBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasExpandBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasMenuBox ifTrue: [ padding := padding - paddingStep ].\r   aWindow labelArea addMorphBack: (Morph new\r          extent: aWindow class borderWidth @ 0;\r          hResizing: #spaceFill).\r   aWindow basicLabel ifNotNil: [ :label |\r         label color: self textColor.\r         aWindow labelArea\r            addMorphBack: label;\r            hResizing: #shrinkWrap ].\r   aWindow labelArea addMorphBack: (Morph new\r          extent: aWindow class borderWidth @ 0;\r          hResizing: #spaceFill).\r   padding > 0 ifTrue: [\r         aWindow labelArea addMorphBack:\r            (Morph new extent: aWindow boxExtent x * padding @ 0) ].\r   macOSLayout\r      ifTrue: [ addMenuBox value ]\r      ifFalse: [\r            addCollapseExpandBoxes value.\r            addCloseBox value ].\r   aWindow labelArea addMorphBack:\r      (Morph new extent: aWindow class borderWidth @ 0)"
+		"sourceCode" : "_pretenured_createCloseBoxFor: aSystemWindow\r   \"Answer a button for closing the window.\"\r\r   | announcement |\r   ^ (self\r         _pretenured_newCloseControlIn: aSystemWindow\r         for: aSystemWindow\r         action: [\r               SystemWindow useHideForClose\r                  ifTrue: [\r                        aSystemWindow hide.\r                        announcement := WindowClosed new\r                                           window: aSystemWindow;\r                                           yourself.\r                        self currentWorld announcer announce:\r                           announcement ]\r                  ifFalse: [ aSystemWindow closeBoxHit ] ]\r         help: 'Close this window' translated) _pretenured_extent:\r        aSystemWindow boxExtent"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_boundingBox\r\r   ^ Rectangle origin: 0 @ 0 corner: width @ height"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "_pretenured_addParticleAt: aPoint temperature: temperature mass: mass\r\r   | particle |\r   particle := HGParticle\r                  at: (HG2dPoint fromPoint: aPoint)\r                  velocity: HG2dPoint _pretenured_zero\r                  temperature: temperature\r                  mass: mass\r                  in: self.\r   particles := particles copyWith: particle.\r   ^ particle"
 	},
 	{
 		"methodClass" : "SequenceableCollection",
 		"sourceCode" : "_pretenured_allButLastDo: block\r   \"Executes aBlock on each of the receiver's elements except for the last one\"\r\r   \"(Array streamContents: [:stream | #(1 2 3) allButLastDo: [:each | stream nextPut: (each + 10)]]) >>> #(11 12)\"\r\r   1 to: self size - 1 do: [ :index | block value: (self at: index) ]"
 	},
 	{
-		"methodClass" : "Margin class",
-		"sourceCode" : "_pretenured_fromNumber: aNumber\r   \"Create a margin whose four values are the same and based on anInteger\"\r\r   ^ self newTenured\r        fromNumber: aNumber;\r        yourself"
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2D: arg\r   \"Answer a Point that is the difference of the receiver and arg.\"\r\r   \"((2@2) - (100@200)) >>> (-98@ -198)\"\r\r   \"((2@2) - 200) >>> (-198@ -198)\"\r\r   arg isPoint ifTrue: [ ^ x - arg x @ (y - arg y) ].\r   ^ arg adaptToPoint: self andSend: #-"
 	},
 	{
-		"methodClass" : "Color class",
-		"sourceCode" : "_pretenured_h: hue s: saturation v: brightness alpha: alpha\r   \"Create a color with the given hue, saturation, brightness, and alpha. Hue is given as the angle in degrees of the color on the color circle where red is zero degrees. Saturation and brightness are numbers in [0.0..1.0] where larger values are more saturated or brighter colors. For example, (Color h: 0 s: 1 v: 1 alpha: 1) is pure red.\"\r\r   \"(Color h: 0 s: 1 v: 1 alpha: 1) >>> Color red \"\r\r   ^ self basicNewTenured\r        initializeHue: hue\r        saturation: saturation\r        brightness: brightness\r        alpha: alpha;\r        yourself"
+		"methodClass" : "HGSpatialPartitionedCollection class",
+		"sourceCode" : "_pretenured_origin: anHGPoint corner: anotherHGPoint step: aNumber\r\r   | size |\r   size := (anotherHGPoint - anHGPoint _pretenured_016r2F: aNumber)\r              floor + (anHGPoint class fromNumber: 1).\r   ^ (self newTenured: size product)\r        setOrigin: anHGPoint\r        corner: anotherHGPoint\r        step: aNumber\r        size: size"
+	},
+	{
+		"methodClass" : "HGSpatialPartitionedCollection",
+		"sourceCode" : "initialize\r\r   1 to: self size do: [ :index |\r   self at: index put: IdentitySet newTenured ]"
 	},
 	{
 		"methodClass" : "UITheme",
-		"sourceCode" : "_pretenured_createCollapseBoxFor: aSystemWindow\r   \"Answer a button for minimising the window.\"\r\r   | formSet msb |\r   formSet := self windowMinimizeFormSet.\r   msb := MultistateButtonMorph new _pretenured_extent: formSet extent.\r   msb activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb extent: formSet extent.\r   msb _pretenured_passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizeOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: [ aSystemWindow collapseBoxHit ];\r      setBalloonText: 'Collapse this window' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
-	},
-	{
-		"methodClass" : "SequenceableCollection",
-		"sourceCode" : "_pretenured_copyFrom: start to: stop\r   \"Answer a copy of a subset of the receiver, starting from element at\r\tindex start until element at index stop.\"\r\r   | newSize |\r   newSize := stop - start + 1.\r   ^ (self species newTenured: newSize)\r        replaceFrom: 1\r        to: newSize\r        with: self\r        startingAt: start"
-	},
-	{
-		"methodClass" : "Number class",
-		"sourceCode" : "newTenured\r\r   self == Number ifTrue: [\r         ^ self error:\r              'Number is an abstract class.  Make a concrete subclass.' ].\r   ^ super newTenured"
-	},
-	{
-		"methodClass" : "Fraction class",
-		"sourceCode" : "_pretenured_numerator: numInteger denominator: denInteger\r   \"Answer an instance of me (numInteger/denInteger).\r\tNOTE: This primitive initialization method will not reduce improper fractions,\r\tso normal usage should be coded as, eg,\r\t\t(Fraction numerator: a denominator: b) reduced\r\tor, more simply, as\r\t\ta / b.\"\r\r   ^ self newTenured setNumerator: numInteger denominator: denInteger"
+		"sourceCode" : "_pretenured_newCloseControlIn: aThemedMorph for: aModel action: aValuable help: helpText\r   \"Answer a button for closing things.\"\r\r   | formSet msb |\r   formSet := self windowCloseFormSet.\r   msb := MultistateButtonMorph newTenured _pretenured_extent:\r             formSet extent.\r   msb _pretenured_activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowClosePassiveFormSet.\r   msb extent: formSet extent.\r   msb _pretenured_activeDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb _pretenured_passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb passiveDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowCloseOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowClosePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: aValuable;\r      setBalloonText: helpText.\r   ^ msb"
 	},
 	{
 		"methodClass" : "MultistateButtonMorph",
 		"sourceCode" : "_pretenured_activeEnabledNotOverUpFillStyle: aFillStyle\r   \"Set the active, enabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( active enabled notOver up )\r      put: aFillStyle.\r   self changed"
 	},
 	{
-		"methodClass" : "Form class",
-		"sourceCode" : "_pretenured_extent: extentPoint depth: bitsPerPixel\r   \"Answer an instance of me with blank bitmap of the given dimensions and depth.\"\r\r   ^ self basicNewTenured\r        _pretenured_setExtent: extentPoint\r        depth: bitsPerPixel"
-	},
-	{
 		"methodClass" : "MultistateButtonMorph",
-		"sourceCode" : "_pretenured_extent: aPoint\r   \"Center the fill style origin.\"\r\r   | delta |\r   self bounds extent = aPoint ifTrue: [ ^ self ].\r   delta := aPoint - self extent // 2.\r   self _pretenured_fillStyles do: [ :fs |\r      fs isOrientedFill ifTrue: [ fs origin: fs origin + delta ] ].\r   super _pretenured_extent: aPoint"
+		"sourceCode" : "_pretenured_extent: aPoint\r   \"Center the fill style origin.\"\r\r   | delta |\r   self bounds _pretenured_extent = aPoint ifTrue: [ ^ self ].\r   delta := aPoint - self extent // 2.\r   self _pretenured_fillStyles _pretenured_do: [ :fs |\r         fs isOrientedFill ifTrue: [\r            fs origin: (fs origin _pretenured_016r2B: delta) ] ].\r   super _pretenured_extent: aPoint"
 	},
 	{
 		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_extent: aPoint\r\r   | newExtent |\r   newExtent := aPoint rounded.\r   (bounds extent closeTo: newExtent) ifTrue: [ ^ self ].\r   self _pretenured_changed.\r   bounds := bounds topLeft _pretenured_extent: newExtent.\r   self layoutChanged.\r   self _pretenured_changed"
+		"sourceCode" : "_pretenured_extent: aPoint\r\r   | newExtent |\r   newExtent := aPoint rounded.\r   (bounds extent closeTo: newExtent) ifTrue: [ ^ self ].\r   self changed.\r   bounds := bounds topLeft _pretenured_extent: newExtent.\r   self layoutChanged.\r   self changed"
 	},
 	{
 		"methodClass" : "Association class",
 		"sourceCode" : "_pretenured_key: newKey value: newValue\r   \"Answer an instance of me with the arguments as the key and value of\r\tthe association.\"\r\r   ^ self basicNewTenured key: newKey value: newValue"
 	},
 	{
-		"methodClass" : "Fraction",
-		"sourceCode" : "_pretenured_reduced\r\r   | gcd numer denom |\r   numerator = 0 ifTrue: [ ^ 0 ].\r   gcd := numerator gcd: denominator.\r   numer := numerator // gcd.\r   denom := denominator // gcd.\r   denom = 1 ifTrue: [ ^ numer ].\r   ^ Fraction _pretenured_numerator: numer denominator: denom"
-	},
-	{
-		"methodClass" : "MorphAnnouncement class",
-		"sourceCode" : "_pretenured_morph: aMorph\r\r   ^ self newTenured\r        morph: aMorph;\r        yourself"
+		"methodClass" : "BitBlt class",
+		"sourceCode" : "_pretenured_toForm: aForm\r\r   ^ self new _pretenured_setDestForm: aForm"
 	},
 	{
 		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
-		"sourceCode" : "_pretenured_filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset: (baseOffset x / 3) rounded @ baseOffset y * scale;\r      advance:\r         (baseAdvance _pretenured_016r2F: 3) _pretenured_rounded\r         * scale;\r      linearAdvance: baseLinearAdvance * scale.\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
-	},
-	{
-		"methodClass" : "ExternalStructure class",
-		"sourceCode" : "newTenured\r\r   ^ self _pretenured_fromHandle: (ByteArray new: self byteSize)"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_createMenuBox\r   \"Answer a button for the window menu.\"\r\r   ^ self theme _pretenured_createMenuBoxFor: self"
+		"sourceCode" : "_pretenured_filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset:\r         ((baseOffset x / 3) rounded @ baseOffset y\r             _pretenured_016r2A: scale);\r      advance:\r         ((baseAdvance _pretenured_016r2F: 3) rounded\r             _pretenured_016r2A: scale);\r      linearAdvance: (baseLinearAdvance _pretenured_016r2A: scale).\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
 	},
 	{
 		"methodClass" : "Number",
-		"sourceCode" : "_pretenured_adaptToPoint: rcvr andSend: selector\r   \"If I am involved in arithmetic with a Point, convert me to a Point.\"\r\r   ^ rcvr _pretenured_perform: selector with: self @ self"
-	},
-	{
-		"methodClass" : "HGParticle",
-		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary new.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint _pretenured_zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
-	},
-	{
-		"methodClass" : "SequenceableCollection",
-		"sourceCode" : "_pretenured_do: aBlock\r   \"Refer to the comment in Collection|do:.\"\r\r   1 to: self size do: [ :index | aBlock value: (self at: index) ]"
+		"sourceCode" : "_pretenured_adaptToPoint: rcvr andSend: selector\r   \"If I am involved in arithmetic with a Point, convert me to a Point.\"\r\r   ^ rcvr perform: selector with: self @ self"
 	},
 	{
 		"methodClass" : "HG2dPoint class",
 		"sourceCode" : "_pretenured_x: aNumber y: anotherNumber\r\r   ^ self newTenured setX: aNumber y: anotherNumber"
 	},
 	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_setBalloonText: stringOrText\r   \"Set receiver's balloon help text. Pass nil to remove the help.\"\r\r   self\r      _pretenured_setBalloonText: stringOrText\r      maxLineLength: self theme settings maxBalloonHelpLineLength"
-	},
-	{
-		"methodClass" : "Point",
-		"sourceCode" : "_pretenured_extent: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose extent is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   ^ Rectangle _pretenured_origin: self extent: aPoint"
+		"methodClass" : "ImageFillStyle class",
+		"sourceCode" : "_pretenured_formSet: aFormSet\r   \"Answer a new instance of the receiver with the given form set.\"\r\r   ^ self newTenured formSet: aFormSet"
 	},
 	{
 		"methodClass" : "HG2dPoint class",
 		"sourceCode" : "_pretenured_zero\r\r   ^ self _pretenured_x: 0.0 y: 0.0"
 	},
 	{
-		"methodClass" : "Number",
-		"sourceCode" : "_pretenured_rounded\r   \"Answer the integer nearest the receiver.\"\r\r   \"1.4 rounded >>> 1\"\r\r   \"1.5 rounded >>> 2\"\r\r   \"2 rounded >>> 2\"\r\r   \"-1.5 rounded >>> -2\"\r\r   ^ (self _pretenured_016r2B: (self sign _pretenured_016r2F: 2))\r        truncated"
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_extent: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose extent is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   ^ Rectangle _pretenured_origin: self extent: aPoint"
+	},
+	{
+		"methodClass" : "FormCanvas class",
+		"sourceCode" : "_pretenured_on: aForm\r\r   ^ self new _pretenured_setForm: aForm"
 	},
 	{
 		"methodClass" : "MultistateButtonMorph",
 		"sourceCode" : "_pretenured_passiveDisabledNotOverUpFillStyle: aFillStyle\r   \"Set the passive, disabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( passive disabled notOver up )\r      put: aFillStyle.\r   self changed"
 	},
 	{
-		"methodClass" : "UITheme",
-		"sourceCode" : "_pretenured_createMenuBoxFor: aSystemWindow\r   \"Answer a button for the window menu.\"\r\r   \"\t^aSystemWindow createBox\r\t\tlabelGraphic: (self windowMenuIconFor: aSystemWindow);\r\t\textent: aSystemWindow boxExtent;\r\t\tactWhen: #buttonDown;\r\t\tactionSelector: #offerWindowMenu;\r\t\tsetBalloonText: 'window menu' translated\"\r\r   | formSet msb |\r   formSet := self windowMenuFormSet.\r   msb := MultistateButtonMorph new _pretenured_extent: formSet extent.\r   msb _pretenured_activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMenuPassiveFormSet.\r   msb extent: formSet extent.\r   msb activeDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb _pretenured_passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb _pretenured_passiveDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMenuFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowMenuPassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: [ aSystemWindow offerWindowMenu ];\r      _pretenured_setBalloonText: 'window menu' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
-	},
-	{
 		"methodClass" : "MultistateButtonMorph",
 		"sourceCode" : "_pretenured_fillStyles\r   \"Answer all the fill styles\"\r\r   | styles |\r   styles := OrderedCollection newTenured.\r   self stateMap do: [ :actives |\r         actives do: [ :enableds |\r            enableds do: [ :overs |\r               overs do: [ :fs | styles add: fs ] ] ] ].\r   ^ styles"
 	},
 	{
-		"methodClass" : "MultistateButtonMorph",
-		"sourceCode" : "_pretenured_changed\r   \"Update the fillStyle here.\"\r\r   self assureExtension.\r   extension fillStyle: self _pretenured_fillStyleToUse.\r   color := self fillStyle asColor.\r   super changed"
+		"methodClass" : "HG2dPoint",
+		"sourceCode" : "_pretenured_016r2F: aNumber\r\r   ^ self class _pretenured_x: x / aNumber y: y / aNumber"
 	},
 	{
-		"methodClass" : "String",
-		"sourceCode" : "_pretenured_withNoLineLongerThan: aNumber\r   \"Answer a string with the same content as receiver, but rewrapped so that no line has more characters than the given number\"\r\r   (aNumber isNumber not or: [ aNumber < 1 ]) ifTrue: [\r      self error: 'too narrow' ].\r   ^ self species\r        _pretenured_new: self size * (aNumber + 1) // aNumber\r        streamContents: [ :stream | \"provision for supplementary line breaks\"\r              self _pretenured_lineIndicesDo: [\r                    :start\r                    :endWithoutDelimiters\r                    :end |\r                    | pastEnd lineStart |\r                    pastEnd := endWithoutDelimiters + 1.\r                    \"eliminate spaces at beginning of line\"\r                    lineStart := (self\r                                     indexOfAnyOf: CSNonSeparators\r                                     startingAt: start\r                                     ifAbsent: [ pastEnd ]) min:\r                                    pastEnd.\r                    [\r                       | lineStop lineEnd spacePosition |\r                       lineEnd := lineStop := lineStart + aNumber\r                                                 min: pastEnd.\r                       spacePosition := lineStart.\r                       [ spacePosition < lineStop ] whileTrue: [\r                             spacePosition := self\r                                                 indexOfAnyOf:\r                                                 CSSeparators\r                                                 startingAt:\r                                                 spacePosition + 1\r                                                 ifAbsent: [ pastEnd ].\r                             spacePosition <= lineStop ifTrue: [\r                                lineEnd := spacePosition ] ].\r                       \"split before space or before lineStop if no space\"\r                       stream nextPutAll:\r                          (self copyFrom: lineStart to: lineEnd - 1).\r                       \"eliminate spaces at beginning of next line\"\r                       lineStart := self\r                                       indexOfAnyOf: CSNonSeparators\r                                       startingAt: lineEnd\r                                       ifAbsent: [ pastEnd ].\r                       lineStart <= endWithoutDelimiters ] whileTrue: [\r                       stream cr ].\r                    stream nextPutAll:\r                       (self _pretenured_copyFrom: pastEnd to: end) ] ]"
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "_pretenured_updateParticleMap\r\r   (simulationOrigin notNil and: [ simulationCorner notNil ]) ifTrue: [\r         | newParticleMap |\r         newParticleMap := HGSpatialPartitionedCollection\r                              _pretenured_origin: simulationOrigin\r                              corner: simulationCorner\r                              step: particleMapResolution.\r         self particlesDo: [ :particle |\r            newParticleMap at: particle position add: particle ].\r         particleMap := newParticleMap ]"
 	},
 	{
-		"methodClass" : "MultistateButtonMorph",
-		"sourceCode" : "_pretenured_activeEnabledOverUpFillStyle: aFillStyle\r   \"Set the active, enabled, over, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( active enabled over up )\r      put: aFillStyle.\r   self changed"
+		"methodClass" : "BitBlt",
+		"sourceCode" : "_pretenured_setDestForm: df\r\r   | bb |\r   bb := df _pretenured_boundingBox.\r   destForm := df.\r   clipX := bb left.\r   clipY := bb top.\r   clipWidth := bb width.\r   clipHeight := bb height"
 	},
 	{
-		"methodClass" : "SmallInteger",
-		"sourceCode" : "_pretenured_016r2F: aNumber\r   \"Primitive. This primitive (for /) divides the receiver by the argument\r\tand returns the result if the division is exact. Fail if the result is not a\r\twhole integer. Fail if the argument is 0 or is not a SmallInteger. Optional.\r\tNo Lookup. See Object documentation whatIsAPrimitive.\"\r\r   <primitive: 10>\r   aNumber = 0 ifTrue: [ ^ (ZeroDivide dividend: self) signal ].\r\r   \"This ugly type checking is needed because the implementation in the superclass assumes that the argument is a LargeInteger.\r\tSo, it is using a primitive message that is only in LargeInteger.\r\tUsing the implementation in the superclass when we have a SmallInteger will fail the primitive and use the slow code.\r\tAt the end it is creating the same Fraction that is done here.\r\tThese duplication has to be avoided by correctly implementing the decision by using double dispatch.\"\r\r   ^ (aNumber isMemberOf: SmallInteger)\r        ifTrue: [\r              (Fraction\r                  _pretenured_numerator: self\r                  denominator: aNumber) _pretenured_reduced ]\r        ifFalse: [ super / aNumber ]"
+		"methodClass" : "FormCanvas",
+		"sourceCode" : "_pretenured_setForm: aForm\r\r   self reset.\r   form := aForm.\r   port := GrafPort _pretenured_toForm: form"
 	},
 	{
 		"methodClass" : "Morph",
 		"sourceCode" : "initialize\r   \"initialize the state of the receiver\"\r\r   super initialize.\r   submorphs := EmptyArray.\r   bounds := self _pretenured_defaultBounds.\r   color := self defaultColor"
 	},
 	{
-		"methodClass" : "Rectangle class",
-		"sourceCode" : "_pretenured_left: left right: right top: top bottom: bottom\r   \"Answer an instance of me whose left, right, top, and bottom coordinates\r\tare determined by the arguments.\"\r\r   ^ self basicNewTenured\r        setLeft: left\r        right: right\r        top: top\r        bottom: bottom"
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "_pretenured_simulationOrigin: anHG2dPoint corner: anotherHG2dPoint\r\r   simulationOrigin := anHG2dPoint.\r   simulationCorner := anotherHG2dPoint.\r   form := Form\r              extent: anotherHG2dPoint x - anHG2dPoint x\r                 @ (anotherHG2dPoint y - anHG2dPoint y)\r              depth: 32.\r   form _pretenured_getCanvas fillColor: self color.\r   visibleForm := Form\r                     extent: anotherHG2dPoint x - anHG2dPoint x\r                        @ (anotherHG2dPoint y - anHG2dPoint y)\r                     depth: 32.\r   visibleForm _pretenured_getCanvas fillColor: self color.\r   scale := self width / (anotherHG2dPoint x - anHG2dPoint x) min:\r               self height / (anotherHG2dPoint y - anHG2dPoint y).\r   self _pretenured_updateParticleMap"
 	},
 	{
 		"methodClass" : "Point",
 		"sourceCode" : "_pretenured_corner: aPoint\r   \"Answer a Rectangle whose origin is the receiver and whose corner is aPoint. This is one of the infix ways of expressing the creation of a rectangle.\"\r\r   \"(10@10 corner: 100@100) >>> (10@10 corner: 100@100)\"\r\r   ^ Rectangle _pretenured_origin: self corner: aPoint"
 	},
 	{
-		"methodClass" : "UITheme",
-		"sourceCode" : "_pretenured_createExpandBoxFor: aSystemWindow\r   \"Answer a button for maximising/restoring the window.\"\r\r   | formSet msb |\r   formSet := self windowMaximizeFormSet.\r   msb := MultistateButtonMorph newTenured extent: formSet extent.\r   msb activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMaximizePassiveFormSet.\r   msb extent: formSet extent.\r   msb passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMaximizeOverFormSet.\r   msb extent: formSet extent.\r   msb\r      _pretenured_activeEnabledOverUpFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowMaximizePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: [ aSystemWindow expandBoxHit ];\r      _pretenured_setBalloonText: 'Expand to full screen' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
+		"methodClass" : "MultistateButtonMorph",
+		"sourceCode" : "_pretenured_activeDisabledNotOverUpFillStyle: aFillStyle\r   \"Set the active, disabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( active disabled notOver up )\r      put: aFillStyle.\r   self changed"
 	},
 	{
-		"methodClass" : "Margin",
-		"sourceCode" : "_pretenured_insetRectangle: aRectangle\r   \"Answer a rectangle whose size has been reduced by the receiver. The limitation is that since a rectangle topleft is always less than its bottomright you may have a some cases that are not possible to express. For that you should use a margin object instead of a rectangle.\"\r\r   | l r t b |\r   l := aRectangle left + self left.\r   r := left max: aRectangle right - self right.\r   t := aRectangle top + self top.\r   b := top max: aRectangle bottom - self bottom.\r\r   ^ Rectangle\r        _pretenured_left: l\r        right: r\r        top: t\r        bottom: b"
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2B: arg\r   \"Answer a Point that is the sum of the receiver and arg.\"\r\r   \"((2@2) + (100@200)) >>> (102@202)\"\r\r   \"((2@2) + 200) >>> (202@202)\"\r\r   arg isPoint ifTrue: [ ^ x + arg x @ (y + arg y) ].\r   ^ arg adaptToPoint: self andSend: #+"
 	},
 	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_setBalloonText: stringOrText maxLineLength: aLength\r   \"Set receiver's balloon help text. Pass nil to remove the help.\"\r\r   (extension isNil and: [ stringOrText isNil ]) ifTrue: [ ^ self ].\r   self assureExtension balloonText: (stringOrText ifNotNil: [\r          stringOrText _pretenured_withNoLineLongerThan: aLength ])"
-	},
-	{
-		"methodClass" : "String",
-		"sourceCode" : "_pretenured_lineIndicesDo: aBlock\r   \"execute aBlock with 3 arguments for each line:\r\t- start index of line\r\t- end index of line without line delimiter\r\t- end index of line including line delimiter(s) CR, LF or CRLF\"\r\r   | cr lf start sz nextLF nextCR |\r   start := 1.\r   sz := self size.\r   cr := Character cr.\r   nextCR := self indexOf: cr startingAt: 1.\r   lf := Character lf.\r   nextLF := self indexOf: lf startingAt: 1.\r   [ start <= sz ] whileTrue: [\r         (nextLF = 0 and: [ nextCR = 0 ]) ifTrue: [ \"No more CR, nor LF, the string is over\"\r               aBlock _pretenured_value: start value: sz value: sz.\r               ^ self ].\r         (nextCR = 0 or: [ 0 < nextLF and: [ nextLF < nextCR ] ])\r            ifTrue: [ \"Found a LF\"\r                  aBlock value: start value: nextLF - 1 value: nextLF.\r                  start := 1 + nextLF.\r                  nextLF := self indexOf: lf startingAt: start ]\r            ifFalse: [\r                  1 + nextCR = nextLF\r                     ifTrue: [ \"Found a CR-LF pair\"\r                           aBlock\r                              value: start\r                              value: nextCR - 1\r                              value: nextLF.\r                           start := 1 + nextLF.\r                           nextCR := self\r                                        indexOf: cr\r                                        startingAt: start.\r                           nextLF := self\r                                        indexOf: lf\r                                        startingAt: start ]\r                     ifFalse: [ \"Found a CR\"\r                           aBlock\r                              value: start\r                              value: nextCR - 1\r                              value: nextCR.\r                           start := 1 + nextCR.\r                           nextCR := self\r                                        indexOf: cr\r                                        startingAt: start ] ] ]"
-	},
-	{
-		"methodClass" : "Number",
-		"sourceCode" : "_pretenured_asMargin\r\r   ^ Margin _pretenured_fromNumber: self"
+		"methodClass" : "OrderedCollection",
+		"sourceCode" : "_pretenured_do: aBlock\r   \"Override the superclass for performance reasons.\"\r\r   firstIndex to: lastIndex do: [ :index |\r   aBlock value: (array at: index) ]"
 	},
 	{
 		"methodClass" : "Rectangle",
-		"sourceCode" : "_pretenured_insetBy: delta\r   \"Answer a Rectangle that is inset from the receiver by delta. delta is a\r\tRectangle, Point, or scalar.\"\r\r   ^ delta _pretenured_asMargin _pretenured_insetRectangle: self"
+		"sourceCode" : "_pretenured_extent\r   \"Answer a point with the receiver's width @ the receiver's height.\"\r\r   ^ corner _pretenured_016r2D: origin"
+	},
+	{
+		"methodClass" : "Form",
+		"sourceCode" : "_pretenured_getCanvas\r   \"Return a Canvas that can be used to draw onto the receiver\"\r\r   ^ self defaultCanvasClass _pretenured_on: self"
+	},
+	{
+		"methodClass" : "Point",
+		"sourceCode" : "_pretenured_016r2F: arg\r   \"Answer a Point that is the quotient of the receiver and arg.\"\r\r   arg isPoint ifTrue: [ ^ x / arg x @ (y / arg y) ].\r   ^ arg _pretenured_adaptToPoint: self andSend: #/"
 	},
 	{
 		"methodClass" : "Rectangle class",
@@ -237,23 +161,15 @@
 	},
 	{
 		"methodClass" : "Rectangle class",
-		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNewTenured setPoint: originPoint point: cornerPoint"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_addCollapseBox\r   \"If I have a labelArea, add a collapse box to it.\"\r\r   labelArea ifNil: [ ^ self ].\r   collapseBox := self _pretenured_createCollapseBox.\r   collapseBox layoutFrame:\r      (self theme windowCollapseBoxLayoutFor: self).\r   labelArea addMorphBack: collapseBox"
-	},
-	{
-		"methodClass" : "Point",
-		"sourceCode" : "_pretenured_016r2F: arg\r   \"Answer a Point that is the quotient of the receiver and arg.\"\r\r   arg isPoint ifTrue: [ ^ x / arg x @ (y _pretenured_016r2F: arg y) ].\r   ^ arg _pretenured_adaptToPoint: self andSend: #/"
+		"sourceCode" : "_pretenured_origin: originPoint corner: cornerPoint\r   \"Answer an instance of me whose corners (top left and bottom right) are\r\tdetermined by the arguments.\"\r\r   ^ self basicNew\r        _pretenured_setPoint: originPoint\r        point: cornerPoint"
 	},
 	{
 		"methodClass" : "Collection",
 		"sourceCode" : "_pretenured_copyEmpty\r   \"Return a new empty collection based on the species\"\r\r   \"{1@2} copyEmpty >>> #()\"\r\r   \"'hello' copyEmpty >>> ''\"\r\r   \"(1 to: 10) copyEmpty >>> #()\"\r\r   ^ self species newTenured"
 	},
 	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_innerBounds\r   \"Return the inner rectangle enclosed by the bounds of this morph excluding the space taken by its borders. For an unbordered morph, this is just its bounds.\"\r\r   ^ self bounds _pretenured_insetBy: self borderWidth"
+		"methodClass" : "SystemWindow",
+		"sourceCode" : "_pretenured_createCloseBox\r   \"Answer a button for closing the window.\"\r\r   ^ self theme _pretenured_createCloseBoxFor: self"
 	},
 	{
 		"methodClass" : "Dictionary",
@@ -264,195 +180,119 @@
 		"sourceCode" : "initialize\r   \"Initialize the receiver.\"\r\r   self stateMap: KeyedTree new.\r   enabled := true.\r   active := true.\r   over := false.\r   down := false.\r   super initialize"
 	},
 	{
-		"methodClass" : "Dictionary",
-		"sourceCode" : "_pretenured_at: key ifAbsent: aBlock\r   \"Answer the value associated with the key or, if key isn't found,\r\tanswer the result of evaluating aBlock.\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ aBlock ]\r         ifNotNil: [ :assoc | assoc ]) value"
-	},
-	{
-		"methodClass" : "SequenceableCollection class",
-		"sourceCode" : "_pretenured_new: newSize streamContents: blockWithArg\r   \"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption\"\r\r   \"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)\"\r\r   | stream |\r   stream := WriteStream _pretenured_on:\r                (self streamSpecies newTenured: newSize).\r   blockWithArg value: stream.\r   \"If the write position of stream is at the end of the internal buffer of stream (originalContents),\r\twe can return it directly instead of making a copy as contents would do\"\r   ^ stream position = stream originalContents size\r        ifTrue: [ stream originalContents ]\r        ifFalse: [ stream _pretenured_contents ]"
-	},
-	{
 		"methodClass" : "Morph",
 		"sourceCode" : "_pretenured_defaultBounds\r   \"answer the default bounds for the receiver\"\r\r   ^ 0 @ 0 _pretenured_corner: 50 @ 40"
+	},
+	{
+		"methodClass" : "Dictionary",
+		"sourceCode" : "_pretenured_at: key ifAbsent: aBlock\r   \"Answer the value associated with the key or, if key isn't found,\r\tanswer the result of evaluating aBlock.\"\r\r   ^ ((array at: (self findElementOrNil: key))\r         ifNil: [ aBlock ]\r         ifNotNil: [ :assoc | assoc ]) value"
 	},
 	{
 		"methodClass" : "MultistateButtonMorph",
 		"sourceCode" : "_pretenured_passiveEnabledNotOverUpFillStyle: aFillStyle\r   \"Set the passive, enabled, notOver, up fill style.\"\r\r   self stateMap\r      _pretenured_atPath: #( passive enabled notOver up )\r      put: aFillStyle.\r   self changed"
 	},
 	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "_pretenured_createCollapseBox\r   \"Answer a button for minimising the window.\"\r\r   ^ self theme _pretenured_createCollapseBoxFor: self"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "_pretenured_submorphsDo: aBlock\r\r   submorphs _pretenured_do: aBlock"
-	},
-	{
-		"methodClass" : "Margin class",
-		"sourceCode" : "left: leftNumber top: topNumber right: rightNumber bottom: bottomNumber\r\r   ^ self newTenured\r        setTop: topNumber\r        left: leftNumber\r        bottom: bottomNumber\r        right: rightNumber"
-	},
-	{
-		"methodClass" : "ExternalAddress",
-		"sourceCode" : "copyFrom: startIndex to: endIndex\r\r   | result size |\r   size := endIndex - startIndex + 1.\r   result := ByteArray newTenured: size.\r   LibC memCopy: self + (startIndex - 1) to: result size: size.\r   ^ result"
-	},
-	{
-		"methodClass" : "HGParticle class",
-		"sourceCode" : "at: position velocity: velocity temperature: temperature mass: mass in: anHGSimulator\r\r   | particle |\r   particle := self newTenured.\r   particle position: position.\r   particle velocity: velocity.\r   particle temperature: temperature.\r   particle mass: mass.\r   ^ particle"
-	},
-	{
-		"methodClass" : "TableLayout",
-		"sourceCode" : "layoutTopToBottom: aMorph in: newBounds\r   \"An optimized top-to-bottom list layout\"\r\r   | inset extent block posX posY centering extraPerCell amount minX minY maxX maxY n height extra last cell size width sum vFill first submorphs |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint y.\r   extent := newBounds extent.\r   n := 0.\r   vFill := false.\r   sum := 0.\r   width := height := 0.\r   first := last := nil.\r   block := [ :m |\r               | sizeX props sizeY |\r               props := m layoutProperties ifNil: [ m ].\r               props disableTableLayout ifFalse: [\r                     n := n + 1.\r                     cell := LayoutCell newTenured target: m.\r                     props vResizing == #spaceFill\r                        ifTrue: [\r                              cell vSpaceFill: true.\r                              extra := m spaceFillWeight.\r                              cell extraSpace: extra.\r                              sum := sum + extra ]\r                        ifFalse: [ cell vSpaceFill: false ].\r                     props hResizing == #spaceFill ifTrue: [\r                        vFill := true ].\r                     size := m minExtent.\r                     sizeX := size x.\r                     sizeY := size y.\r                     sizeX < minX\r                        ifTrue: [ sizeX := minX ]\r                        ifFalse: [\r                        sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r                     sizeY < minY\r                        ifTrue: [ sizeY := minY ]\r                        ifFalse: [\r                        sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r                     cell cellSize: sizeY.\r                     first\r                        ifNil: [ first := cell ]\r                        ifNotNil: [ last nextCell: cell ].\r                     last := cell.\r                     height := height + sizeY.\r                     sizeX > width ifTrue: [ width := sizeX ] ] ].\r\r   submorphs := aMorph submorphs.\r   properties reverseTableCells ifTrue: [\r      submorphs := submorphs reversed ].\r   submorphs do: [ :each |\r         each visible\r            ifTrue: [ block value: each ]\r            ifFalse: [\r            each privateBounds: (each bounds topLeft extent: 0 @ 0) ] ].\r\r   n > 1 ifTrue: [ height := height + (n - 1 * inset) ].\r\r   (properties vResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ sum isZero ] ]) ifTrue: [\r      extent := (extent x max: width) @ height ].\r   (properties hResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ vFill not ] ]) ifTrue: [\r      extent := width @ (extent y max: height) ].\r\r   posX := newBounds left.\r   posY := newBounds top.\r\r   \"Compute extra horizontal space\"\r   extra := extent x - width.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extra > 0 ifTrue: [\r         vFill\r            ifTrue: [ width := extent x ]\r            ifFalse: [\r                  centering := properties wrapCentering.\r                  centering == #bottomRight ifTrue: [\r                     posX := posX + extra ].\r                  centering == #center ifTrue: [\r                     posX := posX + (extra // 2) ] ] ].\r\r\r   \"Compute extra vertical space\"\r   extra := extent y - height.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extraPerCell := 0.\r   extra > 0 ifTrue: [\r         sum isZero\r            ifTrue: [ \"extra space but no #spaceFillers\"\r                  centering := properties listCentering.\r                  centering == #bottomRight ifTrue: [\r                     posY := posY + extra ].\r                  centering == #center ifTrue: [\r                     posY := posY + (extra // 2) ] ]\r            ifFalse: [ extraPerCell := extra asFloat / sum asFloat ] ].\r\r   n := 0.\r   extra := last := 0.\r   cell := first.\r   [ cell == nil ] whileFalse: [\r         n := n + 1.\r         height := cell cellSize.\r         (extraPerCell > 0 and: [ cell vSpaceFill ]) ifTrue: [\r               extra := (last := extra)\r                        + (extraPerCell * cell extraSpace).\r               amount := extra truncated - last truncated.\r               height := height + amount ].\r         cell target layoutInBounds:\r            (posX @ posY extent: width @ height).\r         posY := posY + height + inset.\r         cell := cell nextCell ]"
-	},
-	{
-		"methodClass" : "HGSimulator",
-		"sourceCode" : "simulationOrigin: anHG2dPoint corner: anotherHG2dPoint\r\r   simulationOrigin := anHG2dPoint.\r   simulationCorner := anotherHG2dPoint.\r   form := Form\r              _pretenured_extent: anotherHG2dPoint x - anHG2dPoint x\r                 @ (anotherHG2dPoint y - anHG2dPoint y)\r              depth: 32.\r   form getCanvas fillColor: self color.\r   visibleForm := Form\r                     extent: anotherHG2dPoint x - anHG2dPoint x\r                        @ (anotherHG2dPoint y - anHG2dPoint y)\r                     depth: 32.\r   visibleForm getCanvas fillColor: self color.\r   scale := self width / (anotherHG2dPoint x - anHG2dPoint x) min:\r               self height / (anotherHG2dPoint y - anHG2dPoint y).\r   self updateParticleMap"
-	},
-	{
-		"methodClass" : "ArrayedCollection class",
-		"sourceCode" : "with: anObject\r   \"Answer a new instance of me, containing only anObject.\"\r\r   | newCollection |\r   newCollection := self newTenured: 1.\r   newCollection at: 1 put: anObject.\r   ^ newCollection"
-	},
-	{
-		"methodClass" : "FT2Face",
-		"sourceCode" : "primTransformGlyphSlotOutline: anIntegerArray\r\r   | faceRec outline matrix |\r   faceRec := FTFaceRec fromHandle: handle.\r   matrix := FTMatrix newTenured.\r\r   matrix xx: (anIntegerArray at: 1).\r   matrix xy: (anIntegerArray at: 2).\r   matrix yx: (anIntegerArray at: 3).\r   matrix yy: (anIntegerArray at: 4).\r\r   \"I need to obtain the real address of the struct inside the struct\"\r   outline := FTOutline fromHandle:\r                 faceRec glyph outline getHandle asExternalAddress.\r\r   self ffiOutline: outline transformByMatrix: matrix"
-	},
-	{
-		"methodClass" : "SequenceableCollection",
-		"sourceCode" : "reject: rejectBlock\r   \"Optimized version of Collection>>#reject:\"\r\r   \"(#(1 2 3 4) reject: [:each | each = 3 ]) >>> #(1 2 4)\"\r\r   | each |\r   ^ self class\r        _pretenured_new: self size\r        streamContents: [ :stream |\r              1 to: self size do: [ :index |\r                    (rejectBlock value: (each := self at: index))\r                       ifFalse: [ stream nextPut: each ] ] ]"
-	},
-	{
-		"methodClass" : "ExternalStructure class",
-		"sourceCode" : "new\r\r   ^ self fromHandle: (ByteArray newTenured: self byteSize)"
-	},
-	{
-		"methodClass" : "PharoLightTheme",
-		"sourceCode" : "buttonNormalBorderStyleFor: aButton\r   \"Return the normal button borderStyle for the given button.\"\r\r   | outerColor |\r   (aButton valueOfProperty: #noBorder ifAbsent: [ false ]) ifTrue: [\r         ^ SimpleBorderStyle new\r              width: 0;\r              baseColor: Color transparent ].\r   outerColor := self darkBaseColorFor: aButton.\r   ^ SimpleBorderStyle newTenured\r        width: 1 scaledByDisplayScaleFactor;\r        baseColor: outerColor"
-	},
-	{
-		"methodClass" : "KMDispatcher",
-		"sourceCode" : "targets\r\r   ^ targets ifNil: [ targets := Set newTenured ]"
-	},
-	{
-		"methodClass" : "HG2dRectangle class",
-		"sourceCode" : "origin: anHG2dPoint corner: anotherHG2dPoint\r\r   ^ self newTenured setOrigin: anHG2dPoint corner: anotherHG2dPoint"
-	},
-	{
-		"methodClass" : "FreeTypeFont",
-		"sourceCode" : "characterWidthCache\r\r   ^ characterWidthCache ifNil: [\r        characterWidthCache := IdentityDictionary newTenured ]"
-	},
-	{
-		"methodClass" : "HGForceInitialization class",
-		"sourceCode" : "with: anHGPoint\r\r   ^ self newTenured setForce: anHGPoint"
-	},
-	{
-		"methodClass" : "UITheme",
-		"sourceCode" : "createCollapseBoxFor: aSystemWindow\r   \"Answer a button for minimising the window.\"\r\r   | formSet msb |\r   formSet := self windowMinimizeFormSet.\r   msb := MultistateButtonMorph new extent: formSet extent.\r   msb _pretenured_activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb extent: formSet extent.\r   msb passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizeOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: [ aSystemWindow collapseBoxHit ];\r      setBalloonText: 'Collapse this window' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
-	},
-	{
-		"methodClass" : "UITheme",
-		"sourceCode" : "configureWindowLabelAreaFor: aWindow\r   \"Configure the label area for the given window.\"\r\r   | macOSLayout addCloseBox addCollapseExpandBoxes addMenuBox padding paddingStep |\r   macOSLayout := self labelAreaLayout = #macOS or: [\r                     self labelAreaLayout = #platformDependent and:\r                        Smalltalk os isMacOS ].\r   addCloseBox := [\r                  aWindow hasCloseBox ifTrue: [ aWindow addCloseBox ] ].\r   addCollapseExpandBoxes := [\r                                aWindow hasCollapseBox ifTrue: [\r                                   aWindow addCollapseBox ].\r                                aWindow hasExpandBox ifTrue: [\r                                   aWindow addExpandBox ] ].\r   addMenuBox := [\r                 aWindow hasMenuBox ifTrue: [ aWindow addMenuControl ] ].\r   padding := 0.\r   aWindow labelArea addMorphBack:\r      (Morph newTenured extent: aWindow class borderWidth @ 0).\r   macOSLayout\r      ifTrue: [\r            addCloseBox value.\r            addCollapseExpandBoxes value.\r            paddingStep := 1 ]\r      ifFalse: [\r            addMenuBox value.\r            paddingStep := -1 ].\r   aWindow hasCloseBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasCollapseBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasExpandBox ifTrue: [ padding := padding + paddingStep ].\r   aWindow hasMenuBox ifTrue: [ padding := padding - paddingStep ].\r   aWindow labelArea addMorphBack: (Morph new\r          extent: aWindow class borderWidth @ 0;\r          hResizing: #spaceFill).\r   aWindow basicLabel ifNotNil: [ :label |\r         label color: self textColor.\r         aWindow labelArea\r            addMorphBack: label;\r            hResizing: #shrinkWrap ].\r   aWindow labelArea addMorphBack: (Morph new\r          extent: aWindow class borderWidth @ 0;\r          hResizing: #spaceFill).\r   padding > 0 ifTrue: [\r         aWindow labelArea addMorphBack:\r            (Morph new extent: aWindow boxExtent x * padding @ 0) ].\r   macOSLayout\r      ifTrue: [ addMenuBox value ]\r      ifFalse: [\r            addCollapseExpandBoxes value.\r            addCloseBox value ].\r   aWindow labelArea addMorphBack:\r      (Morph new extent: aWindow class borderWidth @ 0)"
-	},
-	{
-		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
-		"sourceCode" : "renderAndFilterStretchedGlyph: aCharacter depth: depth subpixelPosition: sub font: aFreeTypeFont scale: scale\r   \"Glyphs are either 1 or 8 bit deep. For 32 bpp we use 8 bits, otherwise 1\"\r\r   | em form glyph scaleX charCode slant extraWidth s offsetX offsetY synthBoldStrength boldExtra extraHeight face baseExtent baseOffset baseAdvance baseLinearAdvance |\r   charCode := aCharacter asUnicode asInteger.\r   (aFreeTypeFont face charmaps includes: 'unic')\r      ifTrue: [\r            (aFreeTypeFont isSymbolFont and: [\r                charCode between: 16r20 and: 16rFF ]) ifTrue: [\r               charCode := charCode + 16rF000 ] ]\r      ifFalse: [\r            (aFreeTypeFont face charmaps includes: 'armn') ifTrue: [ \"select apple roman char map, and map character from unicode to mac encoding\"\r                  aFreeTypeFont face setCharMap: 'armn'.\r                  charCode := self unicodeToMacRoman: aCharacter \"check this!\" ] ].\r   aCharacter < $  ifTrue: [ \"charCode := $  asUnicode asInteger\"\r         ^ (GlyphForm extent: 0 @ 0 depth: depth)\r              advance: 0 @ 0;\r              linearAdvance: 0 @ 0;\r              offset: 0 @ 0;\r              yourself ].\r   scaleX := 3.\r   em := aFreeTypeFont pixelSize.\r   [\r      | hintingFlags flags |\r      face := aFreeTypeFont face.\r      face setPixelWidth: em height: em.\r      hintingFlags := FreeTypeSettings current hintingFlags.\r      flags := LoadNoBitmap bitOr:\r                  (LoadIgnoreTransform bitOr: hintingFlags).\r      face loadCharacter: charCode flags: flags ]\r      on: FT2Error , PrimitiveFailed\r      do: [ :e |\r            ^ (GlyphForm extent: 0 @ 0 depth: depth)\r                 advance: 0 @ 0;\r                 linearAdvance: 0 @ 0;\r                 offset: 0 @ 0;\r                 yourself ].\r   glyph := face glyph.\r   slant := aFreeTypeFont simulatedItalicSlant.\r   synthBoldStrength := aFreeTypeFont simulatedBoldStrength.\r   synthBoldStrength ~= 0 ifTrue: [\r      face emboldenOutline: synthBoldStrength ].\r   boldExtra := 4 * synthBoldStrength abs ceiling.\r   face\r      transformOutlineAngle: 0\r      scalePoint: scaleX @ 1 * scale\r      slant: slant.\r   extraWidth := (glyph height * slant) abs ceiling.\r   extraWidth := extraWidth + boldExtra.\r   sub > 0 ifTrue: [ extraWidth := extraWidth + 3 ].\r   extraHeight := boldExtra.\r   baseExtent := glyph width + extraWidth + 1 + 2 * scaleX\r                 @ (glyph height + extraHeight + 1). \"+ 6\"\r   form := GlyphForm extent: baseExtent * scale depth: depth.\r   s := glyph height - glyph hBearingY * slant.\r   s := s sign * s abs ceiling.\r   offsetX := glyph hBearingX negated + s + (boldExtra // 2) + 1\r              * scaleX.\r   offsetY := glyph height - glyph hBearingY + (boldExtra // 2).\r   face translateOutlineBy:\r      offsetX + (sub * scaleX / 64) @ offsetY * scale.\r   face renderGlyphIntoForm: form.\r   baseOffset := glyph hBearingX - s - 1 - (boldExtra // 2) * scaleX\r                 @\r                 (glyph hBearingY + 1 + (boldExtra / 2) ceiling)\r                    negated.\r   \"When not hinting FreeType sets the advance to the truncated linearAdvance.\r\tThe characters appear squashed together. Rounding is probably better, so we fix the advance here\"\r   baseAdvance := aFreeTypeFont subPixelPositioned\r                     ifTrue: [\r                     glyph roundedPixelLinearAdvance * (scaleX @ 1) ]\r                     ifFalse: [\r                     glyph advance x * scaleX @ glyph advance y ].\r   baseLinearAdvance := glyph linearAdvance.\r   ^ self\r        _pretenured_filter: form\r        baseExtent: baseExtent\r        baseOffset: baseOffset\r        baseAdvance: baseAdvance\r        baseLinearAdvance: baseLinearAdvance\r        scale: scale"
-	},
-	{
-		"methodClass" : "RunArray",
-		"sourceCode" : "copyFrom: start to: stop\r\r   | newRuns run1 run2 offset1 offset2 |\r   stop < start ifTrue: [ ^ RunArray new ].\r   self at: start setRunOffsetAndValue: [ :r :o :value1 |\r         run1 := r.\r         offset1 := o.\r         value1 ].\r   self at: stop setRunOffsetAndValue: [ :r :o :value2 |\r         run2 := r.\r         offset2 := o.\r         value2 ].\r   run1 = run2\r      ifTrue: [ newRuns := { (offset2 - offset1 + 1) } ]\r      ifFalse: [\r            newRuns := runs copyFrom: run1 to: run2.\r            newRuns at: 1 put: (newRuns at: 1) - offset1.\r            newRuns at: newRuns size put: offset2 + 1 ].\r   ^ RunArray\r        runs: newRuns\r        values: (values _pretenured_copyFrom: run1 to: run2)"
-	},
-	{
-		"methodClass" : "HGParticle",
-		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary newTenured.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
+		"methodClass" : "Dictionary",
+		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
 	},
 	{
 		"methodClass" : "HashedCollection",
 		"sourceCode" : "grow\r   \"Grow the elements array and reinsert the old elements\"\r\r   | oldElements |\r   oldElements := array.\r   array := Array newTenured:\r               (HashTableSizes atLeast: oldElements size * 2).\r   tally := 0.\r   oldElements do: [ :each | each ifNotNil: [ self noCheckAdd: each ] ]"
 	},
 	{
-		"methodClass" : "ImageFillStyle class",
-		"sourceCode" : "formSet: aFormSet\r   \"Answer a new instance of the receiver with the given form set.\"\r\r   ^ self newTenured formSet: aFormSet"
+		"methodClass" : "Form",
+		"sourceCode" : "setExtent: extent depth: bitsPerPixel\r   \"Create a virtual bit map with the given extent and bitsPerPixel.\"\r\r   width := extent x asInteger.\r   width < 0 ifTrue: [ width := 0 ].\r   height := extent y asInteger.\r   height < 0 ifTrue: [ height := 0 ].\r   depth := bitsPerPixel.\r   bits := Bitmap newTenured: self bitsSize"
 	},
 	{
-		"methodClass" : "FT2Face",
-		"sourceCode" : "renderGlyphIntoForm: aForm pixelMode: pixelMode\r   \"render the current glyph (selected by loadChar/loadGlyph into the given form (1 or 8 bpp)\r\twith pixel mode anInteger \"\r\r   | ftBitmap outline |\r   ftBitmap := FTBitmap newTenured.\r   outline := self outline.\r\r   ExternalAddress\r      allocate: aForm bits byteSize\r      bytesDuring: [ :buffer |\r            1 to: aForm bits byteSize do: [ :i |\r            buffer byteAt: i put: 0 ].\r\r            ftBitmap setBuffer: buffer.\r            ftBitmap initializeFromForm: aForm pixelMode: pixelMode.\r\r            FT2Library current\r               getBitmap: ftBitmap getHandle\r               fromOutline: outline getHandle.\r\r            aForm bits copyFromByteArray:\r               (buffer copyFrom: 1 to: aForm bits byteSize) ]"
+		"methodClass" : "UITheme",
+		"sourceCode" : "newCloseControlIn: aThemedMorph for: aModel action: aValuable help: helpText\r   \"Answer a button for closing things.\"\r\r   | formSet msb |\r   formSet := self windowCloseFormSet.\r   msb := MultistateButtonMorph new extent: formSet extent.\r   msb activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle _pretenured_formSet: formSet).\r   formSet := self windowClosePassiveFormSet.\r   msb extent: formSet extent.\r   msb activeDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   msb _pretenured_passiveDisabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowCloseOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle:\r         (ImageFillStyle _pretenured_formSet: formSet);\r      passiveEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet).\r   formSet := self windowClosePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: aValuable;\r      setBalloonText: helpText.\r   ^ msb"
 	},
 	{
-		"methodClass" : "FreeTypeFont",
-		"sourceCode" : "displayString: aString on: aBitBlt from: startIndex to: stopIndex at: aPoint kern: kernDelta baselineY: baselineY scale: scale\r\r   | glyph depth foreColorVal foreColorAlpha originalColorMap clr subPixelPosition widthAndKernedWidth char nextChar floatDestX destX destY offset gammaTable gammaInverseTable useRule41 |\r   useRule41 := FreeTypeSettings current useSubPixelAntiAliasing and: [\r                   aBitBlt destForm depth >= 8 ].\r   depth := aBitBlt destForm depth.\r   originalColorMap := aBitBlt colorMap.\r   clr := (aBitBlt lastFontForegroundColor ifNil: [\r              Color black asNontranslucentColor ])\r             pixelValueForDepth: 32.\r   useRule41\r      ifTrue: [\r            foreColorVal := clr bitAnd: 16rFFFFFF.\r            foreColorAlpha := (clr bitAnd: 16rFF000000) >> 24.\r            gammaTable := FreeTypeSettings current gammaTable.\r            gammaInverseTable := FreeTypeSettings current\r                                    gammaInverseTable ]\r      ifFalse: [ foreColorVal := clr ].\r   depth <= 8\r      ifTrue: [\r      aBitBlt colorMap: (aBitBlt cachedFontColormapFrom: 32 to: depth) ]\r      ifFalse: [ aBitBlt colorMap: nil ].\r   destX := aPoint x.\r   destY := baselineY.\r   floatDestX := aPoint x.\r   widthAndKernedWidth := Array newTenured: 2.\r   startIndex to: stopIndex do: [ :i |\r         subPixelPosition := (floatDestX \\\\ 1 roundTo: 0.015625) * 64. \"1/64\"\r         subPixelPosition = 64 ifTrue: [\r               subPixelPosition := 0.\r               destX := destX + 1 ].\r         char := aString at: i.\r         glyph := self\r                     glyphOf: char\r                     destDepth: depth\r                     colorValue: foreColorVal\r                     subpixelPosition: subPixelPosition\r                     scale: scale.\r         aBitBlt sourceForm: glyph.\r         offset := glyph offset.\r         aBitBlt destX: destX + offset x.\r         aBitBlt destY: destY + offset y.\r         aBitBlt width: glyph width.\r         aBitBlt height: glyph height.\r         useRule41\r            ifTrue: [\r                  aBitBlt\r                     copyBitsColor: foreColorVal\r                     alpha: foreColorAlpha\r                     gammaTable: gammaTable\r                     ungammaTable: gammaInverseTable ]\r            ifFalse: [ aBitBlt copyBits ].\r         nextChar := i + 1 <= stopIndex\r                        ifTrue: [ aString at: i + 1 ]\r                        ifFalse: [ nil ].\r         self\r            widthAndKernedWidthOfLeft: char\r            right: nextChar\r            into: widthAndKernedWidth.\r         floatDestX := floatDestX\r                       +\r                       ((widthAndKernedWidth at: 2) + kernDelta\r                        * scale).\r         destX := floatDestX ].\r   aBitBlt colorMap: originalColorMap.\r   ^ destX @ destY"
-	},
-	{
-		"methodClass" : "HGSimpleKernel class",
-		"sourceCode" : "support: aNumber\r\r   ^ self newTenured setSupport: aNumber"
-	},
-	{
-		"methodClass" : "Dictionary",
-		"sourceCode" : "at: key put: anObject\r   \"Set the value at key to be anObject.  If key is not found, create a\r\tnew entry for key and set is value to anObject. Answer anObject.\"\r\r   \"(Dictionary new at: #color put: #blue; yourself) >>> (Dictionary new add: #color->#blue; yourself)\"\r\r   \"(Dictionary new at: #color put: #blue; at: #color put: #red; yourself) >>> (Dictionary new add: #color->#red; yourself)\"\r\r   | index assoc |\r   index := self findElementOrNil: key.\r   assoc := array at: index.\r   assoc\r      ifNil: [\r            self\r               atNewIndex: index\r               put: (Association _pretenured_key: key value: anObject) ]\r      ifNotNil: [ assoc value: anObject ].\r   ^ anObject"
-	},
-	{
-		"methodClass" : "SystemWindow",
-		"sourceCode" : "addExpandBox\r   \"If I have a labelArea, add a close box to it\"\r\r   labelArea ifNil: [ ^ self ].\r   expandBox := self createExpandBox.\r   self setExpandBoxBalloonText.\r   expandBox layoutFrame: (LayoutFrame newTenured\r          leftFraction: 1;\r          leftOffset: (self boxExtent x * 2 + 3) negated).\r   labelArea addMorphBack: expandBox"
-	},
-	{
-		"methodClass" : "Color",
-		"sourceCode" : "adjustBrightness: brightness\r   \"Adjust the relative brightness of this color. (lowest value is 0.005 so that hue information is not lost)\"\r\r   ^ self class\r        _pretenured_h: self hue\r        s: self saturation\r        v: (self brightness + brightness min: 1.0 max: 0.005)\r        alpha: self alpha"
-	},
-	{
-		"methodClass" : "FreeTypeCache",
-		"sourceCode" : "atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r   | charCodeTable typeTable scaleTable entry v vSize |\r   mutex criticalReleasingOnError: [\r         charCodeTable := fontTable\r                             at: aFreeTypeFont\r                             ifAbsentPut: [\r                             self dictionaryClass new: 60 ].\r         typeTable := charCodeTable\r                         at: charCodeInteger\r                         ifAbsentPut: [\r                         self dictionaryClass newTenured: 10 ].\r         scaleTable := typeTable\r                          at: typeFlag\r                          ifAbsentPut: [\r                          self dictionaryClass newTenured: 1 ].\r         entry := scaleTable at: scale ifAbsent: [ ].\r         entry ifNotNil: [\r               fifo moveDown: entry.\r               ^ entry object ].\r         v := aBlock\r                 on: Error\r                 do: [ :error |\r                       self\r                          removeIfEmptyScaleTable: scaleTable\r                          type: typeFlag\r                          typeTable: typeTable\r                          charCode: charCodeInteger\r                          charCodeTable: charCodeTable\r                          font: aFreeTypeFont.\r                       error pass ].\r         vSize := self sizeOf: v.\r         (maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r               self\r                  removeIfEmptyScaleTable: scaleTable\r                  type: typeFlag\r                  typeTable: typeTable\r                  charCode: charCodeInteger\r                  charCodeTable: charCodeTable\r                  font: aFreeTypeFont.\r               ^ v ].\r         used := used + vSize.\r         entry := self fifoEntryClass newTenured\r                     font: aFreeTypeFont;\r                     charCode: charCodeInteger;\r                     type: typeFlag;\r                     scale: scale;\r                     object: v;\r                     yourself.\r         scaleTable at: scale put: entry.\r         fifo addLast: entry.\r         maximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r         ^ v ]"
+		"methodClass" : "HGParticle",
+		"sourceCode" : "initialize\r\r   attributes := IdentityDictionary new.\r   self force: HG2dPoint zero.\r   self velocity: HG2dPoint zero.\r   self position: HG2dPoint _pretenured_zero.\r   self heatConductivity: 10.0.\r   self heatCapacity: 10.0.\r   self temperature: 390"
 	},
 	{
 		"methodClass" : "FreeTypeFont",
 		"sourceCode" : "widthAndKernedWidthOfLeft: leftCharacter right: rightCharacterOrNil into: aTwoElementArray\r   \"Set the first element of aTwoElementArray to the width of leftCharacter and\r\tthe second element to the width of left character when kerned with\r\trightCharacterOrNil. Answer the receiver\r\r\tWe use a widthAndKernedWidthCache to store these values for speed\"\r\r   | privateArray |\r   privateArray := (self widthAndKernedWidthCache\r                       at: leftCharacter\r                       ifAbsentPut: [ Dictionary newTenured ])\r                      at:\r                      (rightCharacterOrNil ifNil: [ 0 asCharacter ])\r                      ifAbsentPut: [\r                            super\r                               widthAndKernedWidthOfLeft:\r                               leftCharacter\r                               right: rightCharacterOrNil\r                               into: (Array newTenured: 2) ].\r   \"We can't answer privateArray, we MUST copy its elements into aTwoElementArray\"\r   aTwoElementArray\r      at: 1 put: (privateArray at: 1);\r      at: 2 put: (privateArray at: 2).\r   ^ aTwoElementArray"
 	},
 	{
+		"methodClass" : "ExternalStructure class",
+		"sourceCode" : "new\r\r   ^ self fromHandle: (ByteArray newTenured: self byteSize)"
+	},
+	{
+		"methodClass" : "UITheme",
+		"sourceCode" : "createCollapseBoxFor: aSystemWindow\r   \"Answer a button for minimising the window.\"\r\r   | formSet msb |\r   formSet := self windowMinimizeFormSet.\r   msb := MultistateButtonMorph new extent: formSet extent.\r   msb activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb extent: formSet extent.\r   msb passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMinimizeOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle:\r         (ImageFillStyle _pretenured_formSet: formSet).\r   formSet := self windowMinimizePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle _pretenured_formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      addUpAction: [ aSystemWindow collapseBoxHit ];\r      setBalloonText: 'Collapse this window' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
+	},
+	{
+		"methodClass" : "KMDispatcher class",
+		"sourceCode" : "target: aTargetSelector morph: aMorph\r\r   ^ self newTenured\r        target: (KMTarget for: aTargetSelector in: aMorph);\r        yourself"
+	},
+	{
+		"methodClass" : "Rectangle",
+		"sourceCode" : "asLayoutFrame\r   \"Answer an instance of LayoutFrame which uses fractions from receiver \"\r\r   ^ LayoutFrame newTenured\r        leftFraction: self left;\r        rightFraction: self right;\r        topFraction: self top;\r        bottomFraction: self bottom;\r        yourself"
+	},
+	{
+		"methodClass" : "KeyboardKey",
+		"sourceCode" : "asKeyCombination\r\r   ^ KMSingleKeyCombination newTenured\r        key: self;\r        yourself"
+	},
+	{
 		"methodClass" : "FreeTypeSubPixelAntiAliasedGlyphRenderer",
-		"sourceCode" : "filter: aGlyphForm baseExtent: baseExtent baseOffset: baseOffset baseAdvance: baseAdvance baseLinearAdvance: baseLinearAdvance scale: scale\r   \"aGlyphForm should be 3x stretched 8 bit GlyphForm\"\r\r   | w h s answer rowstart bytes word littleEndian shift v a colorVal i prevG prevB r g b nextR nextG filters rfilter gfilter bfilter balR balG balB |\r   \"correctionFactor := 0.0 .\"\r   filters := FreeTypeSettings current subPixelFilters.\r   rfilter := filters at: 1.\r   gfilter := filters at: 2.\r   bfilter := filters at: 3.\r   bytes := aGlyphForm bits.\r   w := aGlyphForm width.\r   h := aGlyphForm height.\r   answer := aGlyphForm class\r                _pretenured_extent:\r                (baseExtent x / 3) ceiling + 2 @ baseExtent y * scale\r                depth: 32.\r   answer\r      offset: (baseOffset x / 3) rounded @ baseOffset y * scale;\r      advance: (baseAdvance / 3) rounded * scale;\r      linearAdvance: baseLinearAdvance * scale.\r   s := w + 3 >> 2.\r   littleEndian := aGlyphForm isLittleEndian.\r   0 to: h - 1 do: [ :y |\r         rowstart := y * s + 1.\r         prevG := prevB := 0.\r         0 to: w - 1 by: 3 do: [ :x |\r               0 to: 2 do: [ :subpixelindex |\r                     i := x + subpixelindex.\r                     word := bytes at: rowstart + (i // 4).\r                     shift := -8 * (littleEndian\r                                  ifTrue: [ i bitAnd: 3 ]\r                                  ifFalse: [ 3 - (i bitAnd: 3) ]).\r                     v := (word bitShift: shift) bitAnd: 16rFF.\r                     subpixelindex = 0 ifTrue: [ r := v ].\r                     subpixelindex = 1 ifTrue: [ g := v ].\r                     subpixelindex = 2 ifTrue: [ b := v ] ].\r               x >= (w - 3)\r                  ifTrue: [ nextR := nextG := 0 ]\r                  ifFalse: [\r                        0 to: 1 do: [ :subpixelindex |\r                              i := x + 3 + subpixelindex.\r                              word := bytes at: rowstart + (i // 4).\r                              shift := -8 * (littleEndian\r                                           ifTrue: [ i bitAnd: 3 ]\r                                           ifFalse: [\r                                           3 - (i bitAnd: 3) ]).\r                              v := (word bitShift: shift) bitAnd:\r                                      16rFF.\r                              subpixelindex = 0 ifTrue: [ nextR := v ].\r                              subpixelindex = 1 ifTrue: [ nextG := v ] ] ].\r               \"balance r g b\"\r               balR := prevG * (rfilter at: 1)\r                       + (prevB * (rfilter at: 2))\r                       + (r * (rfilter at: 3)) + (g * (rfilter at: 4))\r                       + (b * (rfilter at: 5)).\r               balG := prevB * (gfilter at: 1) + (r * (gfilter at: 2))\r                       + (g * (gfilter at: 3)) + (b * (gfilter at: 4))\r                       + (nextR * (gfilter at: 5)).\r               balB := r * (bfilter at: 1) + (g * (bfilter at: 2))\r                       + (b * (bfilter at: 3))\r                       + (nextR * (bfilter at: 4))\r                       + (nextG * (bfilter at: 5)).\r               \"luminance := (0.299*balR)+(0.587*balG)+(0.114*balB).\r\t\t\tbalR := balR + ((luminance - balR)*correctionFactor).\r\t\t\tbalG := balG + ((luminance - balG)*correctionFactor).\r\t\t\tbalB := balB + ((luminance - balB)*correctionFactor).\"\r               balR := balR truncated.\r               balR < 0\r                  ifTrue: [ balR := 0 ]\r                  ifFalse: [ balR > 255 ifTrue: [ balR := 255 ] ].\r               balG := balG truncated.\r               balG < 0\r                  ifTrue: [ balG := 0 ]\r                  ifFalse: [ balG > 255 ifTrue: [ balG := 255 ] ].\r               balB := balB truncated.\r               balB < 0\r                  ifTrue: [ balB := 0 ]\r                  ifFalse: [ balB > 255 ifTrue: [ balB := 255 ] ].\r               a := balR + balG + balB > 0\r                       ifTrue: [ 16rFF ]\r                       ifFalse: [ 0 ].\r               colorVal := balB + (balG bitShift: 8)\r                           + (balR bitShift: 16) + (a bitShift: 24).\r               answer bits\r                  integerAt: y * answer width + (x // 3 + 1)\r                  put: colorVal.\r               prevB := b.\r               prevG := g \"remember the unbalanced values\" ] ].\r   ^ answer"
+		"sourceCode" : "renderAndFilterStretchedGlyph: aCharacter depth: depth subpixelPosition: sub font: aFreeTypeFont scale: scale\r   \"Glyphs are either 1 or 8 bit deep. For 32 bpp we use 8 bits, otherwise 1\"\r\r   | em form glyph scaleX charCode slant extraWidth s offsetX offsetY synthBoldStrength boldExtra extraHeight face baseExtent baseOffset baseAdvance baseLinearAdvance |\r   charCode := aCharacter asUnicode asInteger.\r   (aFreeTypeFont face charmaps includes: 'unic')\r      ifTrue: [\r            (aFreeTypeFont isSymbolFont and: [\r                charCode between: 16r20 and: 16rFF ]) ifTrue: [\r               charCode := charCode + 16rF000 ] ]\r      ifFalse: [\r            (aFreeTypeFont face charmaps includes: 'armn') ifTrue: [ \"select apple roman char map, and map character from unicode to mac encoding\"\r                  aFreeTypeFont face setCharMap: 'armn'.\r                  charCode := self unicodeToMacRoman: aCharacter \"check this!\" ] ].\r   aCharacter < $  ifTrue: [ \"charCode := $  asUnicode asInteger\"\r         ^ (GlyphForm extent: 0 @ 0 depth: depth)\r              advance: 0 @ 0;\r              linearAdvance: 0 @ 0;\r              offset: 0 @ 0;\r              yourself ].\r   scaleX := 3.\r   em := aFreeTypeFont pixelSize.\r   [\r      | hintingFlags flags |\r      face := aFreeTypeFont face.\r      face setPixelWidth: em height: em.\r      hintingFlags := FreeTypeSettings current hintingFlags.\r      flags := LoadNoBitmap bitOr:\r                  (LoadIgnoreTransform bitOr: hintingFlags).\r      face loadCharacter: charCode flags: flags ]\r      on: FT2Error , PrimitiveFailed\r      do: [ :e |\r            ^ (GlyphForm extent: 0 @ 0 depth: depth)\r                 advance: 0 @ 0;\r                 linearAdvance: 0 @ 0;\r                 offset: 0 @ 0;\r                 yourself ].\r   glyph := face glyph.\r   slant := aFreeTypeFont simulatedItalicSlant.\r   synthBoldStrength := aFreeTypeFont simulatedBoldStrength.\r   synthBoldStrength ~= 0 ifTrue: [\r      face emboldenOutline: synthBoldStrength ].\r   boldExtra := 4 * synthBoldStrength abs ceiling.\r   face\r      transformOutlineAngle: 0\r      scalePoint: scaleX @ 1 * scale\r      slant: slant.\r   extraWidth := (glyph height * slant) abs ceiling.\r   extraWidth := extraWidth + boldExtra.\r   sub > 0 ifTrue: [ extraWidth := extraWidth + 3 ].\r   extraHeight := boldExtra.\r   baseExtent := glyph width + extraWidth + 1 + 2 * scaleX\r                 @ (glyph height + extraHeight + 1). \"+ 6\"\r   form := GlyphForm extent: baseExtent * scale depth: depth.\r   s := glyph height - glyph hBearingY * slant.\r   s := s sign * s abs ceiling.\r   offsetX := glyph hBearingX negated + s + (boldExtra // 2) + 1\r              * scaleX.\r   offsetY := glyph height - glyph hBearingY + (boldExtra // 2).\r   face translateOutlineBy:\r      offsetX + (sub * scaleX / 64) @ offsetY * scale.\r   face renderGlyphIntoForm: form.\r   baseOffset := glyph hBearingX - s - 1 - (boldExtra // 2) * scaleX\r                 @\r                 (glyph hBearingY + 1 + (boldExtra / 2) ceiling)\r                    negated.\r   \"When not hinting FreeType sets the advance to the truncated linearAdvance.\r\tThe characters appear squashed together. Rounding is probably better, so we fix the advance here\"\r   baseAdvance := aFreeTypeFont subPixelPositioned\r                     ifTrue: [\r                     glyph roundedPixelLinearAdvance * (scaleX @ 1) ]\r                     ifFalse: [\r                     glyph advance x * scaleX @ glyph advance y ].\r   baseLinearAdvance := glyph linearAdvance.\r   ^ self\r        _pretenured_filter: form\r        baseExtent: baseExtent\r        baseOffset: baseOffset\r        baseAdvance: baseAdvance\r        baseLinearAdvance: baseLinearAdvance\r        scale: scale"
 	},
 	{
-		"methodClass" : "KMModifier",
-		"sourceCode" : "modifiedBy: modifier\r\r   ^ KMComposedModifier newTenured\r        modifiedBy: modifier;\r        modifiedBy: self;\r        yourself"
-	},
-	{
-		"methodClass" : "SpMorphicBoxLayoutCalculatorLeftToRight",
-		"sourceCode" : "calculateCellFor: aMorph\r\r   | sizeY sizeX props cell minExtent homogeneousWidth |\r   props := aMorph layoutProperties ifNil: [ aMorph ].\r   props disableTableLayout ifTrue: [ ^ self ].\r\r   number := number + 1.\r   cell := LayoutCell newTenured target: aMorph.\r\r   props hResizing == #spaceFill\r      ifTrue: [\r            cell hSpaceFill: true.\r            extra := aMorph spaceFillWeight.\r            cell extraSpace: extra.\r            sum := sum + extra ]\r      ifFalse: [ cell hSpaceFill: false ].\r\r   props vResizing == #spaceFill ifTrue: [ vFill := true ].\r   minExtent := aMorph minExtent.\r   homogeneousWidth := aMorph valueOfProperty: #homogeneousWidth.\r   homogeneousWidth ifNotNil: [\r      minExtent := (minExtent x max: homogeneousWidth) @ minExtent y ].\r   size := minExtent.\r   sizeX := size x.\r   sizeY := size y.\r   sizeX < minX\r      ifTrue: [ sizeX := minX ]\r      ifFalse: [ sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r\r   sizeY < minY\r      ifTrue: [ sizeY := minY ]\r      ifFalse: [ sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r\r   cell cellSize: sizeX.\r   lastCell\r      ifNil: [ firstCell := cell ]\r      ifNotNil: [ lastCell nextCell: cell ].\r   lastCell := cell.\r   width := width + sizeX.\r   sizeY > height ifTrue: [ height := sizeY ].\r\r   ^ sizeX @ sizeY"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "announceDeleted\r\r   self doAnnounce: (MorphDeleted _pretenured_morph: self).\r   self submorphs do: #announceDeleted"
-	},
-	{
-		"methodClass" : "Morph",
-		"sourceCode" : "assureExtension\r   \"creates an extension for the receiver if needed\"\r\r   ^ extension ifNil: [ extension := MorphExtension newTenured ]"
+		"methodClass" : "HG2dRectangle class",
+		"sourceCode" : "originX: x0 originY: y0 cornerX: x1 cornerY: y1\r\r   ^ self new\r        setOrigin: (HG2dPoint _pretenured_x: x0 y: y0)\r        corner: (HG2dPoint x: x1 y: y1)"
 	},
 	{
 		"methodClass" : "SystemWindow",
-		"sourceCode" : "setLabel: aString\r\r   | frame announcement |\r   labelString := aString.\r   announcement := WindowLabelled new\r                      window: self;\r                      label: aString;\r                      yourself.\r   self announce: announcement.\r   self currentWorld announcer announce: announcement.\r   label ifNil: [ ^ self ].\r   label contents: aString.\r   self labelWidgetAllowance. \"Sets it if not already\"\r   self isCollapsed\r      ifTrue: [\r            self extent:\r               label width + labelWidgetAllowance\r               @ (self labelHeight + 2) ]\r      ifFalse: [ \"Add a tooltip on the label with the full content in case there is not enough space\"\r            label width > (bounds width - labelWidgetAllowance)\r               ifTrue: [ label setBalloonText: label contents ]\r               ifFalse: [ label setBalloonText: nil ].\r\r            label\r               fitContents;\r               setWidth:\r                  (label width min:\r                         bounds width - labelWidgetAllowance).\r            label\r               align: label bounds topCenter\r               with: bounds topCenter + (0 @ borderWidth).\r            collapsedFrame ifNotNil: [\r                  collapsedFrame := collapsedFrame withWidth:\r                                       label width\r                                       + labelWidgetAllowance ] ].\r   frame := LayoutFrame newTenured.\r   frame\r      leftFraction: 0.5;\r      topFraction: 0.5;\r      leftOffset: label width negated // 2;\r      topOffset: label height negated // 2.\r   label layoutFrame: frame"
+		"sourceCode" : "addCloseBox\r   \"If I have a labelArea, add a close box to it\"\r\r   | frame |\r   labelArea ifNil: [ ^ self ].\r   closeBox := self _pretenured_createCloseBox.\r   frame := LayoutFrame identity leftOffset: 2.\r   closeBox layoutFrame: frame.\r   labelArea addMorphBack: closeBox"
 	},
 	{
-		"methodClass" : "HGRandomPosition class",
-		"sourceCode" : "origin: aPoint corner: anotherPoint region: anHG2dRegion\r\r   ^ self newTenured\r        setOrigin: (HG2dPoint fromPoint: aPoint)\r        corner: (HG2dPoint fromPoint: anotherPoint)\r        region: anHG2dRegion"
+		"methodClass" : "FreeTypeCache",
+		"sourceCode" : "atFont: aFreeTypeFont charCode: charCodeInteger type: typeFlag scale: scale ifAbsentPut: aBlock\r\r   | charCodeTable typeTable scaleTable entry v vSize |\r   mutex criticalReleasingOnError: [\r         charCodeTable := fontTable\r                             at: aFreeTypeFont\r                             ifAbsentPut: [\r                             self dictionaryClass new: 60 ].\r         typeTable := charCodeTable\r                         at: charCodeInteger\r                         ifAbsentPut: [\r                         self dictionaryClass newTenured: 10 ].\r         scaleTable := typeTable\r                          at: typeFlag\r                          ifAbsentPut: [\r                          self dictionaryClass newTenured: 1 ].\r         entry := scaleTable at: scale ifAbsent: [ ].\r         entry ifNotNil: [\r               fifo moveDown: entry.\r               ^ entry object ].\r         v := aBlock\r                 on: Error\r                 do: [ :error |\r                       self\r                          removeIfEmptyScaleTable: scaleTable\r                          type: typeFlag\r                          typeTable: typeTable\r                          charCode: charCodeInteger\r                          charCodeTable: charCodeTable\r                          font: aFreeTypeFont.\r                       error pass ].\r         vSize := self sizeOf: v.\r         (maximumSize isNotNil and: [ vSize > maximumSize ]) ifTrue: [\r               self\r                  removeIfEmptyScaleTable: scaleTable\r                  type: typeFlag\r                  typeTable: typeTable\r                  charCode: charCodeInteger\r                  charCodeTable: charCodeTable\r                  font: aFreeTypeFont.\r               ^ v ].\r         used := used + vSize.\r         entry := self fifoEntryClass newTenured\r                     font: aFreeTypeFont;\r                     charCode: charCodeInteger;\r                     type: typeFlag;\r                     scale: scale;\r                     object: v;\r                     yourself.\r         scaleTable at: scale put: entry.\r         fifo addLast: entry.\r         maximumSize ifNotNil: [ self shrinkTo: maximumSize ].\r         ^ v ]"
 	},
 	{
-		"methodClass" : "HGBorderlinePressureVisualizer class",
-		"sourceCode" : "pressure: pressure xgrids: xgrids ygrids: ygrids kernel: kernel width: width color: aColor\r\r   ^ self newTenured\r        pressure: pressure;\r        xgrids: xgrids;\r        ygrids: ygrids;\r        kernel: kernel;\r        width: width;\r        color: aColor;\r        yourself"
-	},
-	{
-		"methodClass" : "KMStorage",
-		"sourceCode" : "initialize\r\r   anonymousRegistry := Set newTenured.\r   namedRegistry := Dictionary new"
-	},
-	{
-		"methodClass" : "TableLayout",
-		"sourceCode" : "layoutLeftToRight: aMorph in: newBounds\r   \"An optimized left-to-right list layout\"\r\r   | inset extent block posX posY centering extraPerCell amount minX minY maxX maxY n width extra last cell size height sum vFill first submorphs |\r   size := properties minCellSize asPoint.\r   minX := size x.\r   minY := size y.\r   size := properties maxCellSize asPoint.\r   maxX := size x.\r   maxY := size y.\r   inset := properties cellInset asPoint x.\r   extent := newBounds extent.\r   n := 0.\r   vFill := false.\r   sum := 0.\r   width := height := 0.\r   first := last := nil.\r   block := [ :m |\r               | sizeY sizeX props |\r               props := m layoutProperties ifNil: [ m ].\r               props disableTableLayout ifFalse: [\r                     n := n + 1.\r                     cell := LayoutCell newTenured target: m.\r                     props hResizing == #spaceFill\r                        ifTrue: [\r                              cell hSpaceFill: true.\r                              extra := m spaceFillWeight.\r                              cell extraSpace: extra.\r                              sum := sum + extra ]\r                        ifFalse: [ cell hSpaceFill: false ].\r                     props vResizing == #spaceFill ifTrue: [\r                        vFill := true ].\r                     size := m _pretenured_minExtent.\r                     sizeX := size x.\r                     sizeY := size y.\r                     sizeX < minX\r                        ifTrue: [ sizeX := minX ]\r                        ifFalse: [\r                        sizeX > maxX ifTrue: [ sizeX := maxX ] ].\r                     sizeY < minY\r                        ifTrue: [ sizeY := minY ]\r                        ifFalse: [\r                        sizeY > maxY ifTrue: [ sizeY := maxY ] ].\r                     cell cellSize: sizeX.\r                     last\r                        ifNil: [ first := cell ]\r                        ifNotNil: [ last nextCell: cell ].\r                     last := cell.\r                     width := width + sizeX.\r                     sizeY > height ifTrue: [ height := sizeY ] ] ].\r\r   submorphs := aMorph submorphs.\r   properties reverseTableCells ifTrue: [\r      submorphs := submorphs reversed ].\r   submorphs do: [ :each |\r         each visible\r            ifTrue: [ block value: each ]\r            ifFalse: [\r            each privateBounds: (each bounds topLeft extent: 0 @ 0) ] ].\r\r   n > 1 ifTrue: [ width := width + (n - 1 * inset) ].\r\r   (properties hResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ sum isZero ] ]) ifTrue: [\r      extent := width @ (extent y max: height) ].\r   (properties vResizing == #shrinkWrap and: [\r       properties rubberBandCells or: [ vFill not ] ]) ifTrue: [\r      extent := (extent x max: width) @ height ].\r\r   posX := newBounds left.\r   posY := newBounds top.\r\r   \"Compute extra vertical space\"\r   extra := extent y - height.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extra > 0 ifTrue: [\r         vFill\r            ifTrue: [ height := extent y ]\r            ifFalse: [\r                  centering := properties wrapCentering.\r                  centering == #bottomRight ifTrue: [\r                     posY := posY + extra ].\r                  centering == #center ifTrue: [\r                     posY := posY + (extra // 2) ] ] ].\r\r\r   \"Compute extra horizontal space\"\r   extra := extent x - width.\r   extra < 0 ifTrue: [ extra := 0 ].\r   extraPerCell := 0.\r   extra > 0 ifTrue: [\r         sum isZero\r            ifTrue: [ \"extra space but no #spaceFillers\"\r                  centering := properties listCentering.\r                  centering == #bottomRight ifTrue: [\r                     posX := posX + extra ].\r                  centering == #center ifTrue: [\r                     posX := posX + (extra // 2) ] ]\r            ifFalse: [ extraPerCell := extra asFloat / sum asFloat ] ].\r\r   n := 0.\r   extra := last := 0.\r   cell := first.\r   [ cell == nil ] whileFalse: [\r         n := n + 1.\r         width := cell cellSize.\r         (extraPerCell > 0 and: [ cell hSpaceFill ]) ifTrue: [\r               extra := (last := extra)\r                        + (extraPerCell * cell extraSpace).\r               amount := extra truncated - last truncated.\r               width := width + amount ].\r         cell target layoutInBounds:\r            (posX @ posY extent: width @ height).\r         posX := posX + width + inset.\r         cell := cell nextCell ]"
-	},
-	{
-		"methodClass" : "KMComposedModifier",
-		"sourceCode" : "initialize\r\r   super initialize.\r   modifiers := OrderedCollection newTenured"
-	},
-	{
-		"methodClass" : "ByteString",
-		"sourceCode" : "createSymbol\r\r   ^ (ByteSymbol basicNewTenured: self size) string: self"
+		"methodClass" : "HGTemperatureViscosityCurve class",
+		"sourceCode" : "on: aBlock\r\r   ^ self newTenured setCurve: aBlock"
 	},
 	{
 		"methodClass" : "PSPRunner",
 		"sourceCode" : "profileBenchmark\r\r   | profiler |\r   profiler := FiLiP new\r                  samplingRate: samplingRate;\r                  profileOn: [ benchmarkClass newTenured run ];\r                  yourself.\r\r   experiment := PathSensitvePretenuring new\r                    setUpForProfiler: profiler;\r                    methodProtocol: protocol;\r                    yourself"
+	},
+	{
+		"methodClass" : "HG2dTriangle",
+		"sourceCode" : "setVertex1: anHG2dPoint1 vertex2: anHG2dPoint2 vertex3: anHG2dPoint3\r\r   vertex1 := anHG2dPoint1.\r   vertex2 := anHG2dPoint2.\r   vertex3 := anHG2dPoint3.\r   bounds := HG2dRectangle\r                origin: (HG2dPoint\r                       _pretenured_x:\r                       ((vertex1 x min: vertex2 x) min: vertex3 x)\r                       y: ((vertex1 y min: vertex2 y) min: vertex3 y))\r                corner: (HG2dPoint\r                       x: ((vertex1 x max: vertex2 x) max: vertex3 x)\r                       y: ((vertex1 y max: vertex2 y) max: vertex3 y))"
+	},
+	{
+		"methodClass" : "HGSimpleKernel class",
+		"sourceCode" : "support: aNumber\r\r   ^ self newTenured setSupport: aNumber"
+	},
+	{
+		"methodClass" : "Morph",
+		"sourceCode" : "assureTableProperties\r\r   | props |\r   props := self layoutProperties.\r   props == self ifTrue: [ props := nil ].\r   props ifNil: [\r         props := TableLayoutProperties newTenured initializeFrom:\r                     self.\r         self layoutProperties: props ].\r   props includesTableProperties ifFalse: [\r      self layoutProperties: (props := props asTableLayoutProperties) ].\r   ^ props"
+	},
+	{
+		"methodClass" : "UITheme",
+		"sourceCode" : "createExpandBoxFor: aSystemWindow\r   \"Answer a button for maximising/restoring the window.\"\r\r   | formSet msb |\r   formSet := self windowMaximizeFormSet.\r   msb := MultistateButtonMorph newTenured extent: formSet extent.\r   msb activeEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMaximizePassiveFormSet.\r   msb extent: formSet extent.\r   msb passiveEnabledNotOverUpFillStyle:\r      (ImageFillStyle formSet: formSet).\r   formSet := self windowMaximizeOverFormSet.\r   msb extent: formSet extent.\r   msb\r      activeEnabledOverUpFillStyle: (ImageFillStyle formSet: formSet);\r      passiveEnabledOverUpFillStyle:\r         (ImageFillStyle _pretenured_formSet: formSet).\r   formSet := self windowMaximizePassiveFormSet.\r   msb\r      extent: formSet extent;\r      activeEnabledOverDownFillStyle:\r         (ImageFillStyle formSet: formSet);\r      passiveEnabledOverDownFillStyle:\r         (ImageFillStyle _pretenured_formSet: formSet);\r      addUpAction: [ aSystemWindow expandBoxHit ];\r      setBalloonText: 'Expand to full screen' translated;\r      extent: aSystemWindow boxExtent.\r   ^ msb"
+	},
+	{
+		"methodClass" : "LayoutFrame class",
+		"sourceCode" : "identity\r   \"by default a layout frame is initialized to represent the identity transformation\"\r\r   ^ self newTenured"
+	},
+	{
+		"methodClass" : "HGParticle",
+		"sourceCode" : "force: anHGPoint\r\r   force ifNil: [ force := anHGPoint class _pretenured_zero ].\r   force set: anHGPoint.\r   attributes at: #force put: force"
+	},
+	{
+		"methodClass" : "HGSimulator class",
+		"sourceCode" : "butterBallGraffitiAtDie\r   \"HGSimulator butterBallGraffitiAtDie\"\r\r   | simulator |\r   simulator := HGSimulator new.\r   simulator extent: 500 @ 500.\r   simulator\r      _pretenured_simulationOrigin:\r      (HG2dPoint _pretenured_x: 0.0 y: 0.0)\r      corner: (HG2dPoint x: 500.0 y: 500.0).\r   simulator addInitializer: (HGRandomPosition\r          origin: 300 @ 150\r          corner: 500 @ 350\r          region:\r          (HG2dCircle center: (HG2dPoint x: 400 y: 250) radius: 50.0)).\r   simulator addInitializer:\r      (HGVelocityInitialization with: (HG2dPoint x: -20.0 y: 0.0)).\r   simulator addInitializer: (HGTemperatureInitialization with: 360).\r   simulator addAction: HGTemperatureViscosityCurve butter.\r   simulator addAction: (HGForceInitialization with: HG2dPoint zero).\r   simulator addAction: (HGGravity g: (HG2dPoint x: 0.0 y: 0.1)).\r   simulator addAction:\r      (HGPressure\r          gasConstant: 0.01\r          kernel: (HGSimpleKernel support: 10.0)).\r   simulator addAction:\r      (HGPressureRepulsion kernel: (HGSimpleKernel support: 10.0)).\r   simulator addAction: HGForceIntegration new.\r   simulator addAction:\r      (HGForceInitialization with: HG2dPoint _pretenured_zero).\r   simulator addAction:\r      (HGViscosityTraction kernel: (HGSimpleKernel support: 80.0)).\r   simulator addAction: HGForceIntegration new.\r   simulator addAction: HGVelocityIntegration new.\r   simulator addAction: (HGObstacle\r          with: (HG2dTriangle\r                 on: (HG2dPoint x: 200.0 y: 260.0)\r                 on: (HG2dPoint x: 200.0 y: 450.0)\r                 on: (HG2dPoint x: 10.0 y: 300.0))\r          color: (Color gray: 0.8)).\r   simulator addAction: (HGObstacle\r          with: (HG2dTriangle\r                 on: (HG2dPoint x: 200.0 y: 240.0)\r                 on: (HG2dPoint x: 10.0 y: 200.0)\r                 on: (HG2dPoint x: 200.0 y: 30.0))\r          color: (Color gray: 0.8)).\r   simulator addAction: (HGBoundingBox reflectionRate: 0.1).\r   simulator addAction: HGLocalityMap new.\r   simulator addAction: ((HGBorderlineFillPressureVisualizer\r           pressure: 0.01\r           color: Color yellow)\r          kernel: (HGSimpleKernel support: 10.0);\r          yourself).\r   simulator addAction: ((HGBorderlinePressureVisualizer\r           pressure: 0.01\r           width: 3\r           color: Color black)\r          xgrids: 50;\r          ygrids: 50;\r          kernel: (HGSimpleKernel support: 10.0);\r          yourself).\r   simulator addAction: ((HGBorderlinePressureVisualizer\r           pressure: 0.01\r           width: 3\r           color: Color black)\r          kernel: (HGSimpleKernel support: 10.0);\r          xgrids: 60;\r          ygrids: 60;\r          yourself).\r   400 timesRepeat: [\r         simulator\r            _pretenured_addParticleAt: 0 @ 0\r            temperature: 390\r            mass: 200.0 ].\r   simulator openInWindowLabeled: 'Butter Ball at a Die (Graffiti)'.\r   simulator color: (Color gray: 0.87).\r   ^ simulator"
+	},
+	{
+		"methodClass" : "KMCategory",
+		"sourceCode" : "entriesAt: aPlatform\r\r   platforms ifNil: [ platforms := Dictionary newTenured ].\r   ^ platforms at: aPlatform ifAbsentPut: [ KMStorage new ]"
+	},
+	{
+		"methodClass" : "HGSimulator",
+		"sourceCode" : "initialize\r\r   super initialize.\r   self color: Color white.\r   actions := OrderedCollection new.\r   initializers := OrderedCollection newTenured.\r   particles := Array new.\r   particleMapResolution := 50.\r   random := Random new.\r   self updateParticleMap"
 	}
 ]
