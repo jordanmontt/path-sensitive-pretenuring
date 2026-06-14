@@ -1,19 +1,19 @@
 Extension { #name : 'AllocationGraph' }
 
 { #category : '*PathSensitivePretenuring' }
-AllocationGraph >> traverseLongLivedAllocationStack: allocationStack using: aStrategy [
+AllocationGraph >> traverseLongLivedAllocationStack: rawAllocationStack using: aStrategy [
 
     | depth currentCallStack theCurrentNode |
     depth := 0.
     currentCallStack := OrderedCollection new.
 
     "The first one is the allocator method"
-    allocationStack asMethodWithOffsetCollection allButFirstDo: [ :methodWithOffset |
+    rawAllocationStack allButFirstDo: [ :method :offset |
         | theEdge |
         depth > 20 ifTrue: [ ^ self ].
 
-        theCurrentNode := self nodeFor: methodWithOffset method.
-        [ theEdge := theCurrentNode edgeForOffset: methodWithOffset offset ] on: NotFound do: [ :ex | ^ self ].
+        theCurrentNode := self nodeFor: method.
+        [ theEdge := theCurrentNode edgeForOffset: offset ] on: NotFound do: [ :ex | ^ self ].
         currentCallStack add: theEdge.
         (aStrategy isAllocationSite: theCurrentNode fromAllocationPath: currentCallStack) ifTrue: [
             theCurrentNode
@@ -28,8 +28,8 @@ AllocationGraph >> traverseLongLivedSenderChainsUsing: aStrategy [
 
     self leaves do: [ :leaf |
         leaf allocatedObjectTypes do: [ :type |
-            | callStacksOfType |
-            callStacksOfType := leaf allocatedSamples collect: [ :sample | sample sendersCallStack ] as: Set.
-            callStacksOfType do: [ :callStackOfType | 
-                self traverseLongLivedAllocationStack: callStackOfType using: aStrategy ] ] ]
+            | callStacksPerType |
+            callStacksPerType := leaf allocatedSamples collect: [ :sample | sample rawSendersCallStack ] as: Set.
+            callStacksPerType do: [ :rawCallStackOfType | 
+                self traverseLongLivedAllocationStack: rawCallStackOfType using: aStrategy ] ] ]
 ]
