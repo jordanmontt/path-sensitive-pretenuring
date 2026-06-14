@@ -8,7 +8,7 @@ AllocationGraph >> traverseLongLivedAllocationStack: rawAllocationStack using: a
     currentCallStack := OrderedCollection new.
 
     "The first one is the allocator method"
-    rawAllocationStack allButFirstDo: [ :method :offset |
+    (rawAllocationStack allButFirst: 2) pairsDo: [ :method :offset |
         | theEdge |
         depth > 20 ifTrue: [ ^ self ].
 
