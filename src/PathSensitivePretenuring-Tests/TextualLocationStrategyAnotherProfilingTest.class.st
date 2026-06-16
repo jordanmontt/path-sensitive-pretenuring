@@ -28,17 +28,17 @@ TextualLocationStrategyAnotherProfilingTest >> setUp [
 { #category : 'tests' }
 TextualLocationStrategyAnotherProfilingTest >> testTextualLocationStrategy [
 
-	| allocationGraph sendersChains expectedSendersChains |
+	| allocationGraph sendersChains expectedLongLivedPaths |
 	allocationGraph := psp allocationGraph.
 	allocationGraph edges do: #beLongLived.
 
-	expectedSendersChains := {
+	expectedLongLivedPaths := {
 		{ (allocationGraph edgeFrom: Behavior >> #new to: Behavior >> #basicNew) .
 	 	  (allocationGraph edgeFrom: MockedAllocatedClass class >> #fifi to: Behavior >> #new) } }.
 	
 	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
 	sendersChains := psp longLivedPaths.
 
-	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
+	self assert: expectedLongLivedPaths size equals: sendersChains size.
+	self assertCollection: expectedLongLivedPaths flattened hasSameElements: sendersChains flattened
 ]

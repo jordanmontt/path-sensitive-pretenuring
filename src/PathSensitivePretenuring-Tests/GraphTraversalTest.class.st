@@ -51,11 +51,11 @@ GraphTraversalTest >> testAllPathsFromTo [
 { #category : 'tests' }
 GraphTraversalTest >> testTraverseLongLivedSenderChains [
 
-	| allocationGraph sendersChains expectedSendersChains |
+	| allocationGraph sendersChains expectedLongLivedPaths |
 	allocationGraph := psp allocationGraph.
 	allocationGraph edges do: #beLongLived.
 
-	expectedSendersChains := {
+	expectedLongLivedPaths := {
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew) }.
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: (Array class lookupSelector: #new:)) }.
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m3 to: Behavior >> #basicNew) }.
@@ -66,23 +66,23 @@ GraphTraversalTest >> testTraverseLongLivedSenderChains [
 	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: psp allocationGraph; yourself).
 	sendersChains := psp longLivedPaths.
 
-	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
+	self assert: expectedLongLivedPaths size equals: sendersChains size.
+	self assertCollection: expectedLongLivedPaths flattened hasSameElements: sendersChains flattened
 ]
 
 { #category : 'tests' }
 GraphTraversalTest >> testTraverseTextualStrategyOnlyGetsLongLivedEdges [
 
-	| expectedPaths edge |
+	| expectedLongLivedPaths edge |
 	psp allocationGraph edges do: #beShortLived.
 	edge := psp allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew.
 	edge beLongLived.
-	expectedPaths := { OrderedCollection with: edge }.
+	expectedLongLivedPaths := { OrderedCollection with: edge }.
 	
 	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: psp allocationGraph; yourself).
 
 	self assert: psp longLivedPaths size equals: 1.
-	self assertCollection: psp longLivedPaths hasSameElements: expectedPaths
+	self assertCollection: psp longLivedPaths hasSameElements: expectedLongLivedPaths
 ]
 
 { #category : 'tests' }
