@@ -1,15 +1,15 @@
 Class {
-	#name : 'LocationOfNewStrategyTest',
+	#name : 'TextualLocationStrategyAnotherProfilingTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'allocationGraph'
+		'psp'
 	],
 	#category : 'PathSensitivePretenuring-Tests',
 	#package : 'PathSensitivePretenuring-Tests'
 }
 
 { #category : 'running' }
-LocationOfNewStrategyTest >> setUp [
+TextualLocationStrategyAnotherProfilingTest >> setUp [
 
 	| profiler samples |
 	super setUp.
@@ -18,25 +18,26 @@ LocationOfNewStrategyTest >> setUp [
 		            profileOn: [ MockedAllocatorClass tata ];
 		            yourself.
 	samples := profiler objectAllocations select: [ :ephemeron |
-		           { MockedAllocatorClass. MockedAllocatedClass } includes: ephemeron allocatedObjectClass ].
-	allocationGraph := AllocationGraph new
-		                   setUpForSamples: samples;
-		                   yourself
+		           { MockedAllocatedClass } includes: ephemeron allocatedObjectClass ].
+	psp := PathSensitvePretenuring new
+		rawAllocationsSamples: samples;
+		constructAllocationGraph;
+		yourself
 ]
 
 { #category : 'tests' }
-LocationOfNewStrategyTest >> testTextualLocationStrategy [
+TextualLocationStrategyAnotherProfilingTest >> testTextualLocationStrategy [
 
-	| sendersChains expectedSendersChains |
+	| allocationGraph sendersChains expectedSendersChains |
+	allocationGraph := psp allocationGraph.
 	allocationGraph edges do: #beLongLived.
-	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (MockedAllocatorClass class >> #tata)).
 
 	expectedSendersChains := {
 		{ (allocationGraph edgeFrom: Behavior >> #new to: Behavior >> #basicNew) .
 	 	  (allocationGraph edgeFrom: MockedAllocatedClass class >> #fifi to: Behavior >> #new) } }.
 	
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
-	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
+	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
+	sendersChains := psp longLivedPaths.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
 	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened

@@ -2,7 +2,7 @@ Class {
 	#name : 'GraphTraversalTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'allocationGraph'
+		'psp'
 	],
 	#category : 'PathSensitivePretenuring-Tests',
 	#package : 'PathSensitivePretenuring-Tests'
@@ -19,15 +19,17 @@ GraphTraversalTest >> setUp [
 		            yourself.
 	samples := profiler objectAllocations select: [ :ephemeron |
 		           { AllocationGraphFixtureObject . AllocationGraphFixtureArray } includes: ephemeron allocatedObjectClass ].
-	allocationGraph := AllocationGraph new
-		                   setUpForSamples: samples;
-		                   yourself
+	psp := PathSensitvePretenuring new
+		rawAllocationsSamples: samples;
+		constructAllocationGraph;
+		yourself
 ]
 
 { #category : 'tests' }
 GraphTraversalTest >> testAllPathsFromTo [
 
-	| actualPaths expectedPaths |
+	| allocationGraph actualPaths expectedPaths |
+	allocationGraph := psp allocationGraph.
 	
 	actualPaths := allocationGraph
 			allPathsFrom: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m7)
@@ -47,56 +49,11 @@ GraphTraversalTest >> testAllPathsFromTo [
 ]
 
 { #category : 'tests' }
-GraphTraversalTest >> testDetectAllocationSiteDefault [
-
-	allocationGraph edges do: #beLongLived.
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph).
-
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m1) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixtureUtilities class >> #mm) isAllocationSite.	
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m3) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m4) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m5) isAllocationSite.
-
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m2) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m6) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m7) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #entryPoint) isAllocationSite
-]
-
-{ #category : 'tests' }
-GraphTraversalTest >> testDetectAllocationSitesUsingMethodInPackage [
-
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m1) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m2) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m3) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m4) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m5) isAllocationSite.
-	
-	allocationGraph := allocationGraph subgraphReachableFromMethod: (AllocationGraphFixture class >> #entryPoint).
-	allocationGraph edges do: #beLongLived.
-
-	allocationGraph traverseLongLivedSenderChainsUsing:
-		(ApplicationMethodPretenuringStrategy setUpForApplicationPackages: { AllocationGraphFixture package }).
-
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m1) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m2) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m3) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m4) isAllocationSite.
-	self assert: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m5) isAllocationSite.
-
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixtureUtilities class >> #mm) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m6) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m7) isAllocationSite.
-	self deny: (allocationGraph nodeAtMethod: AllocationGraphFixture class >> #entryPoint) isAllocationSite
-]
-
-{ #category : 'tests' }
 GraphTraversalTest >> testTraverseLongLivedSenderChains [
 
-	| sendersChains expectedSendersChains |
+	| allocationGraph sendersChains expectedSendersChains |
+	allocationGraph := psp allocationGraph.
 	allocationGraph edges do: #beLongLived.
-	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (AllocationGraphFixture class >> #entryPoint)).
 
 	expectedSendersChains := {
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew) }.
@@ -106,50 +63,44 @@ GraphTraversalTest >> testTraverseLongLivedSenderChains [
 		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m5 to: Behavior >> #basicNew) }.
 		{ (allocationGraph edgeFrom: AllocationGraphFixtureUtilities class >> #mm to: Behavior >> #basicNew) }}.
 
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
-	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
+	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: psp allocationGraph; yourself).
+	sendersChains := psp longLivedPaths.
 
 	self assert: expectedSendersChains size equals: sendersChains size.
 	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
-]
-
-{ #category : 'tests' }
-GraphTraversalTest >> testTraverseLongLivedSenderChainsSimpleStrategy [
-
-	| sendersChains expectedSendersChains |
-	allocationGraph edges do: #beLongLived.
-	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (AllocationGraphFixture class >> #entryPoint)).
-	(allocationGraph nodeAtMethod: AllocationGraphFixture class >> #m7) beAllocationSite.
-
-	expectedSendersChains := {
-		OrderedCollection newFrom: {
-			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m4 to: Behavior >> #basicNew).
-			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m7 to: AllocationGraphFixture class >> #m4) }.
-		OrderedCollection newFrom: {
-			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m5 to: Behavior >> #basicNew).
-			(allocationGraph edgeFrom: AllocationGraphFixture class >> #m7 to: AllocationGraphFixture class >> #m5) } }.
-	
-	allocationGraph traverseLongLivedSenderChainsUsing: NodeBasedPretenuringStrategy new.
-	sendersChains := sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
-
-	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains hasSameElements: sendersChains
 ]
 
 { #category : 'tests' }
 GraphTraversalTest >> testTraverseTextualStrategyOnlyGetsLongLivedEdges [
 
-	| sendersChains expectedSendersChains |
-	allocationGraph := allocationGraph subgraphReachableFromNode: (allocationGraph nodeAtMethod: (AllocationGraphFixture class >> #entryPoint)).
-
-	expectedSendersChains := {
-		{ (allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew) } }.
+	| expectedPaths edge |
+	psp allocationGraph edges do: #beShortLived.
+	edge := psp allocationGraph edgeFrom: AllocationGraphFixture class >> #m1 to: Behavior >> #basicNew.
+	edge beLongLived.
+	expectedPaths := { OrderedCollection with: edge }.
 	
-	expectedSendersChains do: [ :array | array do: #beLongLived].
+	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: psp allocationGraph; yourself).
 
-	allocationGraph traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: allocationGraph; yourself).
-	sendersChains := (allocationGraph nodes select: #isAllocationSite) flatCollect: #allocationCallStacks.
+	self assert: psp longLivedPaths size equals: 1.
+	self assertCollection: psp longLivedPaths hasSameElements: expectedPaths
+]
 
-	self assert: expectedSendersChains size equals: sendersChains size.
-	self assertCollection: expectedSendersChains flattened hasSameElements: sendersChains flattened
+{ #category : 'tests' }
+GraphTraversalTest >> testTraverseUsingTextualAllocationSiteStrategy [
+
+	| expectedMethodsToPreture |
+	
+	psp allocationGraph edges do: #beLongLived.
+	psp traverseLongLivedSenderChainsUsing: (TextualLocationOfNewPretenuringStrategy new setUpForGraph: psp allocationGraph).
+	psp flatLongLivedAllocationPaths.
+	expectedMethodsToPreture := { 
+		{ IllMethodWithOffset method: AllocationGraphFixture class >> #m1 offset: 103 }.
+		{ IllMethodWithOffset method: AllocationGraphFixture class >> #m1 offset: 82 }.
+		{ IllMethodWithOffset method: AllocationGraphFixture class >> #m4 offset: 66 }.
+		{ IllMethodWithOffset method: AllocationGraphFixture class >> #m3 offset: 66 }.
+		{ IllMethodWithOffset method: AllocationGraphFixture class >> #m5 offset: 66 }.
+		{ IllMethodWithOffset method: AllocationGraphFixtureUtilities class >> #mm offset: 66 } }.
+	expectedMethodsToPreture := expectedMethodsToPreture collect: #asOrderedCollection.
+
+	self assertCollection: psp methodsToPretenure hasSameElements: expectedMethodsToPreture  
 ]
