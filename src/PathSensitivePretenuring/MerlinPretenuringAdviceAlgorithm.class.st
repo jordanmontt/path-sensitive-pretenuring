@@ -142,7 +142,7 @@ MerlinPretenuringAdviceAlgorithm >> isObjectImmortal: illEphe [
 	| timeOfDeath halfwayBirthtimeToEnd birthTime |
 	timeOfDeath := illEphe finalizationTime min: endTime.
 	birthTime := illEphe initializationTime.
-	halfwayBirthtimeToEnd := birthTime + (endTime - illEphe initializationTime / 2).
+	halfwayBirthtimeToEnd := birthTime + (endTime - birthTime / 2).
 	^ timeOfDeath > halfwayBirthtimeToEnd
 ]
 
