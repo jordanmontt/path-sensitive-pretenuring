@@ -48,29 +48,30 @@ PathSensitvePretenuring >> ambiguityThreshold: aNumber [
 { #category : 'api' }
 PathSensitvePretenuring >> analyzeAllocations [
 
-   self constructAllocationGraph.
+    self constructAllocationGraph.
 
-   	self classifyEdgesByLifetime.
+    self classifyEdgesByLifetime.
 
-	pretenuringStrategy setUpForGraph: allocationGraph.
-	allocationGraph traverseLongLivedSenderChainsUsing: pretenuringStrategy.
-   methodsToPretenure := self flatLongLivedAllocationPaths
+    pretenuringStrategy setUpForGraph: allocationGraph.
+    self traverseLongLivedSenderChainsUsing: pretenuringStrategy.
+    methodsToPretenure := self flatLongLivedAllocationPaths
 ]
 
 { #category : 'calculating' }
 PathSensitvePretenuring >> classifyEdgesByLifetime [
 
-	allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm.
+    allocationSiteClassificator := pretenuringStrategy newClassificationAlgorithm.
 
-	"Set up"
-	allocationSiteClassificator
-		startTime: rawAllocationsSamples first initializationTime;
-		endTime: profiler endTime;
-		setUpForAllocationGraph: allocationGraph.
-	ambiguityThreshold ifNotNil: [ allocationSiteClassificator ambiguityThreshold: ambiguityThreshold ].
+    "Set up"
+    allocationSiteClassificator
+        startTime: rawAllocationsSamples first initializationTime;
+        endTime: profiler endTime;
+        samplingRate: profiler samplingRate;
+        setUpForAllocationGraph: allocationGraph.
+    ambiguityThreshold ifNotNil: [ allocationSiteClassificator ambiguityThreshold: ambiguityThreshold ].
 
-	"API call"
-	allocationSiteClassificator classifyEdgesByLifetime
+    "API call"
+    allocationSiteClassificator classifyEdgesByLifetime
 ]
 
 { #category : 'api' }

@@ -20,7 +20,8 @@ Class {
 		'hif',
 		'hlf',
 		'allocationGraph',
-		'pruningThreshold'
+		'pruningThreshold',
+		'samplingRate'
 	],
 	#category : 'PathSensitivePretenuring-Pretenuring-Graph-Traversal',
 	#package : 'PathSensitivePretenuring',
@@ -128,12 +129,13 @@ MerlinPretenuringAdviceAlgorithm >> groupedAllocationSites [
 { #category : 'initialization' }
 MerlinPretenuringAdviceAlgorithm >> initialize [
 
-	super initialize.
+    super initialize.
 
-	taThreshold := 0.45.
-	hif := 0.
-	hlf := 0.6.
-	pruningThreshold := 0.000002
+    taThreshold := 0.45.
+    hif := 0.
+    hlf := 0.6.
+    pruningThreshold := 0.000002.
+    samplingRate := 1
 ]
 
 { #category : 'calculating' }
@@ -149,10 +151,10 @@ MerlinPretenuringAdviceAlgorithm >> isObjectImmortal: illEphe [
 { #category : 'calculating' }
 MerlinPretenuringAdviceAlgorithm >> isObjectShortLived: illEphe [
 
-	| age maxSize |
-	maxSize := self maxLiveSize.
-	age := (illEphe lifetime / maxSize) asFloat.
-	^ age < (taThreshold * maxSize)
+    | age maxSize |
+    maxSize := self maxLiveSize / samplingRate.
+    age := (illEphe lifetime / maxSize) asFloat.
+    ^ age < taThreshold
 ]
 
 { #category : 'api' }
@@ -187,6 +189,13 @@ MerlinPretenuringAdviceAlgorithm >> pruningThreshold [
 MerlinPretenuringAdviceAlgorithm >> pruningThreshold: aNumber [
 
 	pruningThreshold := aNumber
+]
+
+{ #category : 'accessing' }
+MerlinPretenuringAdviceAlgorithm >> samplingRate: aFraction [
+    "The sampling rate of the profile. The maximum live size is computed from the sampled objects, so it is scaled by it."
+
+    samplingRate := aFraction
 ]
 
 { #category : 'api' }
